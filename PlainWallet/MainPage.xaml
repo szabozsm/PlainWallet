@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PlainWallet.MainPage"
+             Title="PlainWallet">
+
+    <ContentPage.Resources>
+        <Style TargetType="Label">
+            <Setter Property="TextColor" Value="White" />
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid Padding="16">
+        <CollectionView ItemsSource="{Binding Cards}">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Frame
+                            Padding="16"
+                            CornerRadius="18"
+                            HasShadow="True"
+                            BackgroundColor="{Binding BackgroundColor}">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+                                <Image
+                                    Source="{Binding Logo}"
+                                    HeightRequest="40"
+                                    WidthRequest="40"
+                                    Aspect="AspectFit" />
+
+                                <VerticalStackLayout
+                                    Grid.Column="1"
+                                    Spacing="4"
+                                    VerticalOptions="Center">
+                                    <Label
+                                        Text="{Binding Name}"
+                                        FontAttributes="Bold"
+                                        FontSize="18" />
+
+                                    <Label
+                                        Text="{Binding CardNumber}"
+                                        FontSize="14"
+                                        Opacity="0.9" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Frame>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+
+</ContentPage>
