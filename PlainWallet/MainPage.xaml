@@ -26,6 +26,9 @@
                             CornerRadius="18"
                             HasShadow="True"
                             BackgroundColor="{Binding BackgroundColor}">
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnCardTapped" />
+                            </Frame.GestureRecognizers>
                             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
                                 <Image
                                     Source="{Binding Logo}"

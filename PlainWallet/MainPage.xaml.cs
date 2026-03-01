@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using Microsoft.Maui.Controls;
 using PlainWallet.Models;
+using PlainWallet.Services;
 using PlainWallet.Views;
 
 namespace PlainWallet;
@@ -63,20 +64,30 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private async void OnCardSelected(object sender, SelectionChangedEventArgs e)
+    private void OnCardSelected(object sender, SelectionChangedEventArgs e)
     {
         if (e.CurrentSelection.FirstOrDefault() is MembershipCard selectedCard)
-        {
-            await Shell.Current.GoToAsync(nameof(CardDetailPage), new Dictionary<string, object>
-            {
-                ["Card"] = selectedCard
-            });
-        }
+            OpenCardDetail(selectedCard);
 
         if (sender is CollectionView collectionView)
-        {
             collectionView.SelectedItem = null;
+    }
+
+    private void OnCardTapped(object sender, TappedEventArgs e)
+    {
+        // Gesture recognizer is inside the Frame; Frame's BindingContext is the card
+        if (sender is Element element &&
+            element.Parent is BindableObject parent &&
+            parent.BindingContext is MembershipCard card)
+        {
+            OpenCardDetail(card);
         }
+    }
+
+    private async void OpenCardDetail(MembershipCard card)
+    {
+        CardNavigation.SelectedCard = card;
+        await Shell.Current.GoToAsync(nameof(CardDetailPage));
     }
 }
 

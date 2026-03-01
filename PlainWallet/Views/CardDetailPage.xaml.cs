@@ -1,9 +1,9 @@
 using Microsoft.Maui.Controls;
 using PlainWallet.Models;
+using PlainWallet.Services;
 
 namespace PlainWallet.Views;
 
-[QueryProperty(nameof(Card), "Card")]
 public partial class CardDetailPage : ContentPage
 {
     private MembershipCard? _card;
@@ -22,6 +22,12 @@ public partial class CardDetailPage : ContentPage
     {
         InitializeComponent();
         BindingContext = this;
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        Card = CardNavigation.SelectedCard;
     }
 }
 
