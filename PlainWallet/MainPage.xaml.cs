@@ -1,11 +1,14 @@
 using System.Collections.ObjectModel;
+using Microsoft.Maui.Controls;
 using PlainWallet.Models;
+using PlainWallet.Views;
 
 namespace PlainWallet;
 
 public partial class MainPage : ContentPage
 {
     public ObservableCollection<MembershipCard> Cards { get; } = new();
+    private readonly Random _random = new();
 
     public MainPage()
     {
@@ -16,32 +19,64 @@ public partial class MainPage : ContentPage
 
     private void LoadSampleCards()
     {
-        Cards.Add(new MembershipCard
+        var names = new[]
         {
-            Name = "SuperMart Club",
-            CardNumber = "1234 5678 9012",
-            Logo = "dotnet_bot.png",
-            BackgroundColor = Colors.DeepSkyBlue,
-            Notes = "Show at checkout to collect points."
-        });
+            "SuperMart Club",
+            "City Gym",
+            "Book Lovers",
+            "Cinema Stars",
+            "Coffee Points",
+            "Tech Store Plus"
+        };
 
-        Cards.Add(new MembershipCard
+        var notes = new[]
         {
-            Name = "City Gym",
-            CardNumber = "GYM-987654",
-            Logo = "dotnet_bot.png",
-            BackgroundColor = Colors.MediumPurple,
-            Notes = "Access pass for all locations."
-        });
+            "Show at checkout to collect points.",
+            "Access pass for all locations.",
+            "10% off all paperbacks.",
+            "Free popcorn every 5 visits.",
+            "Every 7th drink is free.",
+            "Extended warranty on all gadgets."
+        };
 
-        Cards.Add(new MembershipCard
+        var colors = new[]
         {
-            Name = "Book Lovers",
-            CardNumber = "BL-2024-001",
-            Logo = "dotnet_bot.png",
-            BackgroundColor = Colors.OrangeRed,
-            Notes = "10% off all paperbacks."
-        });
+            Colors.DeepSkyBlue,
+            Colors.MediumPurple,
+            Colors.OrangeRed,
+            Colors.SeaGreen,
+            Colors.Goldenrod,
+            Colors.CadetBlue
+        };
+
+        for (int i = 0; i < 8; i++)
+        {
+            var index = _random.Next(names.Length);
+            Cards.Add(new MembershipCard
+            {
+                Name = names[index],
+                CardNumber = $"{_random.Next(1000, 9999)} {_random.Next(1000, 9999)} {_random.Next(1000, 9999)}",
+                Logo = ImageSource.FromFile("dotnet_bot.png"),
+                BackgroundColor = colors[_random.Next(colors.Length)],
+                Notes = notes[index]
+            });
+        }
+    }
+
+    private async void OnCardSelected(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection.FirstOrDefault() is MembershipCard selectedCard)
+        {
+            await Shell.Current.GoToAsync(nameof(CardDetailPage), new Dictionary<string, object>
+            {
+                ["Card"] = selectedCard
+            });
+        }
+
+        if (sender is CollectionView collectionView)
+        {
+            collectionView.SelectedItem = null;
+        }
     }
 }
 

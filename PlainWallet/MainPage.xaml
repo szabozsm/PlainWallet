@@ -11,7 +11,9 @@
     </ContentPage.Resources>
 
     <Grid Padding="16">
-        <CollectionView ItemsSource="{Binding Cards}">
+        <CollectionView ItemsSource="{Binding Cards}"
+                        SelectionMode="Single"
+                        SelectionChanged="OnCardSelected">
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
             </CollectionView.ItemsLayout>

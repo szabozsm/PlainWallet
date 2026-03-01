@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PlainWallet.Views.CardDetailPage"
+             Title="Card Details">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="16">
+            <Frame
+                Padding="20"
+                CornerRadius="18"
+                HasShadow="True"
+                BackgroundColor="{Binding Card.BackgroundColor}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+                    <Image
+                        Source="{Binding Card.Logo}"
+                        HeightRequest="60"
+                        WidthRequest="60"
+                        Aspect="AspectFit" />
+
+                    <VerticalStackLayout
+                        Grid.Column="1"
+                        Spacing="6"
+                        VerticalOptions="Center">
+                        <Label
+                            Text="{Binding Card.Name}"
+                            FontAttributes="Bold"
+                            FontSize="22"
+                            TextColor="White" />
+
+                        <Label
+                            Text="{Binding Card.CardNumber}"
+                            FontSize="16"
+                            TextColor="White"
+                            Opacity="0.9" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
+
+            <VerticalStackLayout Spacing="8">
+                <Label
+                    Text="Notes"
+                    FontAttributes="Bold"
+                    FontSize="18" />
+                <Label
+                    Text="{Binding Card.Notes}"
+                    FontSize="16" />
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
+
