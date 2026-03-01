@@ -28,6 +28,13 @@ public partial class CardDetailPage : ContentPage
     {
         base.OnAppearing();
         Card = CardNavigation.SelectedCard;
+        UpdateBarcode();
+    }
+
+    private void UpdateBarcode()
+    {
+        if (BarcodeImage is not null)
+            BarcodeImage.Source = BarcodeGenerator.CreateBarcode(Card?.CardNumber);
     }
 }
 

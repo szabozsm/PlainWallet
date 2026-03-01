@@ -39,6 +39,19 @@
 
             <VerticalStackLayout Spacing="8">
                 <Label
+                    Text="Barcode"
+                    FontAttributes="Bold"
+                    FontSize="18" />
+                <Image
+                    x:Name="BarcodeImage"
+                    HeightRequest="80"
+                    HorizontalOptions="Center"
+                    Margin="0,8,0,0"
+                    Aspect="AspectFit" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="8">
+                <Label
                     Text="Notes"
                     FontAttributes="Bold"
                     FontSize="18" />
