@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PlainWallet.Views.NewCardPage"
+             Title="New Card">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+            <Label Text="Name" FontAttributes="Bold" />
+            <Entry x:Name="NameEntry"
+                   Placeholder="Card or store name"
+                   Text="{Binding Name, Mode=TwoWay}" />
+
+            <Label Text="Card number" FontAttributes="Bold" />
+            <Entry x:Name="CardNumberEntry"
+                   Placeholder="e.g. 1234 5678 9012"
+                   Text="{Binding CardNumber, Mode=TwoWay}" />
+
+            <Label Text="Barcode type" FontAttributes="Bold" />
+            <Picker x:Name="BarcodeTypePicker"
+                    Title="Pick barcode type"
+                    ItemsSource="{Binding BarcodeTypeOptions}"
+                    ItemDisplayBinding="{Binding DisplayName}"
+                    SelectedItem="{Binding SelectedBarcodeType, Mode=TwoWay}" />
+
+            <Label Text="Background color" FontAttributes="Bold" />
+            <Picker x:Name="ColorPicker"
+                    Title="Pick a color"
+                    ItemsSource="{Binding ColorOptions}"
+                    ItemDisplayBinding="{Binding Name}"
+                    SelectedItem="{Binding SelectedColor, Mode=TwoWay}" />
+
+            <Label Text="Notes" FontAttributes="Bold" />
+            <Editor x:Name="NotesEditor"
+                    Placeholder="Optional notes"
+                    HeightRequest="80"
+                    Text="{Binding Notes, Mode=TwoWay}" />
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,24,0,0">
+                <Button Grid.Column="0"
+                        Text="Cancel"
+                        BackgroundColor="{StaticResource Gray200}"
+                        TextColor="{StaticResource Gray900}"
+                        Clicked="OnCancelClicked" />
+                <Button Grid.Column="1"
+                        Text="Save"
+                        Clicked="OnSaveClicked" />
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

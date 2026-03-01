@@ -9,7 +9,7 @@ namespace PlainWallet;
 
 public partial class MainPage : ContentPage
 {
-    public ObservableCollection<MembershipCard> Cards { get; } = new();
+    public ObservableCollection<MembershipCard> Cards => CardStore.Cards;
     private readonly Random _random = new();
 
     public MainPage()
@@ -19,8 +19,16 @@ public partial class MainPage : ContentPage
         LoadSampleCards();
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        OnPropertyChanged(nameof(Cards));
+    }
+
     private void LoadSampleCards()
     {
+        if (CardStore.Cards.Count > 0)
+            return;
         var names = new[]
         {
             "SuperMart Club",
@@ -62,7 +70,7 @@ public partial class MainPage : ContentPage
         for (int i = 0; i < 8; i++)
         {
             var index = _random.Next(names.Length);
-            Cards.Add(new MembershipCard
+            CardStore.Cards.Add(new MembershipCard
             {
                 Name = names[index],
                 CardNumber = $"{_random.Next(1000, 9999)} {_random.Next(1000, 9999)} {_random.Next(1000, 9999)}",
@@ -98,6 +106,11 @@ public partial class MainPage : ContentPage
     {
         CardNavigation.SelectedCard = card;
         await Shell.Current.GoToAsync(nameof(CardDetailPage));
+    }
+
+    private async void OnAddCardClicked(object? sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(NewCardPage));
     }
 }
 
