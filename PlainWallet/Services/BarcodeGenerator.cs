@@ -6,19 +6,27 @@ namespace PlainWallet.Services;
 public static class BarcodeGenerator
 {
     /// <summary>
-    /// Generates a Code 128 barcode image from the given value.
+    /// Generates a barcode image from the given value using the specified format.
     /// Returns null if value is null/empty or generation fails.
     /// </summary>
-    public static ImageSource? CreateBarcode(string? value, int width = 800, int height = 80)
+    public static ImageSource? CreateBarcode(string? value, global::ZXing.BarcodeFormat format, int width = 800, int height = 80)
     {
         if (string.IsNullOrWhiteSpace(value))
             return null;
+
+        // EAN-13 requires exactly 12 or 13 digits
+        var content = value;
+        if (format == global::ZXing.BarcodeFormat.EAN_13)
+        {
+            var digits = new string(value.Where(char.IsDigit).ToArray());
+            content = digits.Length >= 12 ? digits[..12] : digits.PadLeft(12, '0');
+        }
 
         try
         {
             var writer = new BarcodeWriter
             {
-                Format = global::ZXing.BarcodeFormat.CODE_128,
+                Format = format,
                 Options = new global::ZXing.Common.EncodingOptions
                 {
                     Width = width,
@@ -28,7 +36,7 @@ public static class BarcodeGenerator
                 }
             };
 
-            using var bitmap = writer.Write(value);
+            using var bitmap = writer.Write(content);
             using var image = SKImage.FromBitmap(bitmap);
             using var data = image.Encode(SKEncodedImageFormat.Png, 100);
             var bytes = data.ToArray();

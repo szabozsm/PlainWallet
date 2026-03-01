@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using ZXing;
 using Microsoft.Maui.Controls;
 using PlainWallet.Models;
 using PlainWallet.Services;
@@ -50,6 +51,14 @@ public partial class MainPage : ContentPage
             Colors.CadetBlue
         };
 
+        var barcodeFormats = new[]
+        {
+            BarcodeFormat.CODE_128,
+            BarcodeFormat.CODE_39,
+            BarcodeFormat.CODE_93,
+            BarcodeFormat.EAN_13
+        };
+
         for (int i = 0; i < 8; i++)
         {
             var index = _random.Next(names.Length);
@@ -59,7 +68,8 @@ public partial class MainPage : ContentPage
                 CardNumber = $"{_random.Next(1000, 9999)} {_random.Next(1000, 9999)} {_random.Next(1000, 9999)}",
                 Logo = ImageSource.FromFile("dotnet_bot.png"),
                 BackgroundColor = colors[_random.Next(colors.Length)],
-                Notes = notes[index]
+                Notes = notes[index],
+                BarcodeType = barcodeFormats[_random.Next(barcodeFormats.Length)]
             });
         }
     }

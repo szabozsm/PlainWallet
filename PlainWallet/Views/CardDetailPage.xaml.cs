@@ -33,8 +33,8 @@ public partial class CardDetailPage : ContentPage
 
     private void UpdateBarcode()
     {
-        if (BarcodeImage is not null)
-            BarcodeImage.Source = BarcodeGenerator.CreateBarcode(Card?.CardNumber);
+        if (BarcodeImage is not null && Card is not null)
+            BarcodeImage.Source = BarcodeGenerator.CreateBarcode(Card.CardNumber, Card.BarcodeType);
     }
 }
 
