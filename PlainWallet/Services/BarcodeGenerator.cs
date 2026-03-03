@@ -9,7 +9,7 @@ public static class BarcodeGenerator
     /// Generates a barcode image from the given value using the specified format.
     /// Returns null if value is null/empty or generation fails.
     /// </summary>
-    public static ImageSource? CreateBarcode(string? value, ZXing.Net.Maui.BarcodeFormat format, int width = 800, int height = 80)
+    public static ImageSource? CreateBarcode(string? value, ZXing.Net.Maui.BarcodeFormat format, int width = 800, int height = 800)
     {
         if (string.IsNullOrWhiteSpace(value))
             return null;

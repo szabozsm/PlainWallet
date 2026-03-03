@@ -48,7 +48,7 @@
                     FontSize="18" />
                 <Image
                     x:Name="BarcodeImage"
-                    HeightRequest="80"
+                    HeightRequest="320"
                     HorizontalOptions="Center"
                     Margin="0,8,0,0"
                     Aspect="AspectFit" />

@@ -40,11 +40,15 @@ public partial class CardEditorPage : ContentPage
 
         Title = "Edit Card";
 
-        // add delete toolbar item
+        // add delete toolbar item with confirmation
         var deleteItem = new ToolbarItem("🗑", null, async () =>
         {
-            if (_editingCard is not null) CardStore.Cards.Remove(_editingCard);
-            await Shell.Current.GoToAsync("..");
+            if (_editingCard is null) return;
+            var confirm = await DisplayAlert("Delete", "Are you sure you want to delete this card?", "Delete", "Cancel");
+            if (!confirm) return;
+            CardStore.Cards.Remove(_editingCard);
+            // After deleting a card, navigate explicitly to the main list of cards
+            await Shell.Current.GoToAsync("//MainPage");
         }) { Order = ToolbarItemOrder.Primary, Priority = 1 };
         ToolbarItems.Add(deleteItem);
     }
