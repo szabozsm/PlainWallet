@@ -10,11 +10,12 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="16">
-            <Frame
+            <Border
                 Padding="20"
-                CornerRadius="18"
-                HasShadow="True"
                 BackgroundColor="{Binding Card.BackgroundColor}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="18" />
+                </Border.StrokeShape>
                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
                     <Image
                         Source="{Binding Card.Logo}"
@@ -39,7 +40,7 @@
                             Opacity="0.9" />
                     </VerticalStackLayout>
                 </Grid>
-            </Frame>
+            </Border>
 
             <VerticalStackLayout Spacing="8">
                 <Label

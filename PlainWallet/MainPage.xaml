@@ -11,7 +11,12 @@
     </ContentPage.Resources>
 
     <Grid Padding="16">
-        <CollectionView ItemsSource="{Binding Cards}"
+        <VerticalStackLayout Spacing="12">
+            <Entry Placeholder="Filter cards..."
+                   TextChanged="OnFilterTextChanged"
+                   ClearButtonVisibility="WhileEditing" />
+
+            <CollectionView ItemsSource="{Binding FilteredCards}"
                         SelectionMode="Single"
                         SelectionChanged="OnCardSelected">
             <CollectionView.ItemsLayout>
@@ -21,14 +26,15 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Grid>
-                        <Frame
+                        <Border
                             Padding="16"
-                            CornerRadius="18"
-                            HasShadow="True"
                             BackgroundColor="{Binding BackgroundColor}">
-                            <Frame.GestureRecognizers>
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="18" />
+                            </Border.StrokeShape>
+                            <Border.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnCardTapped" />
-                            </Frame.GestureRecognizers>
+                            </Border.GestureRecognizers>
                             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
                                 <Image
                                     Source="{Binding Logo}"
@@ -51,11 +57,12 @@
                                         Opacity="0.9" />
                                 </VerticalStackLayout>
                             </Grid>
-                        </Frame>
+                        </Border>
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
-        </CollectionView>
+            </CollectionView>
+        </VerticalStackLayout>
 
         <Button Text="+"
                 FontSize="28"
