@@ -36,5 +36,11 @@ public partial class CardDetailPage : ContentPage
         if (BarcodeImage is not null && Card is not null)
             BarcodeImage.Source = BarcodeGenerator.CreateBarcode(Card.CardNumber, Card.BarcodeType);
     }
+
+    private async void OnEditClicked(object? sender, EventArgs e)
+    {
+        if (Card is null) return;
+        await Navigation.PushAsync(new CardEditorPage(Card));
+    }
 }
 

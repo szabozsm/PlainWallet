@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Linq;
 using Microsoft.Maui.Controls;
 using PlainWallet.Models;
 using PlainWallet.Services;
@@ -6,13 +7,46 @@ using ZXing;
 
 namespace PlainWallet.Views;
 
-public partial class NewCardPage : ContentPage
+public partial class CardEditorPage : ContentPage
 {
-    public NewCardPage()
+    private MembershipCard? _editingCard;
+    private bool _isEditing;
+    public bool IsEditing { get => _isEditing; set { _isEditing = value; OnPropertyChanged(); } }
+
+    public CardEditorPage()
     {
         InitializeComponent();
         BindingContext = this;
         LoadOptions();
+        Title = "New Card";
+    }
+
+    public CardEditorPage(MembershipCard? card) : this()
+    {
+        if (card is null) return;
+        _editingCard = card;
+        IsEditing = true;
+        Name = card.Name ?? string.Empty;
+        CardNumber = card.CardNumber ?? string.Empty;
+        Notes = card.Notes ?? string.Empty;
+        SelectedColor = ColorOptions.FirstOrDefault(o => o.Color == card.BackgroundColor) ?? ColorOptions[0];
+        SelectedBarcodeType = BarcodeTypeOptions.FirstOrDefault(o => o.Format == card.BarcodeType) ?? BarcodeTypeOptions[0];
+        OnPropertyChanged(nameof(Name));
+        OnPropertyChanged(nameof(CardNumber));
+        OnPropertyChanged(nameof(Notes));
+        OnPropertyChanged(nameof(SelectedColor));
+        OnPropertyChanged(nameof(SelectedBarcodeType));
+        OnPropertyChanged(nameof(IsEditing));
+
+        Title = "Edit Card";
+
+        // add delete toolbar item
+        var deleteItem = new ToolbarItem("🗑", null, async () =>
+        {
+            if (_editingCard is not null) CardStore.Cards.Remove(_editingCard);
+            await Shell.Current.GoToAsync("..");
+        }) { Order = ToolbarItemOrder.Primary, Priority = 1 };
+        ToolbarItems.Add(deleteItem);
     }
 
     public string Name { get; set; } = string.Empty;
@@ -47,16 +81,27 @@ public partial class NewCardPage : ContentPage
 
     private async void OnSaveClicked(object? sender, EventArgs e)
     {
-        var card = new MembershipCard
+        if (_editingCard is not null)
         {
-            Name = Name?.Trim() ?? string.Empty,
-            CardNumber = CardNumber?.Trim() ?? string.Empty,
-            Notes = Notes?.Trim() ?? string.Empty,
-            BackgroundColor = SelectedColor?.Color ?? Colors.Gray,
-            BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128,
-            Logo = ImageSource.FromFile("dotnet_bot.png")
-        };
-        CardStore.Cards.Add(card);
+            _editingCard.Name = Name?.Trim() ?? string.Empty;
+            _editingCard.CardNumber = CardNumber?.Trim() ?? string.Empty;
+            _editingCard.Notes = Notes?.Trim() ?? string.Empty;
+            _editingCard.BackgroundColor = SelectedColor?.Color ?? Colors.Gray;
+            _editingCard.BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128;
+        }
+        else
+        {
+            var card = new MembershipCard
+            {
+                Name = Name?.Trim() ?? string.Empty,
+                CardNumber = CardNumber?.Trim() ?? string.Empty,
+                Notes = Notes?.Trim() ?? string.Empty,
+                BackgroundColor = SelectedColor?.Color ?? Colors.Gray,
+                BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128,
+                Logo = ImageSource.FromFile("dotnet_bot.png")
+            };
+            CardStore.Cards.Add(card);
+        }
         await Shell.Current.GoToAsync("..");
     }
 

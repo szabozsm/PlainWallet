@@ -110,7 +110,7 @@ public partial class MainPage : ContentPage
 
     private async void OnAddCardClicked(object? sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync(nameof(NewCardPage));
+        await Shell.Current.GoToAsync(nameof(CardEditorPage));
     }
 }
 

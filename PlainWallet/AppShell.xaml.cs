@@ -8,6 +8,6 @@ public partial class AppShell : Shell
 	{
 		InitializeComponent();
 		Routing.RegisterRoute(nameof(CardDetailPage), typeof(CardDetailPage));
-		Routing.RegisterRoute(nameof(NewCardPage), typeof(NewCardPage));
+		Routing.RegisterRoute(nameof(CardEditorPage), typeof(CardEditorPage));
 	}
 }

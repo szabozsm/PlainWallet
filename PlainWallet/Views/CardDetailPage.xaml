@@ -4,6 +4,10 @@
              x:Class="PlainWallet.Views.CardDetailPage"
              Title="Card Details">
 
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Edit" Clicked="OnEditClicked" Order="Primary" Priority="0" />
+    </ContentPage.ToolbarItems>
+
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="16">
             <Frame
