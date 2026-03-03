@@ -11,10 +11,18 @@
                    Placeholder="Card or store name"
                    Text="{Binding Name, Mode=TwoWay}" />
 
-            <Label Text="Card number" FontAttributes="Bold" />
-            <Entry x:Name="CardNumberEntry"
-                   Placeholder="e.g. 1234 5678 9012"
-                   Text="{Binding CardNumber, Mode=TwoWay}" />
+             <Label Text="Card number" FontAttributes="Bold" />
+             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                  <Entry x:Name="CardNumberEntry"
+                          Placeholder="e.g. 1234 5678 9012"
+                          Text="{Binding CardNumber, Mode=TwoWay}"
+                          VerticalOptions="Center"
+                          Grid.Column="0" />
+                  <Button Text="Scan"
+                           Grid.Column="1"
+                           WidthRequest="92"
+                           Clicked="OnScanBarcodeClicked" />
+             </Grid>
 
             <Label Text="Barcode type" FontAttributes="Bold" />
             <Picker x:Name="BarcodeTypePicker"

@@ -23,7 +23,7 @@
    inkscape:pagecheckerboard="0"
    showgrid="false"
    inkscape:zoom="0.8870614"
-   inkscape:cx="168.53399"
+   inkscape:cx="122.31397"
    inkscape:cy="281.26576"
    inkscape:window-width="1920"
    inkscape:window-height="1018"
@@ -36,9 +36,9 @@
     
     
 <path
-   d="M 385.84389,213.76266 H 199.39345 v -21.1644 h 186.45044 m 0,126.9864 H 199.39345 v -63.4932 h 186.45044 m 0,-84.6576 H 199.39345 c -12.93499,0 -23.3063,9.41816 -23.3063,21.1644 v 126.9864 a 23.306304,21.164401 0 0 0 23.3063,21.1644 h 186.45044 a 23.306304,21.164401 0 0 0 23.3063,-21.1644 v -126.9864 c 0,-11.74624 -10.48784,-21.1644 -23.3063,-21.1644 z"
+   d="M 384.71657,205.87144 H 198.26613 v -21.1644 h 186.45044 m 0,126.9864 H 198.26613 v -63.4932 h 186.45044 m 0,-84.6576 H 198.26613 c -12.93499,0 -23.3063,9.41816 -23.3063,21.1644 v 126.9864 a 23.306304,21.164401 0 0 0 23.3063,21.1644 h 186.45044 a 23.306304,21.164401 0 0 0 23.3063,-21.1644 v -126.9864 c 0,-11.74624 -10.48784,-21.1644 -23.3063,-21.1644 z"
    id="path1258"
-   style="stroke-width:11.1048;fill:#b7c4c8;fill-opacity:1" /><text
+   style="fill:#d35f5f;fill-opacity:1;stroke-width:11.1048" /><text
    xml:space="preserve"
    style="font-size:64px;line-height:1.25;font-family:Calibri;-inkscape-font-specification:Calibri;fill:#0066ff;fill-opacity:1"
    x="82.294197"

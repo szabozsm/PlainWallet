@@ -60,6 +60,16 @@ public partial class NewCardPage : ContentPage
         await Shell.Current.GoToAsync("..");
     }
 
+    private async void OnScanBarcodeClicked(object? sender, EventArgs e)
+    {
+        var scanner = new ScannerPage((code) =>
+        {
+            CardNumber = code ?? string.Empty;
+            OnPropertyChanged(nameof(CardNumber));
+        });
+        await Navigation.PushAsync(scanner);
+    }
+
     private async void OnCancelClicked(object? sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("..");

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                          xmlns:zxing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.MAUI.Controls"
+             x:Class="PlainWallet.Views.ScannerPage"
+             Title="Scan Barcode">
+
+    <Grid RowDefinitions="Auto,*">
+        <Grid Padding="12" ColumnDefinitions="Auto,Auto,*,Auto">
+            <Button Text="Cancel" Clicked="OnCancelClicked" />
+            
+            <Label Grid.Column="1" Text="Point camera at barcode" HorizontalOptions="Center" VerticalOptions="Center" />
+        </Grid>
+
+   <zxing:CameraBarcodeReaderView x:Name="cameraView"
+                                       Grid.Row="1"
+                                       IsDetecting="True" 
+                                       BarcodesDetected="CameraView_OnDetected"/> 
+	 
+
+    </Grid>
+
+</ContentPage>
