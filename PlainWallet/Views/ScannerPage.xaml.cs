@@ -8,10 +8,10 @@ namespace PlainWallet.Views;
 
 public partial class ScannerPage : ContentPage
 {
-    private readonly Action<string?>? _onScanned;
+    private readonly Action<string?,ZXing.Net.Maui.BarcodeFormat>? _onScanned;
     private bool _handling;
 
-    public ScannerPage(Action<string?>? onScanned)
+    public ScannerPage(Action<string?,ZXing.Net.Maui.BarcodeFormat>? onScanned)
     {
         InitializeComponent();
         cameraView.Options = new BarcodeReaderOptions
@@ -41,11 +41,12 @@ public partial class ScannerPage : ContentPage
     {
         if (_handling) return;
         var result = e.Results?.FirstOrDefault()?.Value;
+        ZXing.Net.Maui.BarcodeFormat? bctype = e.Results?.FirstOrDefault()?.Format;
         if (string.IsNullOrEmpty(result)) return;
         _handling = true;
         MainThread.BeginInvokeOnMainThread(async () =>
         {
-            _onScanned?.Invoke(result);
+            _onScanned?.Invoke(result, bctype.Value);
             await Navigation.PopAsync();
         });
     }
@@ -59,5 +60,9 @@ public partial class ScannerPage : ContentPage
     private void OnSwitchClicked(object sender, EventArgs e)
     {
         cameraView.CameraLocation = cameraView.CameraLocation == CameraLocation.Rear ? CameraLocation.Front : CameraLocation.Rear;
+    }
+    void OnTorchClicked(object sender, EventArgs e)
+    {
+        cameraView.IsTorchOn = !cameraView.IsTorchOn;
     }
 }

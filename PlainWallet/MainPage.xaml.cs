@@ -61,10 +61,10 @@ public partial class MainPage : ContentPage
 
         var barcodeFormats = new[]
         {
-            BarcodeFormat.CODE_128,
-            BarcodeFormat.CODE_39,
-            BarcodeFormat.CODE_93,
-            BarcodeFormat.EAN_13
+            ZXing.Net.Maui.BarcodeFormat.Code128,
+            ZXing.Net.Maui.BarcodeFormat.Code39,
+            ZXing.Net.Maui.BarcodeFormat.Code93,
+            ZXing.Net.Maui.BarcodeFormat.Ean13
         };
 
         for (int i = 0; i < 8; i++)

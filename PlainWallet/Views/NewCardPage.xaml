@@ -18,10 +18,16 @@
                           Text="{Binding CardNumber, Mode=TwoWay}"
                           VerticalOptions="Center"
                           Grid.Column="0" />
-                  <Button Text="Scan"
+                  <ImageButton
                            Grid.Column="1"
                            WidthRequest="92"
-                           Clicked="OnScanBarcodeClicked" />
+                           Source="barcode_scan.svg"
+                           Clicked="OnScanBarcodeClicked"
+                           BackgroundColor="{StaticResource Primary}"
+                           CornerRadius="8"
+                           Padding="12"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
              </Grid>
 
             <Label Text="Barcode type" FontAttributes="Bold" />

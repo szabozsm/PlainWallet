@@ -9,14 +9,14 @@ public static class BarcodeGenerator
     /// Generates a barcode image from the given value using the specified format.
     /// Returns null if value is null/empty or generation fails.
     /// </summary>
-    public static ImageSource? CreateBarcode(string? value, global::ZXing.BarcodeFormat format, int width = 800, int height = 80)
+    public static ImageSource? CreateBarcode(string? value, ZXing.Net.Maui.BarcodeFormat format, int width = 800, int height = 80)
     {
         if (string.IsNullOrWhiteSpace(value))
             return null;
 
         // EAN-13 requires exactly 12 or 13 digits
         var content = value;
-        if (format == global::ZXing.BarcodeFormat.EAN_13)
+        if (format == ZXing.Net.Maui.BarcodeFormat.Ean13)
         {
             var digits = new string(value.Where(char.IsDigit).ToArray());
             content = digits.Length >= 12 ? digits[..12] : digits.PadLeft(12, '0');
@@ -26,7 +26,7 @@ public static class BarcodeGenerator
         {
             var writer = new BarcodeWriter
             {
-                Format = format,
+                Format = (ZXing.BarcodeFormat)format,
                 Options = new global::ZXing.Common.EncodingOptions
                 {
                     Width = width,

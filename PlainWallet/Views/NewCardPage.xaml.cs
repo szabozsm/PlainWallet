@@ -36,7 +36,7 @@ public partial class NewCardPage : ContentPage
         ColorOptions.Add(new ColorOption("Cadet Blue", Colors.CadetBlue));
         _selectedColor = ColorOptions[0];
 
-        foreach (BarcodeFormat format in Enum.GetValues(typeof(BarcodeFormat)))
+        foreach (ZXing.Net.Maui.BarcodeFormat format in Enum.GetValues(typeof(ZXing.Net.Maui.BarcodeFormat)))
             BarcodeTypeOptions.Add(new BarcodeTypeOption(format, FormatDisplayName(format)));
         _selectedBarcodeType = BarcodeTypeOptions[0];
         OnPropertyChanged(nameof(ColorOptions));
@@ -53,7 +53,7 @@ public partial class NewCardPage : ContentPage
             CardNumber = CardNumber?.Trim() ?? string.Empty,
             Notes = Notes?.Trim() ?? string.Empty,
             BackgroundColor = SelectedColor?.Color ?? Colors.Gray,
-            BarcodeType = SelectedBarcodeType?.Format ?? BarcodeFormat.CODE_128,
+            BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128,
             Logo = ImageSource.FromFile("dotnet_bot.png")
         };
         CardStore.Cards.Add(card);
@@ -62,10 +62,12 @@ public partial class NewCardPage : ContentPage
 
     private async void OnScanBarcodeClicked(object? sender, EventArgs e)
     {
-        var scanner = new ScannerPage((code) =>
+        var scanner = new ScannerPage((String? code, ZXing.Net.Maui.BarcodeFormat barcodeFormat) =>
         {
             CardNumber = code ?? string.Empty;
+            SelectedBarcodeType = BarcodeTypeOptions.FirstOrDefault(o => o.Format == barcodeFormat) ?? BarcodeTypeOptions[0];  
             OnPropertyChanged(nameof(CardNumber));
+            OnPropertyChanged(nameof(SelectedBarcodeType));
         });
         await Navigation.PushAsync(scanner);
     }
@@ -75,7 +77,7 @@ public partial class NewCardPage : ContentPage
         await Shell.Current.GoToAsync("..");
     }
 
-    private static string FormatDisplayName(BarcodeFormat format)
+    private static string FormatDisplayName(ZXing.Net.Maui.BarcodeFormat format)
     {
         var s = format.ToString();
         if (string.IsNullOrEmpty(s)) return s;
@@ -100,7 +102,7 @@ public class ColorOption
 
 public class BarcodeTypeOption
 {
-    public BarcodeFormat Format { get; }
+    public ZXing.Net.Maui.BarcodeFormat Format { get; }
     public string DisplayName { get; }
-    public BarcodeTypeOption(BarcodeFormat format, string displayName) => (Format, DisplayName) = (format, displayName);
+    public BarcodeTypeOption(ZXing.Net.Maui.BarcodeFormat format, string displayName) => (Format, DisplayName) = (format, displayName);
 }

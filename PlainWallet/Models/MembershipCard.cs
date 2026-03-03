@@ -10,5 +10,5 @@ public class MembershipCard
     public ImageSource? Logo { get; set; }
     public Color BackgroundColor { get; set; } = Colors.Gray;
     public string Notes { get; set; } = string.Empty;
-    public BarcodeFormat BarcodeType { get; set; }
+    public ZXing.Net.Maui.BarcodeFormat BarcodeType { get; set; }
 }
