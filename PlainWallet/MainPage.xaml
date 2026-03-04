@@ -11,12 +11,17 @@
     </ContentPage.Resources>
 
     <Grid Padding="16">
-        <VerticalStackLayout Spacing="12">
-            <Entry Placeholder="Filter cards..."
+        <Grid RowSpacing="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Entry Grid.Row="0" Placeholder="Filter cards..."
                    TextChanged="OnFilterTextChanged"
                    ClearButtonVisibility="WhileEditing" />
 
-            <CollectionView ItemsSource="{Binding FilteredCards}"
+            <CollectionView Grid.Row="1" ItemsSource="{Binding FilteredCards}"
                         SelectionMode="Single"
                         SelectionChanged="OnCardSelected">
             <CollectionView.ItemsLayout>
@@ -62,7 +67,7 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
             </CollectionView>
-        </VerticalStackLayout>
+        </Grid>
 
         <Button Text="+"
                 FontSize="28"
