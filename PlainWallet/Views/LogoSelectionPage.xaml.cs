@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
@@ -10,11 +11,13 @@ public partial class LogoSelectionPage : ContentPage
 {
     public static event Action<string?>? LogoSelected;
 
+    private List<string> _allLogos = new();
+
     public LogoSelectionPage()
     {
         InitializeComponent();
-        var logos = LogosService.GetBuiltInLogoFileNames().Select(f => f as object).ToList();
-         LogosCollection.ItemsSource = logos;
+        _allLogos = LogosService.GetBuiltInLogoFileNames().ToList();
+        LogosCollection.ItemsSource = _allLogos;
     }
 
     private async void OnBrowseClicked(object? sender, EventArgs e)
@@ -28,7 +31,7 @@ public partial class LogoSelectionPage : ContentPage
             });
             if (result is not null)
             {
-                // Use the full path/URI returned by the file picker
+                // Use the full path returned by the file picker when available, otherwise the filename
                 LogoSelected?.Invoke(result.FullPath ?? result.FileName);
                 await Navigation.PopAsync();
             }
@@ -52,5 +55,17 @@ public partial class LogoSelectionPage : ContentPage
         if (string.IsNullOrEmpty(selected)) return;
         LogoSelected?.Invoke(selected);
         await Navigation.PopAsync();
+    }
+
+    private void OnFilterTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        var q = e.NewTextValue?.Trim().Replace(" ","_");
+        if (string.IsNullOrEmpty(q))
+        {
+            LogosCollection.ItemsSource = _allLogos;
+            return;
+        }
+        var filtered = _allLogos.Where(s => s.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
+        LogosCollection.ItemsSource = filtered;
     }
 }

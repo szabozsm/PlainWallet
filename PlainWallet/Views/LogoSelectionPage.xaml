@@ -7,6 +7,8 @@
     <VerticalStackLayout Padding="16" Spacing="12">
         <Label Text="Choose a logo" FontAttributes="Bold" />
 
+            <Entry x:Name="FilterEntry" Placeholder="Filter" TextChanged="OnFilterTextChanged" />
+
        <CollectionView x:Name="LogosCollection"
                 SelectionMode="Single"
                 SelectionChanged="OnSelectionChanged">
