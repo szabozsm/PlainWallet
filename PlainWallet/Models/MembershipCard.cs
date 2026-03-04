@@ -12,7 +12,7 @@ public class MembershipCard : INotifyPropertyChanged
     private string _cardNumber = string.Empty;
     private string _name = string.Empty;
     private string _notes = string.Empty;
-     
+
     private Color _backgroundColor = Colors.Gray;
 
     // Primary key for EF
@@ -23,23 +23,13 @@ public class MembershipCard : INotifyPropertyChanged
     public string Name { get => _name; set { if (_name == value) return; _name = value; OnPropertyChanged(nameof(Name)); } }
 
     // Persisted representation of the background color as hex ARGB
-    public string BackgroundColorHex { get; set; } = "#FF808080";
 
-    [NotMapped]
-    public Color BackgroundColor
-    {
-        get => ParseColor(BackgroundColorHex);
-        set
-        {
-            _backgroundColor = value;
-            BackgroundColorHex = ToHex(value);
-            OnPropertyChanged(nameof(BackgroundColor));
-            OnPropertyChanged(nameof(BackgroundColorHex));
-        }
-    }
+
+    public Color BackgroundColor { get; set; } = Colors.Gray;
+
 
     // Persist a URI or path for the logo image if available
-    public string? LogoUri { get; set; }="";
+    public string? LogoUri { get; set; } = "";
 
     [NotMapped]
     public ImageSource? Logo
