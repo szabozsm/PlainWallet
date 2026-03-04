@@ -10,9 +10,12 @@ public static class LogosService
     // Update this list if you add/remove files in Resources/Logos
     private static readonly string[] _builtIn = new[]
     {
+        "costco_wholesale.svg",
     "cvs.svg",
     "ikea.svg",
+    "moma.svg",
     "target.svg",
+    "walmart.svg",
     "whole_foods.svg"
     };
 
