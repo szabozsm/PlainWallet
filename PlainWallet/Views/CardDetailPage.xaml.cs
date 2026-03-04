@@ -1,14 +1,12 @@
 using Microsoft.Maui.Controls;
 using PlainWallet.Models;
 using PlainWallet.Services;
-using PlainWallet.Services.Data;
 
 namespace PlainWallet.Views;
 
 public partial class CardDetailPage : ContentPage
 {
     private MembershipCard? _card;
-    private readonly CardDbContext db;
 
     public MembershipCard? Card
     {
@@ -20,11 +18,10 @@ public partial class CardDetailPage : ContentPage
         }
     }
 
-    public CardDetailPage(CardDbContext db)
+    public CardDetailPage()
     {
         InitializeComponent();
         BindingContext = this;
-        this.db = db;
     }
 
     protected override void OnAppearing()
@@ -43,7 +40,7 @@ public partial class CardDetailPage : ContentPage
     private async void OnEditClicked(object? sender, EventArgs e)
     {
         if (Card is null) return;
-        await Navigation.PushAsync(new CardEditorPage(Card, db));
+        await Navigation.PushAsync(new CardEditorPage(Card));
     }
 }
 

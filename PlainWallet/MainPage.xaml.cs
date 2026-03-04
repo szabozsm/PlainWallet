@@ -6,29 +6,25 @@ using Microsoft.Maui.Controls;
 using PlainWallet.Models;
 using PlainWallet.Services;
 using PlainWallet.Views;
-using PlainWallet.Services.Data;
 
 namespace PlainWallet;
 
 public partial class MainPage : ContentPage
 {
-    public ObservableCollection<MembershipCard> Cards ;
-    public ObservableCollection<MembershipCard> FilteredCards { get; private set;} = new();
+    public ObservableCollection<MembershipCard> Cards => CardStore.Cards;
+    public ObservableCollection<MembershipCard> FilteredCards { get; } = new();
 
     private string _filter = string.Empty;
     private readonly Random _random = new();
-    private readonly CardDbContext db;
 
-    public MainPage(CardDbContext db)
+    public MainPage()
     {
         InitializeComponent();
         BindingContext = this;
-        this.db = db;
-        Cards= db.Cards.Local.ToObservableCollection();
+        LoadSampleCards();
         // keep filtered view in sync with the store
-        Cards.CollectionChanged += CardStore_CardsChanged;
+        CardStore.Cards.CollectionChanged += CardStore_CardsChanged;
         ApplyFilter();
-        
     }
 
     protected override void OnAppearing()
@@ -37,7 +33,62 @@ public partial class MainPage : ContentPage
         ApplyFilter();
     }
 
-    
+    private void LoadSampleCards()
+    {
+        if (CardStore.Cards.Count > 0)
+            return;
+        var names = new[]
+        {
+            "SuperMart Club",
+            "City Gym",
+            "Book Lovers",
+            "Cinema Stars",
+            "Coffee Points",
+            "Tech Store Plus"
+        };
+
+        var notes = new[]
+        {
+            "Show at checkout to collect points.",
+            "Access pass for all locations.",
+            "10% off all paperbacks.",
+            "Free popcorn every 5 visits.",
+            "Every 7th drink is free.",
+            "Extended warranty on all gadgets."
+        };
+
+        var colors = new[]
+        {
+            Colors.DeepSkyBlue,
+            Colors.MediumPurple,
+            Colors.OrangeRed,
+            Colors.SeaGreen,
+            Colors.Goldenrod,
+            Colors.CadetBlue
+        };
+
+        var barcodeFormats = new[]
+        {
+            ZXing.Net.Maui.BarcodeFormat.Code128,
+            ZXing.Net.Maui.BarcodeFormat.Code39,
+            ZXing.Net.Maui.BarcodeFormat.Code93,
+            ZXing.Net.Maui.BarcodeFormat.Ean13
+        };
+
+        for (int i = 0; i < 8; i++)
+        {
+            var index = _random.Next(names.Length);
+            CardStore.Cards.Add(new MembershipCard
+            {
+                Name = names[index],
+                CardNumber = $"{_random.Next(1000, 9999)} {_random.Next(1000, 9999)} {_random.Next(1000, 9999)}",
+                Logo = ImageSource.FromFile("dotnet_bot.png"),
+                BackgroundColor = colors[_random.Next(colors.Length)],
+                Notes = notes[index],
+                BarcodeType = barcodeFormats[_random.Next(barcodeFormats.Length)]
+            });
+        }
+    }
 
     private void OnCardSelected(object sender, SelectionChangedEventArgs e)
     {
@@ -74,7 +125,7 @@ public partial class MainPage : ContentPage
     {
         var q = (_filter ?? string.Empty).Trim();
         FilteredCards.Clear();
-        IEnumerable<MembershipCard> items = this.Cards;
+        IEnumerable<MembershipCard> items = CardStore.Cards;
         if (!string.IsNullOrEmpty(q))
         {
             var lower = q.ToLowerInvariant();

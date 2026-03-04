@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.Maui.Controls;
 using PlainWallet.Models;
 using PlainWallet.Services;
-using PlainWallet.Services.Data;
 using ZXing;
 
 namespace PlainWallet.Views;
@@ -14,16 +13,15 @@ public partial class CardEditorPage : ContentPage
     private bool _isEditing;
     public bool IsEditing { get => _isEditing; set { _isEditing = value; OnPropertyChanged(); } }
 
-    public CardEditorPage(CardDbContext db)
+    public CardEditorPage()
     {
         InitializeComponent();
         BindingContext = this;
         LoadOptions();
         Title = "New Card";
-        this.db = db;
     }
 
-    public CardEditorPage(MembershipCard? card, CardDbContext db) : this(db)
+    public CardEditorPage(MembershipCard? card) : this()
     {
         if (card is null) return;
         _editingCard = card;
@@ -48,15 +46,13 @@ public partial class CardEditorPage : ContentPage
             if (_editingCard is null) return;
             var confirm = await DisplayAlert("Delete", "Are you sure you want to delete this card?", "Delete", "Cancel");
             if (!confirm) return;
-            await DeleteCardAsync(_editingCard);
+            CardStore.Cards.Remove(_editingCard);
             // After deleting a card, navigate explicitly to the main list of cards
             await Shell.Current.GoToAsync("//MainPage");
-        })
-        { Order = ToolbarItemOrder.Primary, Priority = 1 };
+        }) { Order = ToolbarItemOrder.Primary, Priority = 1 };
         ToolbarItems.Add(deleteItem);
     }
 
-   
     public string Name { get; set; } = string.Empty;
     public string CardNumber { get; set; } = string.Empty;
     public string Notes { get; set; } = string.Empty;
@@ -66,8 +62,6 @@ public partial class CardEditorPage : ContentPage
     public Color? SelectedColor { get => _selectedColor; set { _selectedColor = value; OnPropertyChanged(); } }
     public ObservableCollection<BarcodeTypeOption> BarcodeTypeOptions { get; } = new();
     private BarcodeTypeOption? _selectedBarcodeType;
-    private readonly CardDbContext db;
-
     public BarcodeTypeOption? SelectedBarcodeType { get => _selectedBarcodeType; set { _selectedBarcodeType = value; OnPropertyChanged(); } }
 
     private void LoadOptions()
@@ -92,7 +86,6 @@ public partial class CardEditorPage : ContentPage
             _editingCard.Notes = Notes?.Trim() ?? string.Empty;
             _editingCard.BackgroundColor = SelectedColor ?? Colors.Gray;
             _editingCard.BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128;
-            await SaveCardAsync(_editingCard);
         }
         else
         {
@@ -105,7 +98,7 @@ public partial class CardEditorPage : ContentPage
                 BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128,
                 Logo = ImageSource.FromFile("dotnet_bot.png")
             };
-            await AddCardAsync(card);
+            CardStore.Cards.Add(card);
         }
         await Shell.Current.GoToAsync("..");
     }
@@ -115,7 +108,7 @@ public partial class CardEditorPage : ContentPage
         var scanner = new ScannerPage((String? code, ZXing.Net.Maui.BarcodeFormat barcodeFormat) =>
         {
             CardNumber = code ?? string.Empty;
-            SelectedBarcodeType = BarcodeTypeOptions.FirstOrDefault(o => o.Format == barcodeFormat) ?? BarcodeTypeOptions[0];
+            SelectedBarcodeType = BarcodeTypeOptions.FirstOrDefault(o => o.Format == barcodeFormat) ?? BarcodeTypeOptions[0];  
             OnPropertyChanged(nameof(CardNumber));
             OnPropertyChanged(nameof(SelectedBarcodeType));
         });
@@ -141,33 +134,6 @@ public partial class CardEditorPage : ContentPage
         }
         return result.ToString();
     }
-
- private async Task DeleteCardAsync(MembershipCard card)
-    {
-        if (db == null) throw new InvalidOperationException("CardStore is not initialized.");
-        db.Cards.Remove(card);
-        await db.SaveChangesAsync();
-    }
-
-    private async Task SaveCardAsync(MembershipCard card)
-    {
-        if (db == null) throw new InvalidOperationException("CardStore is not initialized.");
-        if (card.Id == 0)
-            db.Cards.Add(card);
-        else
-            db.Cards.Update(card);
-        await db.SaveChangesAsync();
-    }
-
-    
-    private  async Task AddCardAsync(MembershipCard card)
-    {
-        if (db == null) throw new InvalidOperationException("CardStore is not initialized.");
-        db.Cards.Add(card);
-        await db.SaveChangesAsync();
-    }
-
-
 }
 
  
