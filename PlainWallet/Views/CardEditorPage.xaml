@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+              xmlns:cp="clr-namespace:Maui.ColorPicker;assembly=Maui.ColorPicker"
              x:Class="PlainWallet.Views.CardEditorPage"
              Title="New card">
 
@@ -37,12 +38,19 @@
                     ItemDisplayBinding="{Binding DisplayName}"
                     SelectedItem="{Binding SelectedBarcodeType, Mode=TwoWay}" />
 
-            <Label Text="Background color" FontAttributes="Bold" />
-            <Picker x:Name="ColorPicker"
-                    Title="Pick a color"
-                    ItemsSource="{Binding ColorOptions}"
-                    ItemDisplayBinding="{Binding Name}"
-                    SelectedItem="{Binding SelectedColor, Mode=TwoWay}" />
+        
+
+    <cp:ColorPicker
+                            x:Name="ColorPicker"
+                            ColorFlowDirection="Horizontal"
+                            ColorSpectrumStyle="TintToHueToShadeStyle"
+                            PickedColor="{Binding SelectedColor, Mode=TwoWay}"
+                            PointerRingBorderUnits="0.3"
+                            PointerRingDiameterUnits="0.7"
+                            HeightRequest="150"
+                            Margin="0,10">
+                        </cp:ColorPicker>
+
 
             <Label Text="Notes" FontAttributes="Bold" />
             <Editor x:Name="NotesEditor"

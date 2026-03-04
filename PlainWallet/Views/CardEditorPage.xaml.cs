@@ -31,7 +31,7 @@ public partial class CardEditorPage : ContentPage
         Name = card.Name ?? string.Empty;
         CardNumber = card.CardNumber ?? string.Empty;
         Notes = card.Notes ?? string.Empty;
-        SelectedColor = ColorOptions.FirstOrDefault(o => o.Color == card.BackgroundColor) ?? ColorOptions[0];
+        SelectedColor = Colors.LightBlue;
         SelectedBarcodeType = BarcodeTypeOptions.FirstOrDefault(o => o.Format == card.BarcodeType) ?? BarcodeTypeOptions[0];
         OnPropertyChanged(nameof(Name));
         OnPropertyChanged(nameof(CardNumber));
@@ -61,9 +61,9 @@ public partial class CardEditorPage : ContentPage
     public string CardNumber { get; set; } = string.Empty;
     public string Notes { get; set; } = string.Empty;
 
-    public ObservableCollection<ColorOption> ColorOptions { get; } = new();
-    private ColorOption? _selectedColor;
-    public ColorOption? SelectedColor { get => _selectedColor; set { _selectedColor = value; OnPropertyChanged(); } }
+    
+    private Color? _selectedColor;
+    public Color? SelectedColor { get => _selectedColor; set { _selectedColor = value; OnPropertyChanged(); } }
     public ObservableCollection<BarcodeTypeOption> BarcodeTypeOptions { get; } = new();
     private BarcodeTypeOption? _selectedBarcodeType;
     private readonly CardDbContext db;
@@ -72,18 +72,12 @@ public partial class CardEditorPage : ContentPage
 
     private void LoadOptions()
     {
-        ColorOptions.Add(new ColorOption("Deep Sky Blue", Colors.DeepSkyBlue));
-        ColorOptions.Add(new ColorOption("Medium Purple", Colors.MediumPurple));
-        ColorOptions.Add(new ColorOption("Orange Red", Colors.OrangeRed));
-        ColorOptions.Add(new ColorOption("Sea Green", Colors.SeaGreen));
-        ColorOptions.Add(new ColorOption("Goldenrod", Colors.Goldenrod));
-        ColorOptions.Add(new ColorOption("Cadet Blue", Colors.CadetBlue));
-        _selectedColor = ColorOptions[0];
+      
 
         foreach (ZXing.Net.Maui.BarcodeFormat format in Enum.GetValues(typeof(ZXing.Net.Maui.BarcodeFormat)))
             BarcodeTypeOptions.Add(new BarcodeTypeOption(format, FormatDisplayName(format)));
         _selectedBarcodeType = BarcodeTypeOptions[0];
-        OnPropertyChanged(nameof(ColorOptions));
+        
         OnPropertyChanged(nameof(SelectedColor));
         OnPropertyChanged(nameof(BarcodeTypeOptions));
         OnPropertyChanged(nameof(SelectedBarcodeType));
@@ -96,7 +90,7 @@ public partial class CardEditorPage : ContentPage
             _editingCard.Name = Name?.Trim() ?? string.Empty;
             _editingCard.CardNumber = CardNumber?.Trim() ?? string.Empty;
             _editingCard.Notes = Notes?.Trim() ?? string.Empty;
-            _editingCard.BackgroundColor = SelectedColor?.Color ?? Colors.Gray;
+            _editingCard.BackgroundColor = SelectedColor ?? Colors.Gray;
             _editingCard.BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128;
             await SaveCardAsync(_editingCard);
         }
@@ -107,7 +101,7 @@ public partial class CardEditorPage : ContentPage
                 Name = Name?.Trim() ?? string.Empty,
                 CardNumber = CardNumber?.Trim() ?? string.Empty,
                 Notes = Notes?.Trim() ?? string.Empty,
-                BackgroundColor = SelectedColor?.Color ?? Colors.Gray,
+                BackgroundColor = SelectedColor ?? Colors.Gray,
                 BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128,
                 Logo = ImageSource.FromFile("dotnet_bot.png")
             };
@@ -176,12 +170,7 @@ public partial class CardEditorPage : ContentPage
 
 }
 
-public class ColorOption
-{
-    public string Name { get; }
-    public Color Color { get; }
-    public ColorOption(string name, Color color) => (Name, Color) = (name, color);
-}
+ 
 
 public class BarcodeTypeOption
 {
