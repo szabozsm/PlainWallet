@@ -4,6 +4,8 @@ using Microsoft.Maui.Controls;
 using PlainWallet.Models;
 using PlainWallet.Services;
 using ZXing;
+using PlainWallet.Views;
+using Microsoft.Maui.Storage;
 
 namespace PlainWallet.Views;
 
@@ -19,6 +21,7 @@ public partial class CardEditorPage : ContentPage
         BindingContext = this;
         LoadOptions();
         Title = "New Card";
+        LogoSelectionPage.LogoSelected += OnLogoSelected;
     }
 
     public CardEditorPage(MembershipCard? card) : this()
@@ -31,6 +34,11 @@ public partial class CardEditorPage : ContentPage
         Notes = card.Notes ?? string.Empty;
         SelectedColor = Colors.LightBlue;
         SelectedBarcodeType = BarcodeTypeOptions.FirstOrDefault(o => o.Format == card.BarcodeType) ?? BarcodeTypeOptions[0];
+        SelectedLogoUri = card.LogoUri;
+        if (!string.IsNullOrEmpty(SelectedLogoUri))
+        {
+            try { LogoPreview.Source = ImageSource.FromFile(SelectedLogoUri); } catch { LogoPreview.Source = ImageSource.FromFile(SelectedLogoUri); }
+        }
         OnPropertyChanged(nameof(Name));
         OnPropertyChanged(nameof(CardNumber));
         OnPropertyChanged(nameof(Notes));
@@ -53,9 +61,28 @@ public partial class CardEditorPage : ContentPage
         ToolbarItems.Add(deleteItem);
     }
 
+    private void OnLogoSelected(string? logo)
+    {
+        if (string.IsNullOrEmpty(logo)) return;
+        // If the selected value is a known built-in filename, use ImageSource.FromFile
+        SelectedLogoUri = logo;
+        try
+        {
+            LogoPreview.Source = ImageSource.FromFile(logo);
+        }
+        catch
+        {
+            // try file path
+            LogoPreview.Source = ImageSource.FromFile(logo);
+        }
+        OnPropertyChanged(nameof(SelectedLogoUri));
+    }
+
     public string Name { get; set; } = string.Empty;
     public string CardNumber { get; set; } = string.Empty;
     public string Notes { get; set; } = string.Empty;
+
+    public string? SelectedLogoUri { get; set; }
 
     
     private Color? _selectedColor;
@@ -86,6 +113,7 @@ public partial class CardEditorPage : ContentPage
             _editingCard.Notes = Notes?.Trim() ?? string.Empty;
             _editingCard.BackgroundColor = SelectedColor ?? Colors.Gray;
             _editingCard.BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128;
+            if (!string.IsNullOrEmpty(SelectedLogoUri)) _editingCard.LogoUri = SelectedLogoUri;
         }
         else
         {
@@ -96,11 +124,17 @@ public partial class CardEditorPage : ContentPage
                 Notes = Notes?.Trim() ?? string.Empty,
                 BackgroundColor = SelectedColor ?? Colors.Gray,
                 BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128,
-                Logo = ImageSource.FromFile("dotnet_bot.png")
+                Logo = ImageSource.FromFile(!string.IsNullOrEmpty(SelectedLogoUri) ? SelectedLogoUri : "dotnet_bot.png")
             };
             CardStore.Cards.Add(card);
         }
         await Shell.Current.GoToAsync("..");
+    }
+
+    private async void OnSelectLogoClicked(object? sender, EventArgs e)
+    {
+        var page = new LogoSelectionPage();
+        await Navigation.PushAsync(page);
     }
 
     private async void OnScanBarcodeClicked(object? sender, EventArgs e)
