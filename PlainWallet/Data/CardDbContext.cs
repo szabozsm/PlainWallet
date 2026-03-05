@@ -6,6 +6,7 @@ namespace PlainWallet.Data;
 public class CardDbContext : DbContext
 {
     public CardDbContext(DbContextOptions<CardDbContext> options) : base(options) {
+        SQLitePCL.Batteries_V2.Init();
          this.Database.EnsureCreated();
      }
 

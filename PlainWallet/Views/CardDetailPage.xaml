@@ -19,8 +19,8 @@
                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
                     <Image
                         Source="{Binding Card.Logo}"
-                        HeightRequest="60"
-                        WidthRequest="60"
+                         HeightRequest="64"
+                        WidthRequest="128"
                         Aspect="AspectFit" />
 
                     <VerticalStackLayout

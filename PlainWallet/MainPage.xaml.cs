@@ -136,7 +136,7 @@ public partial class MainPage : ContentPage
             );
         }
 
-        foreach (var it in items)
+        foreach (var it in items.OrderBy(c => c.Name))
             FilteredCards.Add(it);
     }
 

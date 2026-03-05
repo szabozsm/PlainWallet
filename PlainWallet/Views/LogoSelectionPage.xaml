@@ -4,23 +4,19 @@
              x:Class="PlainWallet.Views.LogoSelectionPage"
              Title="Select Logo">
 
-    <Grid Padding="16"
-            RowSpacing="12">
+    <Grid Padding="16" RowSpacing="12">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Label Grid.Row="0"
-                Text="Choose a logo"
-                FontAttributes="Bold"/>
+        <Label Grid.Row="0" Text="Choose a logo" FontAttributes="Bold" />
 
-        <Entry Grid.Row="1"
-                x:Name="FilterEntry"
-                Placeholder="Filter by filename"
-                TextChanged="OnFilterTextChanged"/>
+        <Entry Grid.Row="1" x:Name="FilterEntry" Placeholder="Filter by filename" TextChanged="OnFilterTextChanged" />
 
         <CollectionView Grid.Row="2"
                         x:Name="LogosCollection"
@@ -30,32 +26,34 @@
                         ItemSizingStrategy="MeasureAllItems">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Border Padding="8"
-                            Margin="0,6"
-                            Stroke="LightGray"
-                            StrokeThickness="1">
+                    <Border Padding="8" Margin="0,6" Stroke="LightGray" StrokeThickness="1">
                         <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="6"/>
+                            <RoundRectangle CornerRadius="6" />
                         </Border.StrokeShape>
                         <Grid>
                             <Image Source="{Binding .}"
                                    Aspect="AspectFit"
                                    HeightRequest="140"
-                                   HorizontalOptions="FillAndExpand"
-                                   VerticalOptions="Center"/>
+                                   HorizontalOptions="Fill"
+                                   VerticalOptions="Center" />
                         </Grid>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <HorizontalStackLayout Grid.Row="3"
-                Spacing="12">
-            <Button Text="Browse for image"
-                    Clicked="OnBrowseClicked"/>
-            <Button Text="Cancel"
-                    Clicked="OnCancelClicked"
-                    BackgroundColor="LightGray"/>
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <Entry Grid.Column="0" x:Name="UrlEntry" Placeholder="Enter image URL" HorizontalOptions="Fill" TextChanged="OnUrlTextChanged" />
+            <Button Grid.Column="1" Text="Use URL" Clicked="OnUseUrlClicked" />
+        </Grid>
+
+        <Border Grid.Row="4" Padding="6" Margin="0,6" Stroke="Transparent" BackgroundColor="Transparent">
+            <Image x:Name="UrlPreview" Aspect="AspectFit" HeightRequest="140" HorizontalOptions="Fill" />
+        </Border>
+
+        <HorizontalStackLayout Grid.Row="5" Spacing="12">
+            <Button Text="Browse for image" Clicked="OnBrowseClicked" />
+            <Button Text="Cancel" Clicked="OnCancelClicked" BackgroundColor="LightGray" />
         </HorizontalStackLayout>
     </Grid>
 

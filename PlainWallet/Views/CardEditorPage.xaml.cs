@@ -32,7 +32,7 @@ public partial class CardEditorPage : ContentPage
         Name = card.Name ?? string.Empty;
         CardNumber = card.CardNumber ?? string.Empty;
         Notes = card.Notes ?? string.Empty;
-        SelectedColor = Colors.LightBlue;
+        SelectedColor = card.BackgroundColor;
         SelectedBarcodeType = BarcodeTypeOptions.FirstOrDefault(o => o.Format == card.BarcodeType) ?? BarcodeTypeOptions[0];
         SelectedLogoUri = card.LogoUri;
         if (!string.IsNullOrEmpty(SelectedLogoUri))
@@ -52,7 +52,7 @@ public partial class CardEditorPage : ContentPage
         var deleteItem = new ToolbarItem("🗑", null, async () =>
         {
             if (_editingCard is null) return;
-            var confirm = await DisplayAlert("Delete", "Are you sure you want to delete this card?", "Delete", "Cancel");
+            var confirm = await DisplayAlertAsync("Delete", "Are you sure you want to delete this card?", "Delete", "Cancel");
             if (!confirm) return;
             CardStore.Cards.Remove(_editingCard);
             // After deleting a card, navigate explicitly to the main list of cards
@@ -64,16 +64,18 @@ public partial class CardEditorPage : ContentPage
     private void OnLogoSelected(string? logo)
     {
         if (string.IsNullOrEmpty(logo)) return;
-        // If the selected value is a known built-in filename, use ImageSource.FromFile
         SelectedLogoUri = logo;
         try
         {
-            LogoPreview.Source = ImageSource.FromFile(logo);
+            if (logo.Contains("://"))
+                LogoPreview.Source = ImageSource.FromUri(new Uri(logo));
+            else
+                LogoPreview.Source = ImageSource.FromFile(logo);
         }
         catch
         {
-            // try file path
-            LogoPreview.Source = ImageSource.FromFile(logo);
+            // fallback: try URI then file
+            try { LogoPreview.Source = ImageSource.FromUri(new Uri(logo)); } catch { LogoPreview.Source = ImageSource.FromFile(logo); }
         }
         OnPropertyChanged(nameof(SelectedLogoUri));
     }
@@ -124,7 +126,7 @@ public partial class CardEditorPage : ContentPage
                 Notes = Notes?.Trim() ?? string.Empty,
                 BackgroundColor = SelectedColor ?? Colors.Gray,
                 BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128,
-                Logo = ImageSource.FromFile(!string.IsNullOrEmpty(SelectedLogoUri) ? SelectedLogoUri : "dotnet_bot.png")
+                LogoUri = !string.IsNullOrEmpty(SelectedLogoUri) ? SelectedLogoUri : "dotnet_bot.png"
             };
             CardStore.Cards.Add(card);
         }

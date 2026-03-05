@@ -68,4 +68,46 @@ public partial class LogoSelectionPage : ContentPage
         var filtered = _allLogos.Where(s => s.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
         LogosCollection.ItemsSource = filtered;
     }
+
+    private void OnUrlTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        var text = e.NewTextValue?.Trim();
+        if (string.IsNullOrEmpty(text))
+        {
+            UrlPreview.Source = null;
+            return;
+        }
+        if (Uri.TryCreate(text, UriKind.Absolute, out var uri) && (uri.Scheme == "http" || uri.Scheme == "https"))
+        {
+            try
+            {
+                UrlPreview.Source = ImageSource.FromUri(uri);
+            }
+            catch
+            {
+                UrlPreview.Source = null;
+            }
+        }
+        else
+        {
+            UrlPreview.Source = null;
+        }
+    }
+
+    private async void OnUseUrlClicked(object? sender, EventArgs e)
+    {
+        var url = UrlEntry?.Text?.Trim();
+        if (string.IsNullOrEmpty(url))
+        {
+            await DisplayAlertAsync("Invalid URL", "Please enter a non-empty URL.", "OK");
+            return;
+        }
+        if (Uri.TryCreate(url, UriKind.Absolute, out var uri) && (uri.Scheme == "http" || uri.Scheme == "https"))
+        {
+            LogoSelected?.Invoke(url);
+            await Navigation.PopAsync();
+            return;
+        }
+        await DisplayAlertAsync("Invalid URL", "Please enter a valid http or https URL.", "OK");
+    }
 }

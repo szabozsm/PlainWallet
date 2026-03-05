@@ -43,8 +43,8 @@
                             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
                                 <Image
                                     Source="{Binding Logo}"
-                                    HeightRequest="40"
-                                    WidthRequest="40"
+                                    HeightRequest="64"
+                                    WidthRequest="128"
                                     Aspect="AspectFit" />
 
                                 <VerticalStackLayout
