@@ -27,6 +27,17 @@ public class MembershipCard : INotifyPropertyChanged
 
     public Color BackgroundColor { get; set; } = Colors.Gray;
 
+[NotMapped]
+            public Color ComplementaryColor
+        {
+            get
+            {
+                double luminance = (0.299 * BackgroundColor.Red + 0.587 * BackgroundColor.Green + 0.114 * BackgroundColor.Blue);
+                return luminance > 0.5 ? Colors.Black : Colors.White;
+            }
+        }
+
+
 
     // Persist a URI or path for the logo image if available
     public string? LogoUri { get; set; } = "";

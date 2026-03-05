@@ -5,23 +5,28 @@
              Title="Card Details">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Edit" Clicked="OnEditClicked" Order="Primary" Priority="0" />
+        <ToolbarItem Text="Edit"
+                Clicked="OnEditClicked"
+                Order="Primary"
+                Priority="0"/>
     </ContentPage.ToolbarItems>
 
     <ScrollView>
-        <VerticalStackLayout Padding="16" Spacing="16">
+        <VerticalStackLayout Padding="16"
+                Spacing="16">
             <Border
                 Padding="20"
                 BackgroundColor="{Binding Card.BackgroundColor}">
                 <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="18" />
+                    <RoundRectangle CornerRadius="18"/>
                 </Border.StrokeShape>
-                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+                <Grid ColumnDefinitions="Auto,*"
+                        ColumnSpacing="16">
                     <Image
                         Source="{Binding Card.Logo}"
-                         HeightRequest="64"
+                        HeightRequest="64"
                         WidthRequest="128"
-                        Aspect="AspectFit" />
+                        Aspect="AspectFit"/>
 
                     <VerticalStackLayout
                         Grid.Column="1"
@@ -31,13 +36,12 @@
                             Text="{Binding Card.Name}"
                             FontAttributes="Bold"
                             FontSize="22"
-                            TextColor="White" />
+                            TextColor="{Binding ComplementaryColor}"/>
 
                         <Label
                             Text="{Binding Card.CardNumber}"
                             FontSize="16"
-                            TextColor="White"
-                            Opacity="0.9" />
+                            TextColor="{Binding ComplementaryColor}"/>
                     </VerticalStackLayout>
                 </Grid>
             </Border>
@@ -46,23 +50,23 @@
                 <Label
                     Text="Barcode"
                     FontAttributes="Bold"
-                    FontSize="18" />
+                    FontSize="18"/>
                 <Image
                     x:Name="BarcodeImage"
                     HeightRequest="320"
                     HorizontalOptions="Center"
                     Margin="0,8,0,0"
-                    Aspect="AspectFit" />
+                    Aspect="AspectFit"/>
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="8">
                 <Label
                     Text="Notes"
                     FontAttributes="Bold"
-                    FontSize="18" />
+                    FontSize="18"/>
                 <Label
                     Text="{Binding Card.Notes}"
-                    FontSize="16" />
+                    FontSize="16"/>
             </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>

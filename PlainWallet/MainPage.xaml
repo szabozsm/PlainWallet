@@ -6,66 +6,72 @@
 
     <ContentPage.Resources>
         <Style TargetType="Label">
-            <Setter Property="TextColor" Value="White" />
+            <Setter Property="TextColor"
+                    Value="White"/>
         </Style>
     </ContentPage.Resources>
 
     <Grid Padding="16">
         <Grid RowSpacing="12">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Entry Grid.Row="0" Placeholder="Filter cards..."
+            <Entry Grid.Row="0"
+                    Placeholder="Filter cards..."
                    TextChanged="OnFilterTextChanged"
-                   ClearButtonVisibility="WhileEditing" />
+                   ClearButtonVisibility="WhileEditing"/>
 
-            <CollectionView Grid.Row="1" ItemsSource="{Binding FilteredCards}"
-                        SelectionMode="Single"
-                        SelectionChanged="OnCardSelected">
-            <CollectionView.ItemsLayout>
-                <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
-            </CollectionView.ItemsLayout>
+            <CollectionView Grid.Row="1"
+                    ItemsSource="{Binding FilteredCards}"
+                            SelectionMode="Single"
+                            SelectionChanged="OnCardSelected">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical"
+                            ItemSpacing="12"/>
+                </CollectionView.ItemsLayout>
 
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Border
-                            Padding="16"
-                            BackgroundColor="{Binding BackgroundColor}">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="18" />
-                            </Border.StrokeShape>
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnCardTapped" />
-                            </Border.GestureRecognizers>
-                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
-                                <Image
-                                    Source="{Binding Logo}"
-                                    HeightRequest="64"
-                                    WidthRequest="128"
-                                    Aspect="AspectFit" />
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Border
+                                Padding="16"
+                                BackgroundColor="{Binding BackgroundColor}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="18"/>
+                                </Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnCardTapped"/>
+                                </Border.GestureRecognizers>
+                                <Grid ColumnDefinitions="Auto,*"
+                                        ColumnSpacing="16">
+                                    <Image
+                                        Source="{Binding Logo}"
+                                        HeightRequest="64"
+                                        WidthRequest="128"
+                                        Aspect="AspectFit"/>
 
-                                <VerticalStackLayout
-                                    Grid.Column="1"
-                                    Spacing="4"
-                                    VerticalOptions="Center">
-                                    <Label
-                                        Text="{Binding Name}"
-                                        FontAttributes="Bold"
-                                        FontSize="18" />
+                                    <VerticalStackLayout
+                                        Grid.Column="1"
+                                        Spacing="4"
+                                        VerticalOptions="Center">
+                                        <Label
+                                            Text="{Binding Name}"
+                                            FontAttributes="Bold"
+                                            FontSize="18"
+                                            TextColor="{Binding ComplementaryColor}"/>
 
-                                    <Label
-                                        Text="{Binding CardNumber}"
-                                        FontSize="14"
-                                        Opacity="0.9" />
-                                </VerticalStackLayout>
-                            </Grid>
-                        </Border>
-                    </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
+                                        <Label
+                                            Text="{Binding CardNumber}"
+                                            FontSize="14"
+                                            TextColor="{Binding ComplementaryColor}"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
             </CollectionView>
         </Grid>
 
@@ -80,7 +86,7 @@
                 Margin="0,0,8,16"
                 BackgroundColor="{StaticResource Primary}"
                 TextColor="White"
-                Clicked="OnAddCardClicked" />
+                Clicked="OnAddCardClicked"/>
     </Grid>
 
 </ContentPage>

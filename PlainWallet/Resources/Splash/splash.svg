@@ -22,30 +22,35 @@
    inkscape:pageopacity="0.0"
    inkscape:pagecheckerboard="0"
    showgrid="false"
-   inkscape:zoom="0.8870614"
-   inkscape:cx="122.31397"
-   inkscape:cy="281.26576"
+   inkscape:zoom="3.5482456"
+   inkscape:cx="321.14462"
+   inkscape:cy="158.52905"
    inkscape:window-width="1920"
    inkscape:window-height="1018"
    inkscape:window-x="-6"
    inkscape:window-y="-6"
    inkscape:window-maximized="1"
-   inkscape:current-layer="svg846" />
+   inkscape:current-layer="svg846"
+   showguides="true"
+   inkscape:guide-bbox="true"><sodipodi:guide
+     position="386.66996,501.09271"
+     orientation="1,0"
+     id="guide865" /></sodipodi:namedview>
     
     
     
     
 <path
-   d="M 384.71657,205.87144 H 198.26613 v -21.1644 h 186.45044 m 0,126.9864 H 198.26613 v -63.4932 h 186.45044 m 0,-84.6576 H 198.26613 c -12.93499,0 -23.3063,9.41816 -23.3063,21.1644 v 126.9864 a 23.306304,21.164401 0 0 0 23.3063,21.1644 h 186.45044 a 23.306304,21.164401 0 0 0 23.3063,-21.1644 v -126.9864 c 0,-11.74624 -10.48784,-21.1644 -23.3063,-21.1644 z"
+   d="M 363.27812,221.37206 H 176.82768 v -21.1644 h 186.45044 m 0,126.9864 H 176.82768 v -63.4932 h 186.45044 m 0,-84.6576 H 176.82768 c -12.93499,0 -23.3063,9.41816 -23.3063,21.1644 v 126.9864 a 23.306304,21.164401 0 0 0 23.3063,21.1644 h 186.45044 a 23.306304,21.164401 0 0 0 23.3063,-21.1644 v -126.9864 c 0,-11.74624 -10.48784,-21.1644 -23.3063,-21.1644 z"
    id="path1258"
-   style="fill:#d35f5f;fill-opacity:1;stroke-width:11.1048" /><text
+   style="fill:#0066ff;fill-opacity:1;stroke-width:11.1048" /><text
    xml:space="preserve"
-   style="font-size:64px;line-height:1.25;font-family:Calibri;-inkscape-font-specification:Calibri;fill:#0066ff;fill-opacity:1"
-   x="82.294197"
-   y="143.16934"
+   style="font-size:64px;line-height:1.25;font-family:Calibri;-inkscape-font-specification:Calibri;fill:#ffd42a;fill-opacity:1"
+   x="58.902355"
+   y="144.29666"
    id="text4075"><tspan
      sodipodi:role="line"
      id="tspan4073"
-     x="82.294197"
-     y="143.16934"
-     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:64px;font-family:Corbel;-inkscape-font-specification:'Corbel Bold';fill:#0066ff;fill-opacity:1">Plain Wallet</tspan></text></svg>
+     x="58.902355"
+     y="144.29666"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:64px;font-family:Corbel;-inkscape-font-specification:'Corbel Bold';fill:#ffd42a;fill-opacity:1">Plain Wallet</tspan></text></svg>

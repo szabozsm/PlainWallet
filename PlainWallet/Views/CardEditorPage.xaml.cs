@@ -135,7 +135,10 @@ public partial class CardEditorPage : ContentPage
 
     private async void OnSelectLogoClicked(object? sender, EventArgs e)
     {
-        var page = new LogoSelectionPage();
+        string? initial = null;
+        if (_editingCard is not null && !string.IsNullOrEmpty(_editingCard.LogoUri) && _editingCard.LogoUri.Contains("://"))
+            initial = _editingCard.LogoUri;
+        var page = new LogoSelectionPage(initial);
         await Navigation.PushAsync(page);
     }
 

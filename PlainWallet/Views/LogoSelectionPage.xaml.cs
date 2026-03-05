@@ -14,10 +14,22 @@ public partial class LogoSelectionPage : ContentPage
     private List<string> _allLogos = new();
 
     public LogoSelectionPage()
+        : this(null)
+    {
+    }
+
+    public LogoSelectionPage(string? initialUrl)
     {
         InitializeComponent();
         _allLogos = LogosService.GetBuiltInLogoFileNames().ToList();
         LogosCollection.ItemsSource = _allLogos;
+
+        if (!string.IsNullOrEmpty(initialUrl) && Uri.TryCreate(initialUrl, UriKind.Absolute, out var uri) && (uri.Scheme == "http" || uri.Scheme == "https"))
+        {
+            // set the URL entry and preview
+            UrlEntry.Text = initialUrl;
+            try { UrlPreview.Source = ImageSource.FromUri(uri); } catch { UrlPreview.Source = null; }
+        }
     }
 
     private async void OnBrowseClicked(object? sender, EventArgs e)
