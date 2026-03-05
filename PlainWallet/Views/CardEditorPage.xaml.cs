@@ -49,7 +49,7 @@ public partial class CardEditorPage : ContentPage
         Title = "Edit Card";
 
         // add delete toolbar item with confirmation
-        var deleteItem = new ToolbarItem("🗑", null, async () =>
+        var deleteItem = new ToolbarItem("Delete", null, async () =>
         {
             if (_editingCard is null) return;
             var confirm = await DisplayAlertAsync("Delete", "Are you sure you want to delete this card?", "Delete", "Cancel");

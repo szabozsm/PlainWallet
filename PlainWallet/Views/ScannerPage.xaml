@@ -11,10 +11,12 @@
                 ColumnDefinitions="Auto,Auto,*,Auto">
             <Button Grid.Column="0"
                     Text="↻"
+                    FontSize="18"
                     Clicked="OnSwitchClicked"
                     BackgroundColor="{StaticResource Primary}"/>
             <Button Grid.Column="1"
                     Text="💡"
+                    FontSize="14"
                     Clicked="OnTorchClicked"
                     BackgroundColor="{StaticResource Primary}"/>
             <Label Grid.Column="2"
