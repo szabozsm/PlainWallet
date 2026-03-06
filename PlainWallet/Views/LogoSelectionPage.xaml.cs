@@ -28,7 +28,14 @@ public partial class LogoSelectionPage : ContentPage
         {
             // set the URL entry and preview
             UrlEntry.Text = initialUrl;
-            try { UrlPreview.Source = ImageSource.FromUri(uri); } catch { UrlPreview.Source = null; }
+            try
+            {
+                UrlPreview.Source = ImageSource.FromUri(uri);
+            }
+            catch
+            {
+                UrlPreview.Source = null;
+            }
         }
     }
 
@@ -44,6 +51,8 @@ public partial class LogoSelectionPage : ContentPage
             if (result is not null)
             {
                 // Use the full path returned by the file picker when available, otherwise the filename
+                UrlPreview.Source = ImageSource.FromFile(result.FullPath ?? result.FileName);
+
                 LogoSelected?.Invoke(result.FullPath ?? result.FileName);
                 await Navigation.PopAsync();
             }
@@ -71,7 +80,7 @@ public partial class LogoSelectionPage : ContentPage
 
     private void OnFilterTextChanged(object? sender, TextChangedEventArgs e)
     {
-        var q = e.NewTextValue?.Trim().Replace(" ","_");
+        var q = e.NewTextValue?.Trim().Replace(" ", "_");
         if (string.IsNullOrEmpty(q))
         {
             LogosCollection.ItemsSource = _allLogos;

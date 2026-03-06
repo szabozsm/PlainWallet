@@ -6,6 +6,7 @@ using PlainWallet.Services;
 using ZXing;
 using PlainWallet.Views;
 using Microsoft.Maui.Storage;
+using System.IO;
 
 namespace PlainWallet.Views;
 
@@ -61,16 +62,45 @@ public partial class CardEditorPage : ContentPage
         ToolbarItems.Add(deleteItem);
     }
 
-    private void OnLogoSelected(string? logo)
+    private async void OnLogoSelected(string? logo)
     {
         if (string.IsNullOrEmpty(logo)) return;
         SelectedLogoUri = logo;
         try
         {
-            if (logo.Contains("://"))
-                LogoPreview.Source = ImageSource.FromUri(new Uri(logo));
+            // Check if it's a file path (not a URL)
+            if (!logo.Contains("://"))
+            {
+                // It's a file path, read it and store as binary data
+                if (File.Exists(logo))
+                {
+                    using var fileStream = File.OpenRead(logo);
+                    if (_editingCard is not null)
+                    {
+                        await SetLogoFromStreamAsync(fileStream, logo);
+                    }
+                    else
+                    {
+                        // For new cards, store in temporary field
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await fileStream.CopyToAsync(memoryStream);
+                            _selectedLogoData = memoryStream.ToArray();
+                        }
+                    }
+                    LogoPreview.Source = ImageSource.FromFile(logo);
+                }
+                else
+                {
+                    // File doesn't exist, treat as built-in resource
+                    LogoPreview.Source = ImageSource.FromFile(logo);
+                }
+            }
             else
-                LogoPreview.Source = ImageSource.FromFile(logo);
+            {
+                // It's a URL, store URI only (for now)
+                LogoPreview.Source = ImageSource.FromUri(new Uri(logo));
+            }
         }
         catch
         {
@@ -80,11 +110,36 @@ public partial class CardEditorPage : ContentPage
         OnPropertyChanged(nameof(SelectedLogoUri));
     }
 
+    private async Task SetLogoFromStreamAsync(Stream stream, string? uri = null)
+    {
+        try
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                await stream.CopyToAsync(memoryStream);
+                if (_editingCard is not null)
+                {
+                    _editingCard.LogoData = memoryStream.ToArray();
+                    _editingCard.LogoUri = uri;
+                }
+            }
+        }
+        catch
+        {
+            if (_editingCard is not null)
+            {
+                _editingCard.LogoData = null;
+                _editingCard.LogoUri = uri;
+            }
+        }
+    }
+
     public string Name { get; set; } = string.Empty;
     public string CardNumber { get; set; } = string.Empty;
     public string Notes { get; set; } = string.Empty;
 
     public string? SelectedLogoUri { get; set; }
+    private byte[]? _selectedLogoData;
 
     
     private Color? _selectedColor;
@@ -126,7 +181,8 @@ public partial class CardEditorPage : ContentPage
                 Notes = Notes?.Trim() ?? string.Empty,
                 BackgroundColor = SelectedColor ?? Colors.Gray,
                 BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128,
-                LogoUri = !string.IsNullOrEmpty(SelectedLogoUri) ? SelectedLogoUri : "dotnet_bot.png"
+                LogoUri = !string.IsNullOrEmpty(SelectedLogoUri) ? SelectedLogoUri : "dotnet_bot.png",
+                LogoData = _selectedLogoData
             };
             CardStore.Cards.Add(card);
         }

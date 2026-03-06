@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 using ZXing;
+using System.IO;
 
 namespace PlainWallet.Models;
 
@@ -24,7 +25,6 @@ public class MembershipCard : INotifyPropertyChanged
 
     // Persisted representation of the background color as hex ARGB
 
-
     public Color BackgroundColor { get; set; } = Colors.Gray;
 
 [NotMapped]
@@ -37,16 +37,31 @@ public class MembershipCard : INotifyPropertyChanged
             }
         }
 
-
-
     // Persist a URI or path for the logo image if available
     public string? LogoUri { get; set; } = "";
+
+    // Persist binary logo data directly in the database
+    public byte[]? LogoData { get; set; }
 
     [NotMapped]
     public ImageSource? Logo
     {
         get
         {
+            // First try to load from binary data if available
+            if (LogoData != null && LogoData.Length > 0)
+            {
+                try
+                {
+                    return ImageSource.FromStream(() => new MemoryStream(LogoData));
+                }
+                catch
+                {
+                    // Fall back to URI if binary data fails
+                }
+            }
+            
+            // Fall back to URI-based loading
             if (string.IsNullOrEmpty(LogoUri))
                 return null;
             try
@@ -65,12 +80,27 @@ public class MembershipCard : INotifyPropertyChanged
         {
             try
             {
-                if (value is FileImageSource file) LogoUri = file.File;
-                else if (value is UriImageSource uri) LogoUri = uri.Uri?.ToString();
-                else LogoUri = null;
+                if (value is StreamImageSource stream)
+                {
+                    // For StreamImageSource, we need to read the stream and store as bytes
+                    // This is more complex and may need async handling
+                    LogoData = null; // Clear binary data for now
+                    if (value is FileImageSource file) LogoUri = file.File;
+                    else if (value is UriImageSource uri) LogoUri = uri.Uri?.ToString();
+                    else LogoUri = null;
+                }
+                else
+                {
+                    // Clear binary data when setting non-stream sources
+                    LogoData = null;
+                    if (value is FileImageSource file) LogoUri = file.File;
+                    else if (value is UriImageSource uri) LogoUri = uri.Uri?.ToString();
+                    else LogoUri = null;
+                }
             }
             catch
             {
+                LogoData = null;
                 LogoUri = null;
             }
             OnPropertyChanged(nameof(Logo));
@@ -81,6 +111,30 @@ public class MembershipCard : INotifyPropertyChanged
     public string Notes { get => _notes; set { if (_notes == value) return; _notes = value; OnPropertyChanged(nameof(Notes)); } }
 
     public int BarcodeTypeValue { get; set; }
+
+    /// <summary>
+    /// Sets the logo data from a stream and optionally stores the URI
+    /// </summary>
+    /// <param name="stream">The stream containing the image data</param>
+    /// <param name="uri">Optional URI to store alongside the binary data</param>
+    public async Task SetLogoFromStreamAsync(Stream stream, string? uri = null)
+    {
+        try
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                await stream.CopyToAsync(memoryStream);
+                LogoData = memoryStream.ToArray();
+                LogoUri = uri;
+            }
+            OnPropertyChanged(nameof(Logo));
+        }
+        catch
+        {
+            LogoData = null;
+            LogoUri = uri;
+        }
+    }
 
     [NotMapped]
     public ZXing.Net.Maui.BarcodeFormat BarcodeType
