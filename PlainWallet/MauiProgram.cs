@@ -6,6 +6,7 @@ using PlainWallet.Data;
 using PlainWallet.Services;
 using Microsoft.Maui.Storage;
 using System.IO;
+using UraniumUI;
 
 namespace PlainWallet;
 
@@ -18,6 +19,8 @@ public static class MauiProgram
 			.UseMauiApp<App>()
 			.UseBarcodeReader()
 			.UseSkiaSharp()
+			.UseUraniumUI()
+			.UseUraniumUIMaterial()
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

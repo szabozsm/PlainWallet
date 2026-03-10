@@ -64,7 +64,6 @@ public class MembershipCard : INotifyPropertyChanged
                 }
             }
 
-
             try
             {
                 // If the stored value looks like a file name, return a file image source
@@ -88,10 +87,6 @@ public class MembershipCard : INotifyPropertyChanged
     public string Notes { get => _notes; set { if (_notes == value) return; _notes = value; OnPropertyChanged(nameof(Notes)); } }
 
     public int BarcodeTypeValue { get; set; }
-
-   
-
-    
 
     /// <summary>
     /// Resizes an image to the specified maximum dimensions while maintaining aspect ratio

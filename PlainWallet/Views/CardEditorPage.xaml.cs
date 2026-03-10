@@ -156,7 +156,6 @@ public partial class CardEditorPage : ContentPage
     public string? SelectedLogoUrl { get; set; }
     private byte[]? SelectedLogoData;
 
-
     private Color? _selectedColor;
     public Color? SelectedColor { get => _selectedColor; set { _selectedColor = value; OnPropertyChanged(); } }
     public ObservableCollection<BarcodeTypeOption> BarcodeTypeOptions { get; } = new();
@@ -165,7 +164,6 @@ public partial class CardEditorPage : ContentPage
 
     private void LoadOptions()
     {
-
 
         foreach (ZXing.Net.Maui.BarcodeFormat format in Enum.GetValues(typeof(ZXing.Net.Maui.BarcodeFormat)))
             BarcodeTypeOptions.Add(new BarcodeTypeOption(format, FormatDisplayName(format)));
@@ -246,8 +244,6 @@ public partial class CardEditorPage : ContentPage
         return result.ToString();
     }
 }
-
-
 
 public class BarcodeTypeOption
 {

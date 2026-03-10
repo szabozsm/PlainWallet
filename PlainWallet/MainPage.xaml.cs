@@ -77,7 +77,7 @@ public partial class MainPage : ContentPage
 
         for (int i = 0; i < 8; i++)
         {
-            var index = _random.Next(names.Length);
+            var index = _random.Next(names.Length); 
             CardStore.Cards.Add(new MembershipCard
             {
                 Name = names[index],

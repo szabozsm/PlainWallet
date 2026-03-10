@@ -3,68 +3,65 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
+using PlainWallet.Models;
 using PlainWallet.Services;
-
 namespace PlainWallet.Views;
 
 public partial class LogoSelectionPage : ContentPage
 {
     public static event Action<string?>? LogoSelected;
-
-    private List<string> _allLogos = new();
-
     public LogoSelectionPage()
         : this(null, null, null)
     {
     }
-
+    private LogoTabViewModel myTabs = new LogoTabViewModel();
+    private List<string> _allLogos = new();
     public LogoSelectionPage(string? initialUri, string? initialUrl, byte[]? InitialLogoData)
     {
         InitializeComponent();
         _allLogos = LogosService.GetBuiltInLogoFileNames().ToList();
-        LogosCollection.ItemsSource = _allLogos;
-
+        myTabs.Logos = _allLogos.ToList();
         if (InitialLogoData != null && InitialLogoData.Length > 0)
         {
             try
             {
-                UrlPreview.Source = ImageSource.FromStream(() => new MemoryStream(InitialLogoData));
+                myTabs.FilePreviewSource = ImageSource.FromStream(() => new MemoryStream(InitialLogoData));
             }
             catch
             {
-                UrlPreview.Source = null;
+                myTabs.FilePreviewSource = null;
             }
         }
         else
             if (!string.IsNullOrEmpty(initialUrl))
             {
                 // set the URL entry and preview
-                UrlEntry.Text = initialUrl;
+                myTabs.CurrentUrl = initialUrl;
                 try
                 {
-                    UrlPreview.Source = ImageSource.FromUri(new Uri(initialUrl));
+                    myTabs.UrlPreviewSource = ImageSource.FromUri(new Uri(initialUrl));
                 }
                 catch
                 {
-                    UrlPreview.Source = null;
+                    myTabs.UrlPreviewSource = null;
                 }
             }
             else
                 if (!string.IsNullOrEmpty(initialUri))
                 {
                     // set the URL entry and preview
-                    UrlEntry.Text = "";
+                    myTabs.CurrentUri = initialUri;
                     try
                     {
-                        UrlPreview.Source = ImageSource.FromFile(initialUri);
+                        myTabs.UrlPreviewSource = ImageSource.FromFile(initialUri);
                     }
                     catch
                     {
-                        UrlPreview.Source = null;
+                        myTabs.UrlPreviewSource = null;
                     }
                 }
+        tabView.BindingContext = myTabs;
     }
-
     private async void OnBrowseClicked(object? sender, EventArgs e)
     {
         try
@@ -77,8 +74,7 @@ public partial class LogoSelectionPage : ContentPage
             if (result is not null)
             {
                 // Use the full path returned by the file picker when available, otherwise the filename
-                UrlPreview.Source = ImageSource.FromFile(result.FullPath ?? result.FileName);
-
+                myTabs.FilePreviewSource = ImageSource.FromFile(result.FullPath ?? result.FileName);
                 LogoSelected?.Invoke(result.FullPath ?? result.FileName);
                 await Navigation.PopAsync();
             }
@@ -88,13 +84,11 @@ public partial class LogoSelectionPage : ContentPage
             // ignore
         }
     }
-
     private async void OnCancelClicked(object? sender, EventArgs e)
     {
         LogoSelected?.Invoke(null);
         await Navigation.PopAsync();
     }
-
     private async void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (e.CurrentSelection is null || e.CurrentSelection.Count == 0) return;
@@ -103,47 +97,44 @@ public partial class LogoSelectionPage : ContentPage
         LogoSelected?.Invoke(selected);
         await Navigation.PopAsync();
     }
-
     private void OnFilterTextChanged(object? sender, TextChangedEventArgs e)
     {
         var q = e.NewTextValue?.Trim().Replace(" ", "_");
         if (string.IsNullOrEmpty(q))
         {
-            LogosCollection.ItemsSource = _allLogos;
+            myTabs.Logos = _allLogos;
             return;
         }
         var filtered = _allLogos.Where(s => s.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
-        LogosCollection.ItemsSource = filtered;
+        myTabs.Logos = filtered;
     }
-
     private void OnUrlTextChanged(object? sender, TextChangedEventArgs e)
     {
         var text = e.NewTextValue?.Trim();
         if (string.IsNullOrEmpty(text))
         {
-            UrlPreview.Source = null;
+            myTabs.UrlPreviewSource = null;
             return;
         }
         if (Uri.TryCreate(text, UriKind.Absolute, out var uri) && (uri.Scheme == "http" || uri.Scheme == "https"))
         {
             try
             {
-                UrlPreview.Source = ImageSource.FromUri(uri);
+                myTabs.UrlPreviewSource = ImageSource.FromUri(uri);
             }
             catch
             {
-                UrlPreview.Source = null;
+                myTabs.UrlPreviewSource = null;
             }
         }
         else
         {
-            UrlPreview.Source = null;
+            myTabs.UrlPreviewSource = null;
         }
     }
-
     private async void OnUseUrlClicked(object? sender, EventArgs e)
     {
-        var url = UrlEntry?.Text?.Trim();
+        var url = myTabs.CurrentUrl?.Trim();
         if (string.IsNullOrEmpty(url))
         {
             await DisplayAlertAsync("Invalid URL", "Please enter a non-empty URL.", "OK");
