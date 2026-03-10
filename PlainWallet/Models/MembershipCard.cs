@@ -5,6 +5,8 @@ using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 using ZXing;
 using System.IO;
+using SkiaSharp;
+using System.Threading;
 
 namespace PlainWallet.Models;
 
@@ -76,36 +78,7 @@ public class MembershipCard : INotifyPropertyChanged
                 return null;
             }
         }
-        set
-        {
-            try
-            {
-                if (value is StreamImageSource stream)
-                {
-                    // For StreamImageSource, we need to read the stream and store as bytes
-                    // This is more complex and may need async handling
-                    LogoData = null; // Clear binary data for now
-                    if (value is FileImageSource file) LogoUri = file.File;
-                    else if (value is UriImageSource uri) LogoUri = uri.Uri?.ToString();
-                    else LogoUri = null;
-                }
-                else
-                {
-                    // Clear binary data when setting non-stream sources
-                    LogoData = null;
-                    if (value is FileImageSource file) LogoUri = file.File;
-                    else if (value is UriImageSource uri) LogoUri = uri.Uri?.ToString();
-                    else LogoUri = null;
-                }
-            }
-            catch
-            {
-                LogoData = null;
-                LogoUri = null;
-            }
-            OnPropertyChanged(nameof(Logo));
-            OnPropertyChanged(nameof(LogoUri));
-        }
+     
     }
 
     public string Notes { get => _notes; set { if (_notes == value) return; _notes = value; OnPropertyChanged(nameof(Notes)); } }
@@ -124,7 +97,11 @@ public class MembershipCard : INotifyPropertyChanged
             using (var memoryStream = new MemoryStream())
             {
                 await stream.CopyToAsync(memoryStream);
-                LogoData = memoryStream.ToArray();
+                
+                // Resize image to max 256x256 while maintaining aspect ratio
+                var resizedBytes = await ResizeImageAsync(memoryStream.ToArray(), 256, 256);
+                
+                LogoData = resizedBytes;
                 LogoUri = uri;
             }
             OnPropertyChanged(nameof(Logo));
@@ -133,6 +110,109 @@ public class MembershipCard : INotifyPropertyChanged
         {
             LogoData = null;
             LogoUri = uri;
+        }
+    }
+
+    /// <summary>
+    /// Sets the logo from a StreamImageSource asynchronously
+    /// </summary>
+    /// <param name="streamImageSource">The StreamImageSource to process</param>
+    /// <param name="uri">Optional URI to store alongside the binary data</param>
+    public async Task SetLogoFromStreamImageSourceAsync(StreamImageSource streamImageSource, string? uri = null)
+    {
+        try
+        {
+            var stream = await streamImageSource.Stream(CancellationToken.None);
+            if (stream != null)
+            {
+                await SetLogoFromStreamAsync(stream, uri);
+            }
+        }
+        catch
+        {
+            LogoData = null;
+            LogoUri = uri;
+            OnPropertyChanged(nameof(Logo));
+        }
+    }
+
+    /// <summary>
+    /// Resizes an image to the specified maximum dimensions while maintaining aspect ratio
+    /// </summary>
+    /// <param name="imageBytes">The original image bytes</param>
+    /// <param name="maxWidth">Maximum width</param>
+    /// <param name="maxHeight">Maximum height</param>
+    /// <returns>Resized image bytes</returns>
+    public static async Task<byte[]> ResizeImageAsync(byte[] imageBytes, int maxWidth, int maxHeight)
+    {
+        try
+        {
+            if (imageBytes.Length == 0)
+                return imageBytes;
+
+            // Use Microsoft.Maui.ApplicationModel.DataTransfer for image processing
+            // Load image from bytes
+            using var originalStream = new MemoryStream(imageBytes);
+            
+            // For MAUI, we'll use a simple approach with ImageSource
+            // This is a basic implementation - for production use, consider using a library like ImageSharp
+            return await ResizeImageMauiAsync(originalStream, maxWidth, maxHeight);
+        }
+        catch
+        {
+            // If resizing fails, return original
+            return imageBytes;
+        }
+    }
+
+    private static async Task<byte[]> ResizeImageMauiAsync(Stream imageStream, int maxWidth, int maxHeight)
+    {
+        try
+        {
+            // Read the original stream
+            using var originalStream = new MemoryStream();
+            await imageStream.CopyToAsync(originalStream);
+            var originalBytes = originalStream.ToArray();
+
+            // Load image using SkiaSharp
+            using var bitmap = SKBitmap.Decode(originalBytes);
+            if (bitmap == null)
+                return originalBytes; // Return original if decoding fails
+
+            // Calculate new dimensions maintaining aspect ratio
+            var originalWidth = bitmap.Width;
+            var originalHeight = bitmap.Height;
+            
+            if (originalWidth <= maxWidth && originalHeight <= maxHeight)
+            {
+                // Image is already small enough, return original
+                return originalBytes;
+            }
+            
+            // Calculate scaling factor
+            var scaleX = (float)maxWidth / originalWidth;
+            var scaleY = (float)maxHeight / originalHeight;
+            var scale = Math.Min(scaleX, scaleY);
+            
+            var newWidth = (int)(originalWidth * scale);
+            var newHeight = (int)(originalHeight * scale);
+            
+            // Create resized bitmap
+            using var resizedBitmap = new SKBitmap(newWidth, newHeight);
+            using var canvas = new SKCanvas(resizedBitmap);
+            
+            // Draw scaled image
+            canvas.Clear(SKColors.Transparent);
+            canvas.DrawBitmap(bitmap, new SKRect(0, 0, newWidth, newHeight));
+            
+            // Convert to byte array
+            using var outputStream = new MemoryStream();
+            resizedBitmap.Encode(outputStream, SKEncodedImageFormat.Png, 90);
+            return outputStream.ToArray();
+        }
+        catch
+        {
+            return new byte[0];
         }
     }
 

@@ -36,15 +36,39 @@ public partial class CardEditorPage : ContentPage
         SelectedColor = card.BackgroundColor;
         SelectedBarcodeType = BarcodeTypeOptions.FirstOrDefault(o => o.Format == card.BarcodeType) ?? BarcodeTypeOptions[0];
         SelectedLogoUri = card.LogoUri;
-        if (!string.IsNullOrEmpty(SelectedLogoUri))
+        SelectedLogoData = card.LogoData;
+
+        if (SelectedLogoData != null && SelectedLogoData.Length > 0)
         {
-            try { LogoPreview.Source = ImageSource.FromFile(SelectedLogoUri); } catch { LogoPreview.Source = ImageSource.FromFile(SelectedLogoUri); }
+            try
+            {
+                using var ms = new MemoryStream(SelectedLogoData);
+                LogoPreview.Source = ImageSource.FromStream(() => ms);
+            }
+            catch
+            {
+                LogoPreview.Source = null;
+            }
         }
+        else
+            if (!string.IsNullOrEmpty(SelectedLogoUri))
+            {
+                try
+                {
+                    LogoPreview.Source = ImageSource.FromUri(new Uri(SelectedLogoUri));
+                }
+                catch
+                {
+                    LogoPreview.Source = ImageSource.FromFile(SelectedLogoUri);
+                }
+            }
         OnPropertyChanged(nameof(Name));
         OnPropertyChanged(nameof(CardNumber));
         OnPropertyChanged(nameof(Notes));
         OnPropertyChanged(nameof(SelectedColor));
         OnPropertyChanged(nameof(SelectedBarcodeType));
+        OnPropertyChanged(nameof(SelectedLogoUri));
+        OnPropertyChanged(nameof(SelectedLogoData));
         OnPropertyChanged(nameof(IsEditing));
 
         Title = "Edit Card";
@@ -58,90 +82,70 @@ public partial class CardEditorPage : ContentPage
             CardStore.Cards.Remove(_editingCard);
             // After deleting a card, navigate explicitly to the main list of cards
             await Shell.Current.GoToAsync("//MainPage");
-        }) { Order = ToolbarItemOrder.Primary, Priority = 1 };
+        })
+        { Order = ToolbarItemOrder.Primary, Priority = 1 };
         ToolbarItems.Add(deleteItem);
     }
 
     private async void OnLogoSelected(string? logo)
     {
         if (string.IsNullOrEmpty(logo)) return;
-        SelectedLogoUri = logo;
-        try
+
+        // Check if it's a file path (not a URL)
+        if (!logo.Contains("://"))
         {
-            // Check if it's a file path (not a URL)
-            if (!logo.Contains("://"))
+            // It's a file path, read it and store as binary data
+            if (File.Exists(logo))
             {
-                // It's a file path, read it and store as binary data
-                if (File.Exists(logo))
+                using var fileStream = File.OpenRead(logo);
+                using (var memoryStream = new MemoryStream())
                 {
-                    using var fileStream = File.OpenRead(logo);
-                    if (_editingCard is not null)
-                    {
-                        await SetLogoFromStreamAsync(fileStream, logo);
-                    }
-                    else
-                    {
-                        // For new cards, store in temporary field
-                        using (var memoryStream = new MemoryStream())
-                        {
-                            await fileStream.CopyToAsync(memoryStream);
-                            _selectedLogoData = memoryStream.ToArray();
-                        }
-                    }
-                    LogoPreview.Source = ImageSource.FromFile(logo);
+                    await fileStream.CopyToAsync(memoryStream);
+                    SelectedLogoData = await MembershipCard.ResizeImageAsync(memoryStream.ToArray(), 256, 256);
                 }
-                else
-                {
-                    // File doesn't exist, treat as built-in resource
-                    LogoPreview.Source = ImageSource.FromFile(logo);
-                }
+                SelectedLogoUri = null; // Clear URI since we're now using binary data
+                LogoPreview.Source = ImageSource.FromFile(logo);
+
             }
             else
             {
-                // It's a URL, store URI only (for now)
-                LogoPreview.Source = ImageSource.FromUri(new Uri(logo));
+                // File doesn't exist, treat as built-in resource
+                SelectedLogoData = null;
+                SelectedLogoUri = logo;
+                LogoPreview.Source = ImageSource.FromFile(logo);
             }
         }
-        catch
+        else
         {
-            // fallback: try URI then file
-            try { LogoPreview.Source = ImageSource.FromUri(new Uri(logo)); } catch { LogoPreview.Source = ImageSource.FromFile(logo); }
+            // It's a URL, store URI only (for now)
+            try
+            {
+                LogoPreview.Source = ImageSource.FromUri(new Uri(logo));
+                SelectedLogoData = null;
+                SelectedLogoUri = logo;
+            }
+            catch
+            {
+                LogoPreview.Source = ImageSource.FromFile(logo);
+                SelectedLogoData = null;
+                SelectedLogoUri = logo;
+            }
         }
+
         OnPropertyChanged(nameof(SelectedLogoUri));
+        OnPropertyChanged(nameof(SelectedLogoData));
     }
 
-    private async Task SetLogoFromStreamAsync(Stream stream, string? uri = null)
-    {
-        try
-        {
-            using (var memoryStream = new MemoryStream())
-            {
-                await stream.CopyToAsync(memoryStream);
-                if (_editingCard is not null)
-                {
-                    _editingCard.LogoData = memoryStream.ToArray();
-                    _editingCard.LogoUri = uri;
-                }
-            }
-        }
-        catch
-        {
-            if (_editingCard is not null)
-            {
-                _editingCard.LogoData = null;
-                _editingCard.LogoUri = uri;
-            }
-        }
-    }
+    // Remove the local SetLogoFromStreamAsync method since we're using the one from MembershipCard
 
     public string Name { get; set; } = string.Empty;
     public string CardNumber { get; set; } = string.Empty;
     public string Notes { get; set; } = string.Empty;
 
     public string? SelectedLogoUri { get; set; }
-    private byte[]? _selectedLogoData;
+    private byte[]? SelectedLogoData;
 
-    
+
     private Color? _selectedColor;
     public Color? SelectedColor { get => _selectedColor; set { _selectedColor = value; OnPropertyChanged(); } }
     public ObservableCollection<BarcodeTypeOption> BarcodeTypeOptions { get; } = new();
@@ -150,12 +154,12 @@ public partial class CardEditorPage : ContentPage
 
     private void LoadOptions()
     {
-      
+
 
         foreach (ZXing.Net.Maui.BarcodeFormat format in Enum.GetValues(typeof(ZXing.Net.Maui.BarcodeFormat)))
             BarcodeTypeOptions.Add(new BarcodeTypeOption(format, FormatDisplayName(format)));
         _selectedBarcodeType = BarcodeTypeOptions[0];
-        
+
         OnPropertyChanged(nameof(SelectedColor));
         OnPropertyChanged(nameof(BarcodeTypeOptions));
         OnPropertyChanged(nameof(SelectedBarcodeType));
@@ -170,7 +174,9 @@ public partial class CardEditorPage : ContentPage
             _editingCard.Notes = Notes?.Trim() ?? string.Empty;
             _editingCard.BackgroundColor = SelectedColor ?? Colors.Gray;
             _editingCard.BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128;
-            if (!string.IsNullOrEmpty(SelectedLogoUri)) _editingCard.LogoUri = SelectedLogoUri;
+            _editingCard.LogoUri = SelectedLogoUri;
+            _editingCard.LogoData = SelectedLogoData;
+
         }
         else
         {
@@ -181,8 +187,8 @@ public partial class CardEditorPage : ContentPage
                 Notes = Notes?.Trim() ?? string.Empty,
                 BackgroundColor = SelectedColor ?? Colors.Gray,
                 BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128,
-                LogoUri = !string.IsNullOrEmpty(SelectedLogoUri) ? SelectedLogoUri : "dotnet_bot.png",
-                LogoData = _selectedLogoData
+                LogoUri = SelectedLogoUri,
+                LogoData = SelectedLogoData
             };
             CardStore.Cards.Add(card);
         }
@@ -191,10 +197,7 @@ public partial class CardEditorPage : ContentPage
 
     private async void OnSelectLogoClicked(object? sender, EventArgs e)
     {
-        string? initial = null;
-        if (_editingCard is not null && !string.IsNullOrEmpty(_editingCard.LogoUri) && _editingCard.LogoUri.Contains("://"))
-            initial = _editingCard.LogoUri;
-        var page = new LogoSelectionPage(initial);
+        var page = new LogoSelectionPage(_editingCard?.LogoUri);
         await Navigation.PushAsync(page);
     }
 
@@ -203,7 +206,7 @@ public partial class CardEditorPage : ContentPage
         var scanner = new ScannerPage((String? code, ZXing.Net.Maui.BarcodeFormat barcodeFormat) =>
         {
             CardNumber = code ?? string.Empty;
-            SelectedBarcodeType = BarcodeTypeOptions.FirstOrDefault(o => o.Format == barcodeFormat) ?? BarcodeTypeOptions[0];  
+            SelectedBarcodeType = BarcodeTypeOptions.FirstOrDefault(o => o.Format == barcodeFormat) ?? BarcodeTypeOptions[0];
             OnPropertyChanged(nameof(CardNumber));
             OnPropertyChanged(nameof(SelectedBarcodeType));
         });
@@ -231,7 +234,7 @@ public partial class CardEditorPage : ContentPage
     }
 }
 
- 
+
 
 public class BarcodeTypeOption
 {

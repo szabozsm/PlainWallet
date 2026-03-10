@@ -22,9 +22,9 @@
    inkscape:pageopacity="0.0"
    inkscape:pagecheckerboard="0"
    showgrid="false"
-   inkscape:zoom="1.7741228"
-   inkscape:cx="302.96663"
-   inkscape:cy="70.739184"
+   inkscape:zoom="0.8870614"
+   inkscape:cx="294.79357"
+   inkscape:cy="266.61063"
    inkscape:window-width="1920"
    inkscape:window-height="1018"
    inkscape:window-x="-6"
@@ -32,25 +32,28 @@
    inkscape:window-maximized="1"
    inkscape:current-layer="svg846"
    showguides="true"
-   inkscape:guide-bbox="true"><sodipodi:guide
-     position="386.66996,501.09271"
-     orientation="1,0"
-     id="guide865" /></sodipodi:namedview>
+   inkscape:guide-bbox="true" />
     
     
     
     
-<path
-   d="M 363.27812,221.37206 H 176.82768 v -21.1644 h 186.45044 m 0,126.9864 H 176.82768 v -63.4932 h 186.45044 m 0,-84.6576 H 176.82768 c -12.93499,0 -23.3063,9.41816 -23.3063,21.1644 v 126.9864 a 23.306304,21.164401 0 0 0 23.3063,21.1644 h 186.45044 a 23.306304,21.164401 0 0 0 23.3063,-21.1644 v -126.9864 c 0,-11.74624 -10.48784,-21.1644 -23.3063,-21.1644 z"
+<rect
+   style="fill:#ffccaa;fill-opacity:1;stroke:#003380;stroke-width:2.93472"
+   id="rect5203"
+   width="751.79858"
+   height="742.86676"
+   x="-122.81645"
+   y="-133.04909" /><path
+   d="M 380.49866,229.72217 H 227.41683 v -16.23238 h 153.08183 m 0,97.39431 H 227.41683 v -48.69716 h 153.08183 m 0,-64.92954 H 227.41683 c -10.62005,0 -19.13523,7.22341 -19.13523,16.23239 v 97.39431 a 19.135229,16.232386 0 0 0 19.13523,16.23238 h 153.08183 a 19.135229,16.232386 0 0 0 19.13523,-16.23238 v -97.39431 c 0,-9.00898 -8.61086,-16.23239 -19.13523,-16.23239 z"
    id="path1258"
-   style="fill:#0066ff;fill-opacity:1;stroke-width:11.1048" /><text
+   style="fill:#0066ff;fill-opacity:1;stroke-width:8.81209" /><text
    xml:space="preserve"
-   style="font-size:74.6667px;line-height:1.25;font-family:Calibri;-inkscape-font-specification:Calibri;fill:#ffd42a;fill-opacity:1"
-   x="3.6637888"
-   y="119.49567"
+   style="font-size:64px;line-height:1.25;font-family:Calibri;-inkscape-font-specification:Calibri;fill:#ffd42a;fill-opacity:1"
+   x="73.079132"
+   y="158.00153"
    id="text4075"><tspan
      sodipodi:role="line"
      id="tspan4073"
-     x="3.6637888"
-     y="119.49567"
-     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:74.6667px;font-family:Corbel;-inkscape-font-specification:'Corbel Bold';fill:#ffd42a;fill-opacity:1">Plain Wallet</tspan></text></svg>
+     x="73.079132"
+     y="158.00153"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:64px;font-family:Corbel;-inkscape-font-specification:'Corbel Bold';fill:#ffd42a;fill-opacity:1">Plain Wallet</tspan></text></svg>
