@@ -36,14 +36,14 @@ public partial class CardEditorPage : ContentPage
         SelectedColor = card.BackgroundColor;
         SelectedBarcodeType = BarcodeTypeOptions.FirstOrDefault(o => o.Format == card.BarcodeType) ?? BarcodeTypeOptions[0];
         SelectedLogoUri = card.LogoUri;
+        SelectedLogoUrl = card.LogoUrl;
         SelectedLogoData = card.LogoData;
 
         if (SelectedLogoData != null && SelectedLogoData.Length > 0)
         {
             try
             {
-                using var ms = new MemoryStream(SelectedLogoData);
-                LogoPreview.Source = ImageSource.FromStream(() => ms);
+                LogoPreview.Source =  ImageSource.FromStream(() => new MemoryStream(SelectedLogoData));
             }
             catch
             {
@@ -53,13 +53,17 @@ public partial class CardEditorPage : ContentPage
         else
             if (!string.IsNullOrEmpty(SelectedLogoUri))
             {
-                try
+                LogoPreview.Source = ImageSource.FromFile(SelectedLogoUri);
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(SelectedLogoUrl))
                 {
-                    LogoPreview.Source = ImageSource.FromUri(new Uri(SelectedLogoUri));
+                    LogoPreview.Source = ImageSource.FromUri(new Uri(SelectedLogoUrl));
                 }
-                catch
+                else
                 {
-                    LogoPreview.Source = ImageSource.FromFile(SelectedLogoUri);
+                    LogoPreview.Source = null;
                 }
             }
         OnPropertyChanged(nameof(Name));
@@ -68,6 +72,7 @@ public partial class CardEditorPage : ContentPage
         OnPropertyChanged(nameof(SelectedColor));
         OnPropertyChanged(nameof(SelectedBarcodeType));
         OnPropertyChanged(nameof(SelectedLogoUri));
+        OnPropertyChanged(nameof(SelectedLogoUrl));
         OnPropertyChanged(nameof(SelectedLogoData));
         OnPropertyChanged(nameof(IsEditing));
 
@@ -104,6 +109,7 @@ public partial class CardEditorPage : ContentPage
                     SelectedLogoData = await MembershipCard.ResizeImageAsync(memoryStream.ToArray(), 256, 256);
                 }
                 SelectedLogoUri = null; // Clear URI since we're now using binary data
+                SelectedLogoUrl = null; // Clear URI since we're now using binary data
                 LogoPreview.Source = ImageSource.FromFile(logo);
 
             }
@@ -112,6 +118,7 @@ public partial class CardEditorPage : ContentPage
                 // File doesn't exist, treat as built-in resource
                 SelectedLogoData = null;
                 SelectedLogoUri = logo;
+                SelectedLogoUrl = null;
                 LogoPreview.Source = ImageSource.FromFile(logo);
             }
         }
@@ -122,17 +129,20 @@ public partial class CardEditorPage : ContentPage
             {
                 LogoPreview.Source = ImageSource.FromUri(new Uri(logo));
                 SelectedLogoData = null;
-                SelectedLogoUri = logo;
+                SelectedLogoUri = null;
+                SelectedLogoUrl = logo;
             }
             catch
             {
                 LogoPreview.Source = ImageSource.FromFile(logo);
                 SelectedLogoData = null;
                 SelectedLogoUri = logo;
+                SelectedLogoUrl = null;
             }
         }
 
         OnPropertyChanged(nameof(SelectedLogoUri));
+        OnPropertyChanged(nameof(SelectedLogoUrl));
         OnPropertyChanged(nameof(SelectedLogoData));
     }
 
@@ -143,6 +153,7 @@ public partial class CardEditorPage : ContentPage
     public string Notes { get; set; } = string.Empty;
 
     public string? SelectedLogoUri { get; set; }
+    public string? SelectedLogoUrl { get; set; }
     private byte[]? SelectedLogoData;
 
 
@@ -175,6 +186,7 @@ public partial class CardEditorPage : ContentPage
             _editingCard.BackgroundColor = SelectedColor ?? Colors.Gray;
             _editingCard.BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128;
             _editingCard.LogoUri = SelectedLogoUri;
+            _editingCard.LogoUrl = SelectedLogoUrl;
             _editingCard.LogoData = SelectedLogoData;
 
         }
@@ -188,6 +200,7 @@ public partial class CardEditorPage : ContentPage
                 BackgroundColor = SelectedColor ?? Colors.Gray,
                 BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128,
                 LogoUri = SelectedLogoUri,
+                LogoUrl = SelectedLogoUrl,
                 LogoData = SelectedLogoData
             };
             CardStore.Cards.Add(card);
@@ -197,7 +210,7 @@ public partial class CardEditorPage : ContentPage
 
     private async void OnSelectLogoClicked(object? sender, EventArgs e)
     {
-        var page = new LogoSelectionPage(_editingCard?.LogoUri);
+        var page = new LogoSelectionPage(_editingCard?.LogoUri,_editingCard?.LogoUrl,_editingCard?.LogoData);
         await Navigation.PushAsync(page);
     }
 

@@ -22,7 +22,7 @@
                         x:Name="LogosCollection"
                         SelectionMode="Single"
                         SelectionChanged="OnSelectionChanged"
-                        ItemsLayout="VerticalList"
+                         ItemsLayout="VerticalGrid, 2"
                         ItemSizingStrategy="MeasureAllItems">
             <CollectionView.ItemTemplate>
                 <DataTemplate>

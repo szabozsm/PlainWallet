@@ -29,18 +29,19 @@ public class MembershipCard : INotifyPropertyChanged
 
     public Color BackgroundColor { get; set; } = Colors.Gray;
 
-[NotMapped]
-            public Color ComplementaryColor
+    [NotMapped]
+    public Color ComplementaryColor
+    {
+        get
         {
-            get
-            {
-                double luminance = (0.299 * BackgroundColor.Red + 0.587 * BackgroundColor.Green + 0.114 * BackgroundColor.Blue);
-                return luminance > 0.5 ? Colors.Black : Colors.White;
-            }
+            double luminance = (0.299 * BackgroundColor.Red + 0.587 * BackgroundColor.Green + 0.114 * BackgroundColor.Blue);
+            return luminance > 0.5 ? Colors.Black : Colors.White;
         }
+    }
 
     // Persist a URI or path for the logo image if available
     public string? LogoUri { get; set; } = "";
+    public string? LogoUrl { get; set; } = "";
 
     // Persist binary logo data directly in the database
     public byte[]? LogoData { get; set; }
@@ -62,79 +63,35 @@ public class MembershipCard : INotifyPropertyChanged
                     // Fall back to URI if binary data fails
                 }
             }
-            
-            // Fall back to URI-based loading
-            if (string.IsNullOrEmpty(LogoUri))
-                return null;
+
+
             try
             {
                 // If the stored value looks like a file name, return a file image source
-                if (!LogoUri.Contains("://") && !LogoUri.StartsWith("/"))
+                if (!string.IsNullOrEmpty(LogoUri))
                     return ImageSource.FromFile(LogoUri);
-                return ImageSource.FromUri(new Uri(LogoUri));
+                else
+                    if (!string.IsNullOrEmpty(LogoUrl))
+                        return ImageSource.FromUri(new Uri(LogoUrl));
+                    else
+                        return null;
+
             }
             catch
             {
                 return null;
             }
         }
-     
+
     }
 
     public string Notes { get => _notes; set { if (_notes == value) return; _notes = value; OnPropertyChanged(nameof(Notes)); } }
 
     public int BarcodeTypeValue { get; set; }
 
-    /// <summary>
-    /// Sets the logo data from a stream and optionally stores the URI
-    /// </summary>
-    /// <param name="stream">The stream containing the image data</param>
-    /// <param name="uri">Optional URI to store alongside the binary data</param>
-    public async Task SetLogoFromStreamAsync(Stream stream, string? uri = null)
-    {
-        try
-        {
-            using (var memoryStream = new MemoryStream())
-            {
-                await stream.CopyToAsync(memoryStream);
-                
-                // Resize image to max 256x256 while maintaining aspect ratio
-                var resizedBytes = await ResizeImageAsync(memoryStream.ToArray(), 256, 256);
-                
-                LogoData = resizedBytes;
-                LogoUri = uri;
-            }
-            OnPropertyChanged(nameof(Logo));
-        }
-        catch
-        {
-            LogoData = null;
-            LogoUri = uri;
-        }
-    }
+   
 
-    /// <summary>
-    /// Sets the logo from a StreamImageSource asynchronously
-    /// </summary>
-    /// <param name="streamImageSource">The StreamImageSource to process</param>
-    /// <param name="uri">Optional URI to store alongside the binary data</param>
-    public async Task SetLogoFromStreamImageSourceAsync(StreamImageSource streamImageSource, string? uri = null)
-    {
-        try
-        {
-            var stream = await streamImageSource.Stream(CancellationToken.None);
-            if (stream != null)
-            {
-                await SetLogoFromStreamAsync(stream, uri);
-            }
-        }
-        catch
-        {
-            LogoData = null;
-            LogoUri = uri;
-            OnPropertyChanged(nameof(Logo));
-        }
-    }
+    
 
     /// <summary>
     /// Resizes an image to the specified maximum dimensions while maintaining aspect ratio
@@ -153,7 +110,7 @@ public class MembershipCard : INotifyPropertyChanged
             // Use Microsoft.Maui.ApplicationModel.DataTransfer for image processing
             // Load image from bytes
             using var originalStream = new MemoryStream(imageBytes);
-            
+
             // For MAUI, we'll use a simple approach with ImageSource
             // This is a basic implementation - for production use, consider using a library like ImageSharp
             return await ResizeImageMauiAsync(originalStream, maxWidth, maxHeight);
@@ -182,29 +139,29 @@ public class MembershipCard : INotifyPropertyChanged
             // Calculate new dimensions maintaining aspect ratio
             var originalWidth = bitmap.Width;
             var originalHeight = bitmap.Height;
-            
+
             if (originalWidth <= maxWidth && originalHeight <= maxHeight)
             {
                 // Image is already small enough, return original
                 return originalBytes;
             }
-            
+
             // Calculate scaling factor
             var scaleX = (float)maxWidth / originalWidth;
             var scaleY = (float)maxHeight / originalHeight;
             var scale = Math.Min(scaleX, scaleY);
-            
+
             var newWidth = (int)(originalWidth * scale);
             var newHeight = (int)(originalHeight * scale);
-            
+
             // Create resized bitmap
             using var resizedBitmap = new SKBitmap(newWidth, newHeight);
             using var canvas = new SKCanvas(resizedBitmap);
-            
+
             // Draw scaled image
             canvas.Clear(SKColors.Transparent);
             canvas.DrawBitmap(bitmap, new SKRect(0, 0, newWidth, newHeight));
-            
+
             // Convert to byte array
             using var outputStream = new MemoryStream();
             resizedBitmap.Encode(outputStream, SKEncodedImageFormat.Png, 90);

@@ -14,29 +14,55 @@ public partial class LogoSelectionPage : ContentPage
     private List<string> _allLogos = new();
 
     public LogoSelectionPage()
-        : this(null)
+        : this(null, null, null)
     {
     }
 
-    public LogoSelectionPage(string? initialUrl)
+    public LogoSelectionPage(string? initialUri, string? initialUrl, byte[]? InitialLogoData)
     {
         InitializeComponent();
         _allLogos = LogosService.GetBuiltInLogoFileNames().ToList();
         LogosCollection.ItemsSource = _allLogos;
 
-        if (!string.IsNullOrEmpty(initialUrl) && Uri.TryCreate(initialUrl, UriKind.Absolute, out var uri) && (uri.Scheme == "http" || uri.Scheme == "https"))
+        if (InitialLogoData != null && InitialLogoData.Length > 0)
         {
-            // set the URL entry and preview
-            UrlEntry.Text = initialUrl;
             try
             {
-                UrlPreview.Source = ImageSource.FromUri(uri);
+                UrlPreview.Source = ImageSource.FromStream(() => new MemoryStream(InitialLogoData));
             }
             catch
             {
                 UrlPreview.Source = null;
             }
         }
+        else
+            if (!string.IsNullOrEmpty(initialUrl))
+            {
+                // set the URL entry and preview
+                UrlEntry.Text = initialUrl;
+                try
+                {
+                    UrlPreview.Source = ImageSource.FromUri(new Uri(initialUrl));
+                }
+                catch
+                {
+                    UrlPreview.Source = null;
+                }
+            }
+            else
+                if (!string.IsNullOrEmpty(initialUri))
+                {
+                    // set the URL entry and preview
+                    UrlEntry.Text = "";
+                    try
+                    {
+                        UrlPreview.Source = ImageSource.FromFile(initialUri);
+                    }
+                    catch
+                    {
+                        UrlPreview.Source = null;
+                    }
+                }
     }
 
     private async void OnBrowseClicked(object? sender, EventArgs e)
