@@ -1,99 +1,87 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:cp="clr-namespace:Maui.ColorPicker;assembly=Maui.ColorPicker"
+             xmlns:mcp="clr-namespace:PlainWallet.Views.Controls"
              x:Class="PlainWallet.Views.CardEditorPage"
              Title="New card">
 
-        <ScrollView>
-                <VerticalStackLayout Padding="20"
-                                     Spacing="16">
-                        <Label Text="Name"
-                               FontAttributes="Bold"/>
-                        <Entry x:Name="NameEntry"
-                               Placeholder="Card or store name"
-                               Text="{Binding Name, Mode=TwoWay}"/>
+       <ScrollView>
+              <VerticalStackLayout Padding="20"
+                                   Spacing="16">
 
-                        <Label Text="Card number"
-                               FontAttributes="Bold"/>
-                        <Grid ColumnDefinitions="*,Auto"
-                              ColumnSpacing="8">
-                                <Entry x:Name="CardNumberEntry"
-                                       Placeholder="e.g. 1234 5678 9012"
-                                       Text="{Binding CardNumber, Mode=TwoWay}"
-                                       VerticalOptions="Center"
-                                       Grid.Column="0"/>
-                                <ImageButton
-                                        Grid.Column="1"
-                                        WidthRequest="92"
-                                        Source="barcode_scan.svg"
-                                        Clicked="OnScanBarcodeClicked"
-                                        BackgroundColor="{StaticResource Primary}"
-                                        CornerRadius="8"
-                                        Padding="12"
-                                        HorizontalOptions="Center"
-                                        VerticalOptions="Center"/>
-                        </Grid>
+                     <Label Text="Name"
+                            FontAttributes="Bold"/>
+                     <Entry x:Name="NameEntry"
+                            Placeholder="Card or store name"
+                            Text="{Binding Name, Mode=TwoWay}"/>
 
-                        <Label Text="Barcode type"
-                               FontAttributes="Bold"/>
-                        <Picker x:Name="BarcodeTypePicker"
-                                Title="Pick barcode type"
-                                ItemsSource="{Binding BarcodeTypeOptions}"
-                                ItemDisplayBinding="{Binding DisplayName}"
-                                SelectedItem="{Binding SelectedBarcodeType, Mode=TwoWay}"/>
+                     <Label Text="Card number"
+                            FontAttributes="Bold"/>
+                     <Grid ColumnDefinitions="*,Auto"
+                           ColumnSpacing="8">
+                            <Entry x:Name="CardNumberEntry"
+                                   Placeholder="e.g. 1234 5678 9012"
+                                   Text="{Binding CardNumber, Mode=TwoWay}"
+                                   VerticalOptions="Center"
+                                   Grid.Column="0"/>
+                            <ImageButton
+                                   Grid.Column="1"
+                                   WidthRequest="92"
+                                   Source="barcode_scan.svg"
+                                   Clicked="OnScanBarcodeClicked"
+                                   BackgroundColor="{StaticResource Primary}"
+                                   CornerRadius="8"
+                                   Padding="12"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"/>
+                     </Grid>
 
-                        <cp:ColorPicker
-                                x:Name="ColorPicker"
-                                ColorFlowDirection="Horizontal"
-                                ColorSpectrumStyle="TintToHueToShadeStyle"
-                                PickedColor="{Binding SelectedColor, Mode=TwoWay}"
-                                PointerRingBorderUnits="0.3"
-                                PointerRingDiameterUnits="0.7"
-                                HeightRequest="150"
-                                Margin="0,10">
-                        </cp:ColorPicker>
+                     <Label Text="Barcode type"
+                            FontAttributes="Bold"/>
+                     <Picker x:Name="BarcodeTypePicker"
+                             Title="Pick barcode type"
+                             ItemsSource="{Binding BarcodeTypeOptions}"
+                             ItemDisplayBinding="{Binding DisplayName}"
+                             SelectedItem="{Binding SelectedBarcodeType, Mode=TwoWay}"/>
 
-                        <Label Text="Notes"
-                               FontAttributes="Bold"/>
-                        <Editor x:Name="NotesEditor"
-                                Placeholder="Optional notes"
-                                HeightRequest="80"
-                                Text="{Binding Notes, Mode=TwoWay}"/>
+                     <Label Text="Logo"
+                            FontAttributes="Bold"/>
+                     <HorizontalStackLayout Spacing="12"
+                                            VerticalOptions="Center">
 
-                        <Label Text="Logo"
-                               FontAttributes="Bold"/>
-                        <HorizontalStackLayout Spacing="12"
-                                               VerticalOptions="Center">
+                            <Border WidthRequest="96"
+                                    HeightRequest="96"
+                                    Padding="6"
+                                    Margin="0,6"
+                                    Stroke="Transparent"
+                                    BackgroundColor="Transparent">
+                                   <Image x:Name="LogoPreview"
+                                          Source="dotnet_bot.png"
+                                          Aspect="AspectFit"/>
+                            </Border>
 
-                                <Border WidthRequest="96"
-                                        HeightRequest="96"
-                                        Padding="6"
-                                        Margin="0,6"
-                                        Stroke="Transparent"
-                                        BackgroundColor="Transparent">
-                                        <Image x:Name="LogoPreview"
-                                               Source="dotnet_bot.png"
-                                               Aspect="AspectFit"/>
-                                </Border>
+                            <Button  Text="Select Logo"
+                                     Clicked="OnSelectLogoClicked"
+                                     BackgroundColor="{StaticResource Primary}"/>
+                     </HorizontalStackLayout>
+                     <mcp:ColorPicker
+                            x:Name="ColorPicker"
+                            SelectedColor="{Binding SelectedColor0, Mode=TwoWay}"
+                            Margin="0,5"/>
 
-                                <Button  Text="Select Logo"
-                                        Clicked="OnSelectLogoClicked"
-                                        BackgroundColor="{StaticResource Primary}"/>
-                        </HorizontalStackLayout>
-                        <Grid ColumnDefinitions="*,*"
-                              ColumnSpacing="12"
-                              Margin="0,24,0,0">
-                                <Button Grid.Column="0"
-                                        Text="Cancel"
-                                        BackgroundColor="{StaticResource Gray200}"
-                                        TextColor="{StaticResource Gray900}"
-                                        Clicked="OnCancelClicked"/>
-                                <Button Grid.Column="1"
-                                        Text="Save"
-                                        Clicked="OnSaveClicked"/>
-                        </Grid>
-                </VerticalStackLayout>
-        </ScrollView>
+                     <Label Text="Notes"
+                            FontAttributes="Bold"/>
+                     <Editor x:Name="NotesEditor"
+                             Placeholder="Optional notes"
+                             HeightRequest="80"
+                             Text="{Binding Notes, Mode=TwoWay}"/>
+                     <Button
+                            WidthRequest="200"
+                                   BackgroundColor="Red"
+                                   TextColor="white"
+                            Text="Delete"
+                            Clicked="OnDeleteClicked"/>
+              </VerticalStackLayout>
+       </ScrollView>
 
 </ContentPage>

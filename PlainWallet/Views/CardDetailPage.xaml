@@ -36,12 +36,12 @@
                             Text="{Binding Card.Name}"
                             FontAttributes="Bold"
                             FontSize="22"
-                            TextColor="{Binding ComplementaryColor}"/>
+                            TextColor="{Binding Card.ComplementaryColor}"/>
 
                         <Label
                             Text="{Binding Card.CardNumber}"
                             FontSize="16"
-                            TextColor="{Binding ComplementaryColor}"/>
+                            TextColor="{Binding Card.ComplementaryColor}"/>
                     </VerticalStackLayout>
                 </Grid>
             </Border>

@@ -74,19 +74,15 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
         </Grid>
-
-        <Button Text="+"
-                FontSize="28"
-                FontAttributes="Bold"
-                WidthRequest="56"
-                HeightRequest="56"
-                CornerRadius="28"
-                HorizontalOptions="End"
-                VerticalOptions="End"
-                Margin="0,0,8,16"
-                BackgroundColor="{StaticResource Primary}"
-                TextColor="White"
-                Clicked="OnAddCardClicked"/>
+     <ImageButton Source="add.svg"
+                  BackgroundColor="{StaticResource Primary}"
+                 CornerRadius="28"
+                 WidthRequest="56"
+                 HeightRequest="56"
+                 HorizontalOptions="End"
+                 VerticalOptions="End"
+                 Margin="0,0,8,16"
+                 Clicked="OnAddCardClicked"/>
     </Grid>
 
 </ContentPage>

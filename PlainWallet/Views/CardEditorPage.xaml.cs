@@ -23,6 +23,10 @@ public partial class CardEditorPage : ContentPage
         LoadOptions();
         Title = "New Card";
         LogoSelectionPage.LogoSelected += OnLogoSelected;
+         var applyItem = new ToolbarItem("Apply", null, async () => await SaveCard())
+        { Order = ToolbarItemOrder.Primary, Priority = 1 };
+
+        ToolbarItems.Add(applyItem);
     }
 
     public CardEditorPage(MembershipCard? card) : this()
@@ -33,8 +37,8 @@ public partial class CardEditorPage : ContentPage
         Name = card.Name ?? string.Empty;
         CardNumber = card.CardNumber ?? string.Empty;
         Notes = card.Notes ?? string.Empty;
-        SelectedColor = card.BackgroundColor;
-        SelectedBarcodeType = BarcodeTypeOptions.FirstOrDefault(o => o.Format == card.BarcodeType) ?? BarcodeTypeOptions[0];
+        SelectedColor0 = card.BackgroundColor;
+        SelectedBarcodeType = BarcodeTypeOptions.FirstOrDefault(o => o.Format == card.BarcodeType) ?? BarcodeTypeOptions[4];
         SelectedLogoUri = card.LogoUri;
         SelectedLogoUrl = card.LogoUrl;
         SelectedLogoData = card.LogoData;
@@ -43,7 +47,7 @@ public partial class CardEditorPage : ContentPage
         {
             try
             {
-                LogoPreview.Source =  ImageSource.FromStream(() => new MemoryStream(SelectedLogoData));
+                LogoPreview.Source = ImageSource.FromStream(() => new MemoryStream(SelectedLogoData));
             }
             catch
             {
@@ -69,7 +73,7 @@ public partial class CardEditorPage : ContentPage
         OnPropertyChanged(nameof(Name));
         OnPropertyChanged(nameof(CardNumber));
         OnPropertyChanged(nameof(Notes));
-        OnPropertyChanged(nameof(SelectedColor));
+        OnPropertyChanged(nameof(SelectedColor0));
         OnPropertyChanged(nameof(SelectedBarcodeType));
         OnPropertyChanged(nameof(SelectedLogoUri));
         OnPropertyChanged(nameof(SelectedLogoUrl));
@@ -78,18 +82,10 @@ public partial class CardEditorPage : ContentPage
 
         Title = "Edit Card";
 
-        // add delete toolbar item with confirmation
-        var deleteItem = new ToolbarItem("Delete", null, async () =>
-        {
-            if (_editingCard is null) return;
-            var confirm = await DisplayAlertAsync("Delete", "Are you sure you want to delete this card?", "Delete", "Cancel");
-            if (!confirm) return;
-            CardStore.Cards.Remove(_editingCard);
-            // After deleting a card, navigate explicitly to the main list of cards
-            await Shell.Current.GoToAsync("//MainPage");
-        })
-        { Order = ToolbarItemOrder.Primary, Priority = 1 };
-        ToolbarItems.Add(deleteItem);
+        // var deleteItem = new ToolbarItem("Delete", null, async () => await DeleteCard())
+        // { Order = ToolbarItemOrder.Primary, Priority = 1 };
+    // ToolbarItems.Add(deleteItem);
+
     }
 
     private async void OnLogoSelected(string? logo)
@@ -157,7 +153,7 @@ public partial class CardEditorPage : ContentPage
     private byte[]? SelectedLogoData;
 
     private Color? _selectedColor;
-    public Color? SelectedColor { get => _selectedColor; set { _selectedColor = value; OnPropertyChanged(); } }
+    public Color? SelectedColor0 { get => _selectedColor; set { _selectedColor = value; OnPropertyChanged(); } }
     public ObservableCollection<BarcodeTypeOption> BarcodeTypeOptions { get; } = new();
     private BarcodeTypeOption? _selectedBarcodeType;
     public BarcodeTypeOption? SelectedBarcodeType { get => _selectedBarcodeType; set { _selectedBarcodeType = value; OnPropertyChanged(); } }
@@ -167,21 +163,41 @@ public partial class CardEditorPage : ContentPage
 
         foreach (ZXing.Net.Maui.BarcodeFormat format in Enum.GetValues(typeof(ZXing.Net.Maui.BarcodeFormat)))
             BarcodeTypeOptions.Add(new BarcodeTypeOption(format, FormatDisplayName(format)));
-        _selectedBarcodeType = BarcodeTypeOptions[0];
+        _selectedBarcodeType = BarcodeTypeOptions[4];
 
-        OnPropertyChanged(nameof(SelectedColor));
+        OnPropertyChanged(nameof(SelectedColor0));
         OnPropertyChanged(nameof(BarcodeTypeOptions));
         OnPropertyChanged(nameof(SelectedBarcodeType));
     }
 
     private async void OnSaveClicked(object? sender, EventArgs e)
     {
+        await SaveCard();
+    }
+
+ private async void OnDeleteClicked(object? sender, EventArgs e)
+    {
+        await DeleteCard();
+    }
+
+    private async Task DeleteCard()
+    {
+        if (_editingCard is null) return;
+        var confirm = await DisplayAlertAsync("Delete", "Are you sure you want to delete this card?", "Delete", "Cancel");
+        if (!confirm) return;
+        CardStore.Cards.Remove(_editingCard);
+        // After deleting a card, navigate explicitly to the main list of cards
+        await Shell.Current.GoToAsync("//MainPage");
+    }
+
+    private async Task SaveCard()
+    {
         if (_editingCard is not null)
         {
             _editingCard.Name = Name?.Trim() ?? string.Empty;
             _editingCard.CardNumber = CardNumber?.Trim() ?? string.Empty;
             _editingCard.Notes = Notes?.Trim() ?? string.Empty;
-            _editingCard.BackgroundColor = SelectedColor ?? Colors.Gray;
+            _editingCard.BackgroundColor = SelectedColor0 ?? Colors.Gray;
             _editingCard.BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128;
             _editingCard.LogoUri = SelectedLogoUri;
             _editingCard.LogoUrl = SelectedLogoUrl;
@@ -195,7 +211,7 @@ public partial class CardEditorPage : ContentPage
                 Name = Name?.Trim() ?? string.Empty,
                 CardNumber = CardNumber?.Trim() ?? string.Empty,
                 Notes = Notes?.Trim() ?? string.Empty,
-                BackgroundColor = SelectedColor ?? Colors.Gray,
+                BackgroundColor = SelectedColor0 ?? Colors.Gray,
                 BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128,
                 LogoUri = SelectedLogoUri,
                 LogoUrl = SelectedLogoUrl,
@@ -208,7 +224,7 @@ public partial class CardEditorPage : ContentPage
 
     private async void OnSelectLogoClicked(object? sender, EventArgs e)
     {
-        var page = new LogoSelectionPage(_editingCard?.LogoUri,_editingCard?.LogoUrl,_editingCard?.LogoData);
+        var page = new LogoSelectionPage(_editingCard?.LogoUri, _editingCard?.LogoUrl, _editingCard?.LogoData);
         await Navigation.PushAsync(page);
     }
 
@@ -217,7 +233,7 @@ public partial class CardEditorPage : ContentPage
         var scanner = new ScannerPage((String? code, ZXing.Net.Maui.BarcodeFormat barcodeFormat) =>
         {
             CardNumber = code ?? string.Empty;
-            SelectedBarcodeType = BarcodeTypeOptions.FirstOrDefault(o => o.Format == barcodeFormat) ?? BarcodeTypeOptions[0];
+            SelectedBarcodeType = BarcodeTypeOptions.FirstOrDefault(o => o.Format == barcodeFormat) ?? BarcodeTypeOptions[4];
             OnPropertyChanged(nameof(CardNumber));
             OnPropertyChanged(nameof(SelectedBarcodeType));
         });

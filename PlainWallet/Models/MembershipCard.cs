@@ -25,9 +25,7 @@ public class MembershipCard : INotifyPropertyChanged
     public string CardNumber { get => _cardNumber; set { if (_cardNumber == value) return; _cardNumber = value; OnPropertyChanged(nameof(CardNumber)); } }
     public string Name { get => _name; set { if (_name == value) return; _name = value; OnPropertyChanged(nameof(Name)); } }
 
-    // Persisted representation of the background color as hex ARGB
-
-    public Color BackgroundColor { get; set; } = Colors.Gray;
+    public Color BackgroundColor { get; set; } = Colors.LightGray;
 
     [NotMapped]
     public Color ComplementaryColor
