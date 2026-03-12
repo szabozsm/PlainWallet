@@ -70,8 +70,9 @@ public static class CardStore
             }
             else
             {
-                // copy changed values into tracked entity if necessary
-                ctx.Entry(card).CurrentValues.SetValues(card);
+                // Mark the tracked entity as Modified to ensure EF Core detects changes
+                ctx.Entry(tracked).CurrentValues.SetValues(card);
+                // ctx.Entry(tracked).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             }
             ctx.SaveChanges();
         };

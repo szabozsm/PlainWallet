@@ -135,15 +135,15 @@
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0"
-                          ColumnDefinitions="*,Auto"
+                          RowDefinitions="*,Auto"
                           ColumnSpacing="8">
-                        <Entry Grid.Column="0"
+                        <Entry Grid.Row="0"
                                x:Name="UrlEntry"
-                               Text="{Binding Url, Mode=TwoWay}"
+                               Text="{Binding CurrentUrl, Mode=TwoWay}"
                                Placeholder="Enter image URL"
                                HorizontalOptions="Fill"
                                TextChanged="OnUrlTextChanged"/>
-                        <Button Grid.Column="1"
+                        <Button Grid.Row="1"
                                 Text="Use URL"
                                 Clicked="OnUseUrlClicked"/>
                     </Grid>

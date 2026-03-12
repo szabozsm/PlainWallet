@@ -1,31 +1,40 @@
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.IO;
+using System.Threading;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
-using ZXing;
-using System.IO;
 using SkiaSharp;
-using System.Threading;
+using ZXing;
 
 namespace PlainWallet.Models;
 
 public class MembershipCard : INotifyPropertyChanged
 {
+
+    private Color _backgroundColor = Colors.LightGray;
+    private int _barcodeTypeValue;
     private string _cardNumber = string.Empty;
+    private byte[]? _logoData;
+    private string? _logoUri = "";
+    private string? _logoUrl = "";
     private string _name = string.Empty;
     private string _notes = string.Empty;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
-    private Color _backgroundColor = Colors.Gray;
+    public Color BackgroundColor { get => _backgroundColor; set { if (_backgroundColor == value) return; _backgroundColor = value; OnPropertyChanged(nameof(BackgroundColor)); } }
 
-    // Primary key for EF
-    [Key]
-    public int Id { get; set; }
+    [NotMapped]
+    public ZXing.Net.Maui.BarcodeFormat BarcodeType
+    {
+        get => (ZXing.Net.Maui.BarcodeFormat)BarcodeTypeValue;
+        set => BarcodeTypeValue = (int)value;
+    }
+
+    public int BarcodeTypeValue { get => _barcodeTypeValue; set { if (_barcodeTypeValue == value) return; _barcodeTypeValue = value; OnPropertyChanged(nameof(BarcodeTypeValue)); } }
 
     public string CardNumber { get => _cardNumber; set { if (_cardNumber == value) return; _cardNumber = value; OnPropertyChanged(nameof(CardNumber)); } }
-    public string Name { get => _name; set { if (_name == value) return; _name = value; OnPropertyChanged(nameof(Name)); } }
-
-    public Color BackgroundColor { get; set; } = Colors.LightGray;
 
     [NotMapped]
     public Color ComplementaryColor
@@ -37,12 +46,10 @@ public class MembershipCard : INotifyPropertyChanged
         }
     }
 
-    // Persist a URI or path for the logo image if available
-    public string? LogoUri { get; set; } = "";
-    public string? LogoUrl { get; set; } = "";
+    // Primary key for EF
 
-    // Persist binary logo data directly in the database
-    public byte[]? LogoData { get; set; }
+    [Key]
+    public int Id { get; set; }
 
     [NotMapped]
     public ImageSource? Logo
@@ -81,10 +88,17 @@ public class MembershipCard : INotifyPropertyChanged
         }
 
     }
+    // Persist binary logo data directly in the database
+
+    public byte[]? LogoData { get => _logoData; set { if (_logoData == value) return; _logoData = value; OnPropertyChanged(nameof(LogoData)); } }
+
+    // Persist a URI or path for the logo image if available
+    public string? LogoUri { get => _logoUri; set { if (_logoUri == value) return; _logoUri = value; OnPropertyChanged(nameof(LogoUri)); } }
+
+    public string? LogoUrl { get => _logoUrl; set { if (_logoUrl == value) return; _logoUrl = value; OnPropertyChanged(nameof(LogoUrl)); } }
+    public string Name { get => _name; set { if (_name == value) return; _name = value; OnPropertyChanged(nameof(Name)); } }
 
     public string Notes { get => _notes; set { if (_notes == value) return; _notes = value; OnPropertyChanged(nameof(Notes)); } }
-
-    public int BarcodeTypeValue { get; set; }
 
     /// <summary>
     /// Resizes an image to the specified maximum dimensions while maintaining aspect ratio
@@ -114,6 +128,7 @@ public class MembershipCard : INotifyPropertyChanged
             return imageBytes;
         }
     }
+    protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
     private static async Task<byte[]> ResizeImageMauiAsync(Stream imageStream, int maxWidth, int maxHeight)
     {
@@ -165,51 +180,5 @@ public class MembershipCard : INotifyPropertyChanged
             return new byte[0];
         }
     }
-
-    [NotMapped]
-    public ZXing.Net.Maui.BarcodeFormat BarcodeType
-    {
-        get => (ZXing.Net.Maui.BarcodeFormat)BarcodeTypeValue;
-        set => BarcodeTypeValue = (int)value;
-    }
-    public event PropertyChangedEventHandler? PropertyChanged;
-    protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-
-    private static string ToHex(Color c)
-    {
-        byte a = (byte)(c.Alpha * 255);
-        byte r = (byte)(c.Red * 255);
-        byte g = (byte)(c.Green * 255);
-        byte b = (byte)(c.Blue * 255);
-        return $"#{a:X2}{r:X2}{g:X2}{b:X2}";
-    }
-
-    private static Color ParseColor(string? hex)
-    {
-        try
-        {
-            if (string.IsNullOrEmpty(hex)) return Colors.Gray;
-            var h = hex.TrimStart('#');
-            if (h.Length == 8)
-            {
-                byte a = Convert.ToByte(h.Substring(0, 2), 16);
-                byte r = Convert.ToByte(h.Substring(2, 2), 16);
-                byte g = Convert.ToByte(h.Substring(4, 2), 16);
-                byte b = Convert.ToByte(h.Substring(6, 2), 16);
-                return Color.FromRgba(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
-            }
-            if (h.Length == 6)
-            {
-                byte r = Convert.ToByte(h.Substring(0, 2), 16);
-                byte g = Convert.ToByte(h.Substring(2, 2), 16);
-                byte b = Convert.ToByte(h.Substring(4, 2), 16);
-                return Color.FromRgb(r / 255.0, g / 255.0, b / 255.0);
-            }
-        }
-        catch
-        {
-            // fall through to return default
-        }
-        return Colors.Gray;
-    }
+ 
 }
