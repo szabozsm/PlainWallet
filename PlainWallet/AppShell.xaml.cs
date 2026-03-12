@@ -116,11 +116,15 @@ public partial class AppShell : Shell
                         }
                         else
                         {
-                            db.Entry(tracked).CurrentValues.SetValues(card);
+                             db.Entry(tracked).CurrentValues.SetValues(card);
                         }
                     }
                     
                     await db.SaveChangesAsync();
+                    
+                    // Refresh the CardStore to update the UI
+                   CardStore.RefreshFromDatabase();
+                    
                     await DisplayAlert("Import Success", $"Successfully imported {importData.Cards.Count} cards.", "OK");
                 }
             }

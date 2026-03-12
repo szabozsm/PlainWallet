@@ -66,7 +66,6 @@ public class MembershipCard : INotifyPropertyChanged
     // Primary key for EF
 
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
     [JsonIgnore]

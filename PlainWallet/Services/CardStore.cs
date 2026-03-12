@@ -13,10 +13,12 @@ namespace PlainWallet.Services;
 public static class CardStore
 {
     public static ObservableCollection<MembershipCard> Cards { get; } = new();
+    private static IServiceProvider _Services;
 
     public static void Initialize(IServiceProvider services)
     {
-        using var scope = services.CreateScope();
+        _Services = services;
+        using var scope = _Services.CreateScope();
         var ctx = scope.ServiceProvider.GetRequiredService<CardDbContext>();
         ctx.Database.EnsureCreated();
 
@@ -24,36 +26,54 @@ public static class CardStore
         foreach (var c in ctx.Cards.ToList())
         {
             Cards.Add(c);
-            SubscribeCard(c, services);
+            SubscribeCard(c, _Services);
         }
 
-        Cards.CollectionChanged += (s, e) =>
-        {
-            using var innerScope = services.CreateScope();
-            var innerCtx = innerScope.ServiceProvider.GetRequiredService<CardDbContext>();
-            if (e.NewItems != null)
-            {
-                foreach (MembershipCard item in e.NewItems)
-                {
-                    innerCtx.Cards.Add(item);
-                }
-            }
-            if (e.OldItems != null)
-            {
-                foreach (MembershipCard item in e.OldItems)
-                {
-                    var tracked = innerCtx.Cards.Local.FirstOrDefault(x => x.Id == item.Id) ?? innerCtx.Cards.Find(item.Id);
-                    if (tracked != null) innerCtx.Cards.Remove(tracked);
-                }
-            }
-            innerCtx.SaveChanges();
+        Cards.CollectionChanged += OnCardsChanged;
 
-            if (e.NewItems != null)
+    }
+
+    private static void OnCardsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        using var innerScope = _Services.CreateScope();
+        var innerCtx = innerScope.ServiceProvider.GetRequiredService<CardDbContext>();
+        if (e.NewItems != null)
+        {
+            foreach (MembershipCard item in e.NewItems)
             {
-                foreach (MembershipCard item in e.NewItems)
-                    SubscribeCard(item, services);
+                innerCtx.Cards.Add(item);
             }
-        };
+        }
+        if (e.OldItems != null)
+        {
+            foreach (MembershipCard item in e.OldItems)
+            {
+                var tracked = innerCtx.Cards.Local.FirstOrDefault(x => x.Id == item.Id) ?? innerCtx.Cards.Find(item.Id);
+                if (tracked != null) innerCtx.Cards.Remove(tracked);
+            }
+        }
+        innerCtx.SaveChanges();
+
+        if (e.NewItems != null)
+        {
+            foreach (MembershipCard item in e.NewItems)
+                SubscribeCard(item, _Services);
+        }
+    }
+
+    public static void RefreshFromDatabase()
+    {
+        using var scope = _Services.CreateScope();
+        var ctx = scope.ServiceProvider.GetRequiredService<CardDbContext>();
+
+        Cards.CollectionChanged -= OnCardsChanged;
+        Cards.Clear();
+        foreach (var c in ctx.Cards.ToList())
+        {
+            Cards.Add(c);
+            SubscribeCard(c, _Services);
+        }
+        Cards.CollectionChanged += OnCardsChanged;
     }
 
     private static void SubscribeCard(MembershipCard card, IServiceProvider services)
