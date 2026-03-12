@@ -31,6 +31,8 @@ public static class MauiProgram
 		var dbPath = Path.Combine(FileSystem.AppDataDirectory, "cards.db");
 		builder.Services.AddDbContext<CardDbContext>(options => options.UseSqlite($"Data Source={dbPath}"));
 
+		builder.Services.AddTransient<Views.SettingsPage>();
+
 #if DEBUG
 		builder.Logging.AddDebug();
 #endif

@@ -22,4 +22,5 @@ public class CardDbContext : DbContext
         }
 
     public DbSet<MembershipCard> Cards { get; set; } = null!;
+    public DbSet<Settings> Settings { get; set; } = null!;
 }
