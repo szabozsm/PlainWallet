@@ -29,7 +29,11 @@ public static class MauiProgram
 
 		// configure SQLite DB path in app data
 		var dbPath = Path.Combine(FileSystem.AppDataDirectory, "cards.db");
-		builder.Services.AddDbContext<CardDbContext>(options => options.UseSqlite($"Data Source={dbPath}"));
+		builder.Services.AddDbContext<CardDbContext>(options => options.UseSqlite($"Data Source={dbPath}")
+#if DEBUG
+		.EnableSensitiveDataLogging()
+#endif
+		);
 
 		builder.Services.AddTransient<Views.SettingsPage>();
 

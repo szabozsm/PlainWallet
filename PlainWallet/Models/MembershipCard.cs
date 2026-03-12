@@ -2,7 +2,10 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
+using Android.Util;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 using SkiaSharp;
@@ -32,10 +35,12 @@ public class MembershipCard : INotifyPropertyChanged
     private string _notes = string.Empty;
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    [JsonConverter(typeof(MauiColorJsonConverter))]
     public Color BackgroundColor { get => _backgroundColor; set { if (_backgroundColor == value) return; _backgroundColor = value; OnPropertyChanged(nameof(BackgroundColor)); } }
 
     public LogoKind LogoKind { get => _logoKind; set { if (_logoKind == value) return; _logoKind = value; OnPropertyChanged(nameof(LogoKind)); } }
 
+    [JsonIgnore]
     [NotMapped]
     public ZXing.Net.Maui.BarcodeFormat BarcodeType
     {
@@ -47,6 +52,7 @@ public class MembershipCard : INotifyPropertyChanged
 
     public string CardNumber { get => _cardNumber; set { if (_cardNumber == value) return; _cardNumber = value; OnPropertyChanged(nameof(CardNumber)); } }
 
+    [JsonIgnore]
     [NotMapped]
     public Color ComplementaryColor
     {
@@ -60,8 +66,10 @@ public class MembershipCard : INotifyPropertyChanged
     // Primary key for EF
 
     [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
+    [JsonIgnore]
     [NotMapped]
     public ImageSource? Logo
     {
@@ -264,4 +272,26 @@ public class MembershipCard : INotifyPropertyChanged
         }
     }
 
+}
+public class MauiColorJsonConverter : JsonConverter<Color>
+{
+    public override Color Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string hexValue = reader.GetString();
+        if (string.IsNullOrEmpty(hexValue))
+        {
+            return Colors.White;
+        }
+        return Color.FromArgb(hexValue);
+    }
+
+    public override void Write(Utf8JsonWriter writer, Color value, JsonSerializerOptions options)
+    {
+        if (value == null)
+        {
+            writer.WriteNullValue();
+            return;
+        }
+        writer.WriteStringValue(value.ToArgbHex(includeAlpha: true));
+    }
 }

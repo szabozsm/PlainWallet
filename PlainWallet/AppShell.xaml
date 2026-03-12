@@ -14,27 +14,15 @@
         Route="MainPage"/>
 
     <MenuItem Text="Settings"
-            IconImageSource="settings.svg"
-            Clicked="OnSettingsClicked"/>
+              IconImageSource="settings.svg"
+              Clicked="OnSettingsClicked"/>
 
+    <MenuItem Text="Export"
+              IconImageSource="export.svg"
+              Clicked="OnExportClicked"/>
 
-
-    <FlyoutItem Title="Export"
-            Icon="export.svg">
-
-        <ShellContent
-            Title="Export"
-            ContentTemplate="{DataTemplate local:MainPage}"
-            Route="ExportPage"/>
-    </FlyoutItem>
-
-    <FlyoutItem Title="Import"
-            Icon="import_data.svg">
-
-        <ShellContent
-            Title="Import"
-            ContentTemplate="{DataTemplate local:MainPage}"
-            Route="ImportPage"/>
-    </FlyoutItem>
+    <MenuItem Text="Import"
+              IconImageSource="import_data.svg"
+              Clicked="OnImportClicked"/>
 
 </Shell>
