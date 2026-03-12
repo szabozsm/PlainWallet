@@ -153,11 +153,18 @@
                             Margin="0,6"
                             Stroke="Transparent"
                             BackgroundColor="Transparent">
-                        <Image x:Name="UrlPreview"
-                               Source="{Binding UrlPreviewSource}"
-                               Aspect="AspectFit"
-                               HeightRequest="140"
-                               HorizontalOptions="Fill"/>
+                        <Grid>
+                            <Image x:Name="UrlPreview"
+                                   Source="{Binding UrlPreviewSource}"
+                                   Aspect="AspectFit"
+                                   HeightRequest="140"
+                                   HorizontalOptions="Fill"/>
+                            <ActivityIndicator IsRunning="{Binding IsUrlLoading}"
+                                               IsVisible="{Binding IsUrlLoading}"
+                                               VerticalOptions="Center"
+                                               HorizontalOptions="Center"
+                                               Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                        </Grid>
                     </Border>
 
                 </Grid>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
+using Microsoft.Maui.ApplicationModel;
 using PlainWallet.Models;
 using PlainWallet.Services;
 namespace PlainWallet.Views;
@@ -108,28 +109,45 @@ public partial class LogoSelectionPage : ContentPage
         var filtered = _allLogos.Where(s => s.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
         myTabs.Logos = filtered;
     }
-    private void OnUrlTextChanged(object? sender, TextChangedEventArgs e)
+    private async void OnUrlTextChanged(object? sender, TextChangedEventArgs e)
     {
         var text = e.NewTextValue?.Trim();
         if (string.IsNullOrEmpty(text))
         {
             myTabs.UrlPreviewSource = null;
+            myTabs.IsUrlLoading = false;
             return;
         }
         if (Uri.TryCreate(text, UriKind.Absolute, out var uri) && (uri.Scheme == "http" || uri.Scheme == "https"))
         {
             try
             {
-                myTabs.UrlPreviewSource = ImageSource.FromUri(uri);
+                // Show loading animation
+                myTabs.IsUrlLoading = true;
+                myTabs.UrlPreviewSource = null;
+
+                // Load the image asynchronously to show loading state
+                await Task.Run(() =>
+                {
+                    // This forces the image to load
+                    var imageSource = ImageSource.FromUri(uri);
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        myTabs.UrlPreviewSource = imageSource;
+                        myTabs.IsUrlLoading = false;
+                    });
+                });
             }
             catch
             {
                 myTabs.UrlPreviewSource = null;
+                myTabs.IsUrlLoading = false;
             }
         }
         else
         {
             myTabs.UrlPreviewSource = null;
+            myTabs.IsUrlLoading = false;
         }
     }
     private async void OnUseUrlClicked(object? sender, EventArgs e)
