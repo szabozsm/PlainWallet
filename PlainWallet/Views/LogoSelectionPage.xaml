@@ -9,7 +9,7 @@
     <material:TabView x:Name="tabView"
                       TabPlacement="Bottom">
 
-        <material:TabItem Title="">
+        <material:TabItem Title="" x:Name="BuiltinTab">
             <material:TabItem.HeaderTemplate>
                 <DataTemplate>
                     <Button Text="{Binding Title}"
@@ -93,7 +93,7 @@
             </material:TabItem.Content>
         </material:TabItem>
 
-        <material:TabItem>
+        <material:TabItem x:Name="WebTab">
             <material:TabItem.HeaderTemplate>
                 <DataTemplate>
                     <Button Text="{Binding Title}"
@@ -172,7 +172,7 @@
             </material:TabItem.Content>
         </material:TabItem>
 
-        <material:TabItem>
+        <material:TabItem x:Name="FileTab" >
             <material:TabItem.HeaderTemplate>
                 <DataTemplate>
                     <Button Text="{Binding Title}"

@@ -6,9 +6,17 @@ using System.Threading;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 using SkiaSharp;
+using Svg.Skia;
 using ZXing;
 
 namespace PlainWallet.Models;
+
+public enum LogoKind
+{
+    Builtin,
+    Web,
+    File
+}
 
 public class MembershipCard : INotifyPropertyChanged
 {
@@ -17,6 +25,7 @@ public class MembershipCard : INotifyPropertyChanged
     private int _barcodeTypeValue;
     private string _cardNumber = string.Empty;
     private byte[]? _logoData;
+    private LogoKind _logoKind;
     private string? _logoUri = "";
     private string? _logoUrl = "";
     private string _name = string.Empty;
@@ -24,6 +33,8 @@ public class MembershipCard : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public Color BackgroundColor { get => _backgroundColor; set { if (_backgroundColor == value) return; _backgroundColor = value; OnPropertyChanged(nameof(BackgroundColor)); } }
+
+    public LogoKind LogoKind { get => _logoKind; set { if (_logoKind == value) return; _logoKind = value; OnPropertyChanged(nameof(LogoKind)); } }
 
     [NotMapped]
     public ZXing.Net.Maui.BarcodeFormat BarcodeType
@@ -56,35 +67,62 @@ public class MembershipCard : INotifyPropertyChanged
     {
         get
         {
-            // First try to load from binary data if available
-            if (LogoData != null && LogoData.Length > 0)
+            switch (LogoKind)
             {
-                try
-                {
-                    return ImageSource.FromStream(() => new MemoryStream(LogoData));
-                }
-                catch
-                {
-                    // Fall back to URI if binary data fails
-                }
-            }
+                case LogoKind.Builtin:
+                    if (!string.IsNullOrEmpty(LogoUri))
+                        return ImageSource.FromFile(LogoUri);
+                    break;
+                case LogoKind.Web:
+                    {
+                        if (LogoData != null && LogoData.Length > 0)
+                        {
+                            try
+                            {
+                                return ImageSource.FromStream(() => new MemoryStream(LogoData));
+                            }
+                            catch
+                            {
+                            }
+                        }
+                        try
+                        {
+                            if (LogoUrl.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+                            {
+                                byte[] SelectedLogoData = MembershipCard.DownloadSvgAsPngAsync(LogoUrl, 256).GetAwaiter().GetResult();
+                                return ImageSource.FromStream(() => new MemoryStream(SelectedLogoData));
+                            }
+                            else
 
-            try
-            {
-                // If the stored value looks like a file name, return a file image source
-                if (!string.IsNullOrEmpty(LogoUri))
-                    return ImageSource.FromFile(LogoUri);
-                else
-                    if (!string.IsNullOrEmpty(LogoUrl))
-                        return ImageSource.FromUri(new Uri(LogoUrl));
-                    else
+                                if (!string.IsNullOrEmpty(LogoUrl))
+                                    return ImageSource.FromUri(new Uri(LogoUrl));
+                        }
+                        catch
+                        {
+                        }
+
                         return null;
+                    }
 
+                    break;
+                case LogoKind.File:
+                    {
+                        if (LogoData != null && LogoData.Length > 0)
+                        {
+                            try
+                            {
+                                return ImageSource.FromStream(() => new MemoryStream(LogoData));
+                            }
+                            catch
+                            {
+                                return null;
+                            }
+                        }
+                        return null;
+                    }
+                    break;
             }
-            catch
-            {
-                return null;
-            }
+            return null;
         }
 
     }
@@ -129,6 +167,51 @@ public class MembershipCard : INotifyPropertyChanged
         }
     }
     protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+    public static async Task<byte[]> DownloadSvgAsPngAsync(string url, int maxSize = 256)
+    {
+
+        // 1. Download the SVG content
+        using var httpClient = new HttpClient();
+        var svgContent = await httpClient.GetStringAsync(url);
+
+        // 2. Load SVG into Svg.Skia
+        using var svg = new SKSvg();
+        using var svgStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(svgContent));
+        svg.Load(svgStream);
+
+        if (svg.Picture is null)
+            throw new InvalidOperationException("Failed to parse SVG content.");
+
+        // 3. Determine original SVG bounds
+        var svgBounds = svg.Picture.CullRect;
+        float svgWidth = svgBounds.Width;
+        float svgHeight = svgBounds.Height;
+
+        if (svgWidth <= 0 || svgHeight <= 0)
+            throw new InvalidOperationException("SVG has invalid dimensions.");
+
+        // 4. Calculate scale to fit within maxSize x maxSize, preserving aspect ratio
+        float scale = Math.Min(maxSize / svgWidth, maxSize / svgHeight);
+
+        int targetWidth = (int)Math.Round(svgWidth * scale);
+        int targetHeight = (int)Math.Round(svgHeight * scale);
+
+        // 5. Render SVG to a SkiaSharp bitmap
+        using var bitmap = new SKBitmap(targetWidth, targetHeight);
+        using var canvas = new SKCanvas(bitmap);
+
+        canvas.Clear(SKColors.Transparent);
+        canvas.Scale(scale);
+        canvas.DrawPicture(svg.Picture);
+        canvas.Flush();
+
+        // 6. Encode bitmap to PNG and return as byte[]
+        using var image = SKImage.FromBitmap(bitmap);
+        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+
+        return data.ToArray();
+    }
 
     private static async Task<byte[]> ResizeImageMauiAsync(Stream imageStream, int maxWidth, int maxHeight)
     {
@@ -180,5 +263,5 @@ public class MembershipCard : INotifyPropertyChanged
             return new byte[0];
         }
     }
- 
+
 }
