@@ -56,7 +56,6 @@
                                     Stroke="Transparent"
                                     BackgroundColor="Transparent">
                                    <Image x:Name="LogoPreview"
-                                          Source="dotnet_bot.png"
                                           Aspect="AspectFit"/>
                             </Border>
 

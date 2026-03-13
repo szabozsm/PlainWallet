@@ -127,6 +127,7 @@ public partial class CardEditorPage : ContentPage
                 break;
         }
 
+        OnPropertyChanged(nameof(LogoKind));
         OnPropertyChanged(nameof(SelectedLogoUri));
         OnPropertyChanged(nameof(SelectedLogoUrl));
         OnPropertyChanged(nameof(SelectedLogoData));

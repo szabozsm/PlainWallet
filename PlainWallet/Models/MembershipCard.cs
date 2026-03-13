@@ -16,6 +16,7 @@ namespace PlainWallet.Models;
 
 public enum LogoKind
 {
+    None,
     Builtin,
     Web,
     File
@@ -29,7 +30,7 @@ public class MembershipCard : INotifyPropertyChanged
     private int _barcodeTypeValue;
     private string _cardNumber = string.Empty;
     private byte[]? _logoData;
-    private LogoKind _logoKind;
+    private LogoKind _logoKind = LogoKind.None;
     private string? _logoUri = "";
     private string? _logoUrl = "";
     private string _name = string.Empty;
@@ -78,6 +79,10 @@ public class MembershipCard : INotifyPropertyChanged
         {
             switch (LogoKind)
             {
+                case LogoKind.None:
+                    return this.CreateAvatarImage(this.CalculateInitials(Name), ComplementaryColor);
+                 //  return ImageSource.FromFile("barcode_scan.svg");
+                    break;
                 case LogoKind.Builtin:
                     if (!string.IsNullOrEmpty(LogoUri))
                         return ImageSource.FromFile(LogoUri);
@@ -282,6 +287,78 @@ public class MembershipCard : INotifyPropertyChanged
             return new byte[0];
         }
     }
+    private String CalculateInitials(string _name)
+    {
+        if (string.IsNullOrEmpty(_name)) return "";
+        if (string.IsNullOrWhiteSpace(_name)) return "";
+        if (_name.Length == 1) return _name.ToUpper();
+
+        var l = _name.ToUpper().Split(' ');
+        if (l.Length == 0) return "";
+        if (l.Length == 1)
+        {
+            return l[0].Substring(0, 2);
+        }
+        else
+        {
+            return l[0].Substring(0, 1) + l[1].Substring(0, 1);
+        }
+    }
+
+    public ImageSource CreateAvatarImage(string text, Color color)
+    {
+        try
+        {
+            int size = 64; // Size of the avatar image
+            int thickness=3;
+            using var bitmap = new SKBitmap(size, size);
+            using var canvas = new SKCanvas(bitmap);
+            
+            // Clear with transparent background
+            canvas.Clear(SKColors.Transparent);
+            
+            // Draw circle (60px diameter = 30px radius, centered at 32,32)
+            using var circlePaint = new SKPaint
+            {
+                Style = SKPaintStyle.Stroke,
+                StrokeWidth = thickness,
+                Color = new SKColor((byte)(color.Red * 255), (byte)(color.Green * 255), (byte)(color.Blue * 255), (byte)(color.Alpha * 255)),
+                IsAntialias = true
+            };
+            
+            //canvas.DrawCircle(size/2, size/2, size/2-thickness/2-1, circlePaint);
+            canvas.DrawRoundRect(new SKRect(thickness, thickness, size-thickness, size-thickness), size/4, size/4, circlePaint);
+            
+            // Draw text (48px size, centered)
+            using var textPaint = new SKPaint
+            {
+                Color = new SKColor((byte)(color.Red * 255), (byte)(color.Green * 255), (byte)(color.Blue * 255), (byte)(color.Alpha * 255)),
+                TextSize = (int)(0.50 * size),
+                IsAntialias = true,
+                Typeface = SKTypeface.Default
+            };
+            
+            var textBounds = new SKRect();
+            textPaint.MeasureText(text, ref textBounds);
+            
+            // Center the text
+            var x = (size/2) - textBounds.Width / 2 - textBounds.Left;
+            var y = (size/2) - textBounds.Height / 2 - textBounds.Top;
+            
+            canvas.DrawText(text, x, y, textPaint);
+            
+            // Convert to ImageSource
+            using var image = SKImage.FromBitmap(bitmap);
+            using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+            
+            var imageData = data.ToArray();
+            return ImageSource.FromStream(() => new MemoryStream(imageData));
+        }
+        catch (Exception ex)
+        {
+            return ImageSource.FromFile("barcode_scan.svg");
+        }
+    }
 
 }
 public class MauiColorJsonConverter : JsonConverter<Color>
@@ -305,4 +382,5 @@ public class MauiColorJsonConverter : JsonConverter<Color>
         }
         writer.WriteStringValue(value.ToArgbHex(includeAlpha: true));
     }
+
 }

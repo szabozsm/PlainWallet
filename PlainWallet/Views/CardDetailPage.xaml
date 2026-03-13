@@ -15,7 +15,7 @@
         <VerticalStackLayout Padding="16"
                 Spacing="16">
             <Border
-                Padding="20"
+                Padding="12"
                 BackgroundColor="{Binding Card.BackgroundColor}">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="18"/>
@@ -24,8 +24,8 @@
                         ColumnSpacing="16">
                     <Image
                         Source="{Binding Card.Logo}"
-                        HeightRequest="64"
-                        WidthRequest="128"
+                        HeightRequest="60"
+                        WidthRequest="80"
                         Aspect="AspectFit"/>
 
                     <VerticalStackLayout

@@ -82,7 +82,6 @@ public partial class MainPage : ContentPage
             {
                 Name = names[index],
                 CardNumber = $"{_random.Next(1000, 9999)} {_random.Next(1000, 9999)} {_random.Next(1000, 9999)}",
-                LogoUri = "dotnet_bot.png",
                 BackgroundColor = colors[_random.Next(colors.Length)],
                 Notes = notes[index],
                 BarcodeType = barcodeFormats[_random.Next(barcodeFormats.Length)]
