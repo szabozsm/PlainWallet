@@ -26,7 +26,7 @@ public partial class AppShell : Shell
     {
         var settingsPage = _services.GetRequiredService<SettingsPage>();
         await Navigation.PushAsync(settingsPage);
-                this.FlyoutIsPresented = false;
+        this.FlyoutIsPresented = false;
     }
 
     private async void OnExportClicked(object? sender, EventArgs e)
@@ -38,6 +38,8 @@ public partial class AppShell : Shell
             using var db = innerScope.ServiceProvider.GetRequiredService<CardDbContext>();
             var cards = db.Cards.ToList();
 
+            cards.ForEach(c => c.JsonLastChanged=c.LastChanged) ; 
+            
             var exportData = new
             {
                 Version = "1.0",
@@ -116,15 +118,16 @@ public partial class AppShell : Shell
                         }
                         else
                         {
-                             db.Entry(tracked).CurrentValues.SetValues(card);
+                            if (card.JsonLastChanged > tracked.LastChanged)
+                                db.Entry(tracked).CurrentValues.SetValues(card);
                         }
                     }
-                    
+
                     await db.SaveChangesAsync();
-                    
+
                     // Refresh the CardStore to update the UI
-                   CardStore.RefreshFromDatabase();
-                    
+                    CardStore.RefreshFromDatabase();
+
                     await DisplayAlert("Import Success", $"Successfully imported {importData.Cards.Count} cards.", "OK");
                 }
             }
@@ -133,7 +136,7 @@ public partial class AppShell : Shell
         {
             await DisplayAlert("Import Error", $"Failed to import cards: {ex.Message}", "OK");
         }
-         finally
+        finally
         {
             this.FlyoutIsPresented = false;
         }

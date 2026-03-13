@@ -33,6 +33,7 @@ public class MembershipCard : INotifyPropertyChanged
     private string? _logoUrl = "";
     private string _name = string.Empty;
     private string _notes = string.Empty;
+    private DateTime _lastChanged = DateTime.Now;
     public event PropertyChangedEventHandler? PropertyChanged;
 
     [JsonConverter(typeof(MauiColorJsonConverter))]
@@ -145,6 +146,12 @@ public class MembershipCard : INotifyPropertyChanged
 
     public string Notes { get => _notes; set { if (_notes == value) return; _notes = value; OnPropertyChanged(nameof(Notes)); } }
 
+[NotMapped]
+    public DateTime JsonLastChanged { get; set; }
+
+[JsonIgnore]
+    public DateTime LastChanged { get => _lastChanged; private set => _lastChanged = value; }
+
     /// <summary>
     /// Resizes an image to the specified maximum dimensions while maintaining aspect ratio
     /// </summary>
@@ -173,7 +180,11 @@ public class MembershipCard : INotifyPropertyChanged
             return imageBytes;
         }
     }
-    protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    protected void OnPropertyChanged(string name) 
+    { 
+        _lastChanged = DateTime.Now;
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name)); 
+    }
 
     public static async Task<byte[]> DownloadSvgAsPngAsync(string url, int maxSize = 256)
     {
