@@ -25,4 +25,24 @@
               IconImageSource="import_data.svg"
               Clicked="OnImportClicked"/>
 
+    <!-- <MenuItem Text="Buy Me a Coffee"
+              Clicked="OnBuyMeCoffeeTapped">
+        <MenuItem.IconImageSource>
+            <FontImageSource
+                Glyph="&#9749;"
+                FontFamily="FontAwesome"
+                Size="72"
+                Color="Black"/>
+        </MenuItem.IconImageSource>
+    </MenuItem> -->
+
+    <Shell.FlyoutFooter>
+        <Image Source="buyme.png"
+               HorizontalOptions="Center">
+            <Image.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnBuyMeCoffeeTapped"/>
+            </Image.GestureRecognizers>
+        </Image>
+    </Shell.FlyoutFooter>
+
 </Shell>

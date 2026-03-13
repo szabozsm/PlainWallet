@@ -29,6 +29,18 @@ public partial class AppShell : Shell
         this.FlyoutIsPresented = false;
     }
 
+    private async void OnBuyMeCoffeeTapped(object? sender, EventArgs e)
+    {
+        try
+        {
+            await Launcher.Default.OpenAsync(new Uri("https://buymeacoffee.com/szabozsm"));
+        }
+        catch
+        {
+            await DisplayAlert("Browser Error", "Could not open the coffee page. Please visit: https://buymeacoffee.com/szabozsm", "OK");
+        }
+    }
+
     private async void OnExportClicked(object? sender, EventArgs e)
     {
         try
