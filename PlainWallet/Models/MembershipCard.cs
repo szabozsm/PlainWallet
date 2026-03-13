@@ -25,6 +25,7 @@ public class MembershipCard : INotifyPropertyChanged
 {
 
     private Color _backgroundColor = Colors.LightGray;
+    private Guid _id = Guid.NewGuid();
     private int _barcodeTypeValue;
     private string _cardNumber = string.Empty;
     private byte[]? _logoData;
@@ -67,7 +68,7 @@ public class MembershipCard : INotifyPropertyChanged
     // Primary key for EF
 
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get => _id; set { if (_id == value) return; _id = value; OnPropertyChanged(nameof(Id)); } }
 
     [JsonIgnore]
     [NotMapped]
@@ -146,10 +147,10 @@ public class MembershipCard : INotifyPropertyChanged
 
     public string Notes { get => _notes; set { if (_notes == value) return; _notes = value; OnPropertyChanged(nameof(Notes)); } }
 
-[NotMapped]
+    [NotMapped]
     public DateTime JsonLastChanged { get; set; }
 
-[JsonIgnore]
+    [JsonIgnore]
     public DateTime LastChanged { get => _lastChanged; private set => _lastChanged = value; }
 
     /// <summary>
@@ -180,10 +181,10 @@ public class MembershipCard : INotifyPropertyChanged
             return imageBytes;
         }
     }
-    protected void OnPropertyChanged(string name) 
-    { 
+    protected void OnPropertyChanged(string name)
+    {
         _lastChanged = DateTime.Now;
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name)); 
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
     public static async Task<byte[]> DownloadSvgAsPngAsync(string url, int maxSize = 256)
