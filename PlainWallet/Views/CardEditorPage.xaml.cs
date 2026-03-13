@@ -39,7 +39,7 @@ public partial class CardEditorPage : ContentPage
         SelectedLogoUri = card.LogoUri;
         SelectedLogoUrl = card.LogoUrl;
         SelectedLogoData = card.LogoData;
-
+        LogoKind = card.LogoKind;
         LogoPreview.Source = card.Logo;
 
         OnPropertyChanged(nameof(Name));

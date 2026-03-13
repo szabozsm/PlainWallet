@@ -10,13 +10,20 @@ public static class LogosService
     // Update this list if you add/remove files in Resources/Logos
     private static readonly string[] _builtIn = new[]
     {
-        "costco_wholesale.svg",
-    "cvs.svg",
-    "ikea.svg",
-    "moma.svg",
-    "target.svg",
-    "walmart.svg",
-    "whole_foods.svg"
+ "ace_hardware.svg",
+"barnes_noble.svg",
+"big_lots.svg",
+"costco_wholesale.svg",
+"cvs.svg",
+"decathlon.svg",
+"dicks_sporting_goods.svg",
+"dm.svg",
+"giant_eagle.svg",
+"ikea.svg",
+"moma.svg",
+"target.svg",
+"walmart.svg",
+"whole_foods.svg"
     };
 
     public static IEnumerable<string> GetBuiltInLogoFileNames() => _builtIn;
