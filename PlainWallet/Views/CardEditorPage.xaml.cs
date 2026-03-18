@@ -73,6 +73,9 @@ public partial class CardEditorPage : ContentPage
                 SelectedLogoUri = logo;
                 SelectedLogoUrl = null;
                 LogoPreview.Source = ImageSource.FromFile(logo);
+                var color = LogosService.Instance.GetLogoColor(logo);
+                if (color != Color.Default)
+                    SelectedColor0 = color;
                 break;
             case LogoKind.Web:
                 {

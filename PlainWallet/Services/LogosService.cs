@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.ApplicationModel;
+using System.Drawing;
 
 namespace PlainWallet.Services;
 
@@ -13,24 +14,24 @@ public static class LogosService
     // Update this list if you add/remove files in Resources/Logos
     private static readonly LogoInfo[] _builtIn =
     [
-new LogoInfo("ace_hardware.svg","#FF00FF00"), 
-new LogoInfo("barnes_noble.svg",""), 
-new LogoInfo("big_lots.svg",""), 
+new LogoInfo("ace_hardware.svg",""), 
+new LogoInfo("barnes_noble.svg","#cc0000ff"), 
+new LogoInfo("big_lots.svg","#1482c2ff"), 
 new LogoInfo("costco_wholesale.svg",""), 
 new LogoInfo("cvs.svg",""), 
 new LogoInfo("decathlon.svg",""), 
-new LogoInfo("dicks_sporting_goods.svg",""), 
+new LogoInfo("dicks_sporting_goods.svg","#006554ff"), 
 new LogoInfo("dm.svg",""), 
 new LogoInfo("giant_eagle.svg",""), 
 new LogoInfo("heinens.svg",""), 
-new LogoInfo("ikea.svg",""), 
-new LogoInfo("lakeshore_learning.svg",""), 
-new LogoInfo("lego.svg",""), 
-new LogoInfo("lidl.svg",""), 
+new LogoInfo("ikea.svg","#2360a5ff"), 
+new LogoInfo("lakeshore_learning.svg","#ed1c24ff"), 
+new LogoInfo("lego.svg","#ff0000ff"), 
+new LogoInfo("lidl.svg","#1e71b8ff"), 
 new LogoInfo("lowe_s.svg",""), 
 new LogoInfo("moma.svg",""), 
 new LogoInfo("ollie_s.svg",""), 
-new LogoInfo("panera_bread.svg",""), 
+new LogoInfo("panera_bread.svg","#606b21ff"), 
 new LogoInfo("pet_supplies_plus.svg",""), 
 new LogoInfo("petsmart.svg",""), 
 new LogoInfo("target.svg",""), 
@@ -44,6 +45,14 @@ new LogoInfo("whole_foods.svg",""),
     public static IEnumerable<string> GetBuiltInLogoFileNames()
     {
         return _builtIn.Select(x => x.FileName);
+    }
+
+    public Color GetLogoColor(string filename)
+    {
+        var logoInfo = _builtIn.FirstOrDefault(x => x.FileName == filename);
+        if (logoInfo == null) return Color.Default;
+        if (string.IsNullOrEmpty( logoInfo.Color)) return Color.Default;
+        return Color.Parse(logoInfo.Color);
     }
 
     public static ImageSource GetImageSourceForBuiltIn(string fileName)
