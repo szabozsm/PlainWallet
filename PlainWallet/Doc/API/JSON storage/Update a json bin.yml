@@ -1,0 +1,224 @@
+info:
+  name: Update a json bin
+  type: http
+  seq: 2
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/bin/:id"
+  params:
+    - name: id
+      value: 822f3c9057b3
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "Version": "1.0",
+        "ExportDate": "2026-03-18T22:43:55",
+        "Cards": [
+          {
+            "BackgroundColor": "#FF5F9EA0",
+            "LogoKind": 1,
+            "BarcodeTypeValue": 16,
+            "CardNumber": "11111111111111111111",
+            "Id": "6a585be2-6455-41c5-a534-cb8856a5d8f7",
+            "LogoData": null,
+            "LogoUri": "moma.svg",
+            "LogoUrl": null,
+            "Name": "AAAAAA",
+            "Notes": "Free popcorn every 5 visits.",
+            "JsonLastChanged": "2026-03-13T00:08:59.4158808"
+          },
+          {
+            "BackgroundColor": "#FFD3D3D3",
+            "LogoKind": 1,
+            "BarcodeTypeValue": 8,
+            "CardNumber": "7305 8731 2059",
+            "Id": "29ed345b-2c79-41e5-9875-e31352fa2cba",
+            "LogoData": null,
+            "LogoUri": "whole_foods.svg",
+            "LogoUrl": null,
+            "Name": "Book Lovers",
+            "Notes": "10% off all paperbacks.",
+            "JsonLastChanged": "2026-03-12T23:43:06.1482769"
+          },
+          {
+            "BackgroundColor": "#FFFFFFFF",
+            "LogoKind": 1,
+            "BarcodeTypeValue": 8,
+            "CardNumber": "7315 4908 4610",
+            "Id": "144f5ddb-db31-4117-ad6b-b20b788c146c",
+            "LogoData": null,
+            "LogoUri": "walgreens.svg",
+            "LogoUrl": null,
+            "Name": "abhg cggh ghb",
+            "Notes": "Every 7th drink is free.",
+            "JsonLastChanged": "2026-03-18T21:40:39.9714443"
+          },
+          {
+            "BackgroundColor": "#FFFF4500",
+            "LogoKind": 2,
+            "BarcodeTypeValue": 8,
+            "CardNumber": "6275 9856 3817",
+            "Id": "e32772ce-cccf-4d2b-8c3c-b99f43cc5f63",
+            "LogoData": "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",
+            "LogoUri": null,
+            "LogoUrl": "https://www.citypng.com/public/uploads/preview/puma-black-logo-png-701751694774568gw2on2y0un.png",
+            "Name": "Coffee Points",
+            "Notes": "Every 7th drink is free.",
+            "JsonLastChanged": "2026-03-13T00:09:14.7242169"
+          },
+          {
+            "BackgroundColor": "#FF5F9EA0",
+            "LogoKind": 1,
+            "BarcodeTypeValue": 4,
+            "CardNumber": "1984 2317 5090",
+            "Id": "28f957e6-3c14-43c7-9f46-15dbac1df228",
+            "LogoData": null,
+            "LogoUri": "dicks_sporting_goods.svg",
+            "LogoUrl": null,
+            "Name": "Dick's",
+            "Notes": "Show at checkout to collect points.",
+            "JsonLastChanged": "2026-03-13T00:26:33.6368748"
+          },
+          {
+            "BackgroundColor": "#FFFFFFFF",
+            "LogoKind": 1,
+            "BarcodeTypeValue": 128,
+            "CardNumber": "3872 7569 3433",
+            "Id": "b7e98d14-ec86-464b-aa4b-b07452e8d6ac",
+            "LogoData": null,
+            "LogoUri": "dm.svg",
+            "LogoUrl": null,
+            "Name": "DM",
+            "Notes": "Show at checkout to collect points.",
+            "JsonLastChanged": "2026-03-13T00:27:14.0424904"
+          },
+          {
+            "BackgroundColor": "#FFFFFFFF",
+            "LogoKind": 1,
+            "BarcodeTypeValue": 16,
+            "CardNumber": "6336 3319 8841",
+            "Id": "6e9ca1a2-bfd8-48c3-a9f8-1c7daae66ee9",
+            "LogoData": null,
+            "LogoUri": "cvs.svg",
+            "LogoUrl": null,
+            "Name": "Book Lovers",
+            "Notes": "10% off all paperbacks.",
+            "JsonLastChanged": "2026-03-12T23:43:41.755477"
+          },
+          {
+            "BackgroundColor": "#FFF0E68C",
+            "LogoKind": 1,
+            "BarcodeTypeValue": 8,
+            "CardNumber": "1449 4640 1945",
+            "Id": "a8c4a718-6e45-4931-a1ac-ec0395ff1609",
+            "LogoData": null,
+            "LogoUri": "walmart.svg",
+            "LogoUrl": null,
+            "Name": "City Gym",
+            "Notes": "Access pass for all locations.",
+            "JsonLastChanged": "2026-03-12T23:50:29.4460182"
+          }
+        ]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: Bin data updated
+    request:
+      url: "{{baseUrl}}/bin/:id"
+      method: PUT
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "status": 0,
+            "data": {}
+          }
+  - name: 401 Response
+    description: Wrong security key
+    request:
+      url: "{{baseUrl}}/bin/:id"
+      method: PUT
+    response:
+      status: 401
+      statusText: Unauthorized
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "status": 0,
+            "message": ""
+          }
+  - name: 404 Response
+    description: Bin not found
+    request:
+      url: "{{baseUrl}}/bin/:id"
+      method: PUT
+    response:
+      status: 404
+      statusText: Not Found
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "status": 0,
+            "message": ""
+          }
+  - name: 413 Response
+    description: JSON data too large
+    request:
+      url: "{{baseUrl}}/bin/:id"
+      method: PUT
+    response:
+      status: 413
+      statusText: Payload Too Large
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "status": 0,
+            "message": ""
+          }
+  - name: 422 Response
+    description: Id must be specified
+    request:
+      url: "{{baseUrl}}/bin/:id"
+      method: PUT
+    response:
+      status: 422
+      statusText: Unprocessable Entity
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "status": 0,
+            "message": ""
+          }

@@ -1,0 +1,34 @@
+opencollection: 1.0.0
+
+info:
+  name: JSON storage
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ""
+      port: ""
+      auth:
+        username: ""
+        password: ""
+      bypassProxy: ""
+
+request:
+  headers:
+    - name: Security-key
+      value: abcd123
+  auth:
+    type: apikey
+    key: Api-key
+    value: 1897703b-2330-11f1-a204-0242ac110003
+    placement: header
+  variables:
+    - name: baseUrl
+      value: https://json.extendsclass.com
+bundled: false
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git

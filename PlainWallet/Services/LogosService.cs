@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.ApplicationModel;
-using System.Drawing;
 
 namespace PlainWallet.Services;
 
@@ -15,11 +14,11 @@ public static class LogosService
     private static readonly LogoInfo[] _builtIn =
     [
 new LogoInfo("ace_hardware.svg",""), 
-new LogoInfo("barnes_noble.svg","#cc0000ff"), 
-new LogoInfo("big_lots.svg","#1482c2ff"), 
+new LogoInfo("barnes_noble.svg",""), 
+new LogoInfo("big_lots.svg",""), 
 new LogoInfo("costco_wholesale.svg",""), 
-new LogoInfo("cvs.svg",""), 
-new LogoInfo("decathlon.svg",""), 
+new LogoInfo("cvs.svg","#cc0000ff"), 
+new LogoInfo("decathlon.svg","#1482c2ff"), 
 new LogoInfo("dicks_sporting_goods.svg","#006554ff"), 
 new LogoInfo("dm.svg",""), 
 new LogoInfo("giant_eagle.svg",""), 
@@ -47,12 +46,12 @@ new LogoInfo("whole_foods.svg",""),
         return _builtIn.Select(x => x.FileName);
     }
 
-    public Color GetLogoColor(string filename)
+    public static Color GetLogoColor(string filename)
     {
         var logoInfo = _builtIn.FirstOrDefault(x => x.FileName == filename);
-        if (logoInfo == null) return Color.Default;
-        if (string.IsNullOrEmpty( logoInfo.Color)) return Color.Default;
-        return Color.Parse(logoInfo.Color);
+        if (logoInfo == null) return Colors.Transparent;
+        if (string.IsNullOrEmpty( logoInfo.Color)) return Colors.Transparent;
+        return Color.FromRgba(logoInfo.Color);
     }
 
     public static ImageSource GetImageSourceForBuiltIn(string fileName)

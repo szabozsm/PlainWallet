@@ -1,0 +1,72 @@
+info:
+  name: Create a json bin
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{baseUrl}}/bin"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: 200 Response
+    description: Bin information (id and URL)
+    request:
+      url: "{{baseUrl}}/bin"
+      method: POST
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "status": 0,
+            "uri": "",
+            "id": ""
+          }
+  - name: 413 Response
+    description: "'JSON data too large' or 'Security key is too large'"
+    request:
+      url: "{{baseUrl}}/bin"
+      method: POST
+    response:
+      status: 413
+      statusText: Payload Too Large
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "status": 0,
+            "message": ""
+          }
+  - name: 422 Response
+    description: Security key is required for private bin
+    request:
+      url: "{{baseUrl}}/bin"
+      method: POST
+    response:
+      status: 422
+      statusText: Unprocessable Entity
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |-
+          {
+            "status": 0,
+            "message": ""
+          }

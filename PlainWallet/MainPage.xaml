@@ -64,7 +64,7 @@
 
                                         <Label
                                             Text="{Binding CardNumber}"
-                                            FontSize="14"
+                                            FontSize="10"
                                             TextColor="{Binding ComplementaryColor}"/>
                                     </VerticalStackLayout>
                                 </Grid>

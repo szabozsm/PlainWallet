@@ -1,0 +1,6 @@
+name: Environment 1
+variables:
+  - name: baseUrl
+    value: https://extendsclass.com/api/json-storage
+  - name: id
+    value: 822f3c9057b3
