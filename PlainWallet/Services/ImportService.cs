@@ -76,36 +76,59 @@ public class ImportService
                 return -1;
         }
 
-        public void UploadData()
+        public async Task UploadData()
         {
-                var data = GetDataToExport();
-
-                string BucketId = GetBucketId(); // Implement this method to retrieve the appropriate bucket ID
-
-                var cli = _services.GetRequiredService<IExtendsClassClient>();
-
-                cli.BinPUTAsync(data, BucketId);
-
+                try
+                {
+                        var data = GetDataToExport();
+                        string BucketId = await GetBucketId(); 
+                        var cli = _services.GetRequiredService<IExtendsClassClient>();
+                        await cli.BinPUTAsync(data, BucketId);
+                }
+                catch (Exception ex)
+                {
+                        await Application.Current.MainPage.DisplayAlertAsync("Error", $"Failed to upload data to extendsclass.com: {ex.Message}", "OK");
+                }
         }
 
         public async Task DownloadData()
         {
-                string BucketId = GetBucketId(); // Implement this method to retrieve the appropriate bucket ID
-
-                var cli = _services.GetRequiredService<IExtendsClassClient>();
-
-                var data = await cli.BinGETAsync(BucketId);
-
-                if (data != null)
+                try
                 {
-                        string json = data.ToString();
-                        await ImportData(json);
+                        string BucketId = await GetBucketId(); 
+                        var cli = _services.GetRequiredService<IExtendsClassClient>();
+                        var data = await cli.BinGETAsync(BucketId);
+                        if (data != null)
+                        {
+                                string json = data.ToString();
+                                await ImportData(json);
+                        }
+                }
+                catch (Exception ex)
+                {
+                        await Application.Current.MainPage.DisplayAlertAsync("Error", $"Failed to download data from extendsclass.com: {ex.Message}", "OK");
                 }
         }
 
-        private string GetBucketId()
+        private async Task<string> GetBucketId()
         {
-                return "822f3c9057b3";
+                if (string.IsNullOrEmpty(SettingsStore.BucketId))
+                {
+                        var cli = _services.GetRequiredService<IExtendsClassClient>();
+                        try
+                        {
+                                var res = await cli.BinPOSTAsync();
+                                SettingsStore.BucketId = res.Id;
+                        }
+                        catch (Exception ex)
+                        {
+                                await Application.Current.MainPage.DisplayAlertAsync("Error", $"Failed to create bucket on extendsclass.com: {ex.Message}", "OK");
+                        }
+
+                        await SettingsStore.SaveAsync();
+                }
+
+                return SettingsStore.BucketId;
         }
 
         private class ImportedData

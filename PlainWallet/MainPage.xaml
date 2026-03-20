@@ -17,19 +17,26 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-
-            <Entry Grid.Row="0"
+            <VerticalStackLayout Grid.Row="0">
+                <ActivityIndicator IsRunning="{Binding ShowAnimation}"
+                        IsVisible="{Binding ShowAnimation}"
+                        Color="{StaticResource Primary}"
+                        VerticalOptions="CenterAndExpand"/>
+                <Entry
                     Placeholder="Filter cards..."
-                   TextChanged="OnFilterTextChanged"
-                   ClearButtonVisibility="WhileEditing"/>
+                    TextChanged="OnFilterTextChanged"
+                    ClearButtonVisibility="WhileEditing"/>
+
+            </VerticalStackLayout>
 
             <CollectionView Grid.Row="1"
-                    ItemsSource="{Binding FilteredCards}"
+                    x:Name="CardCollection"
+                            ItemsSource="{Binding FilteredCards}"
                             SelectionMode="Single"
                             SelectionChanged="OnCardSelected">
                 <CollectionView.ItemsLayout>
                     <LinearItemsLayout Orientation="Vertical"
-                            ItemSpacing="12"/>
+                                       ItemSpacing="12"/>
                 </CollectionView.ItemsLayout>
 
                 <CollectionView.ItemTemplate>
@@ -45,7 +52,7 @@
                                     <TapGestureRecognizer Tapped="OnCardTapped"/>
                                 </Border.GestureRecognizers>
                                 <Grid ColumnDefinitions="Auto,*"
-                                        ColumnSpacing="16">
+                                      ColumnSpacing="16">
                                     <Image
                                         Source="{Binding Logo}"
                                         HeightRequest="120"
@@ -74,15 +81,15 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
         </Grid>
-     <ImageButton Source="add.svg"
-                  BackgroundColor="{StaticResource Primary}"
-                 CornerRadius="28"
-                 WidthRequest="56"
-                 HeightRequest="56"
-                 HorizontalOptions="End"
-                 VerticalOptions="End"
-                 Margin="0,0,8,16"
-                 Clicked="OnAddCardClicked"/>
+        <ImageButton Source="add.svg"
+                     BackgroundColor="{StaticResource Primary}"
+                     CornerRadius="28"
+                     WidthRequest="56"
+                     HeightRequest="56"
+                     HorizontalOptions="End"
+                     VerticalOptions="End"
+                     Margin="0,0,8,16"
+                     Clicked="OnAddCardClicked"/>
     </Grid>
 
 </ContentPage>

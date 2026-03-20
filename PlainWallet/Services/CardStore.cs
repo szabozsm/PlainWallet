@@ -13,12 +13,12 @@ namespace PlainWallet.Services;
 public static class CardStore
 {
     public static ObservableCollection<MembershipCard> Cards { get; } = new();
-    private static IServiceProvider _Services;
+    private static IServiceProvider _services;
 
     public static void Initialize(IServiceProvider services)
     {
-        _Services = services;
-        using var scope = _Services.CreateScope();
+        _services = services;
+        using var scope = _services.CreateScope();
         var ctx = scope.ServiceProvider.GetRequiredService<CardDbContext>();
         ctx.Database.EnsureCreated();
 
@@ -26,16 +26,16 @@ public static class CardStore
         foreach (var c in ctx.Cards.ToList())
         {
             Cards.Add(c);
-            SubscribeCard(c, _Services);
+            SubscribeCard(c, _services);
         }
 
         Cards.CollectionChanged += OnCardsChanged;
 
     }
 
-    private static void OnCardsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    private async static void OnCardsChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        using var innerScope = _Services.CreateScope();
+        using var innerScope = _services.CreateScope();
         var innerCtx = innerScope.ServiceProvider.GetRequiredService<CardDbContext>();
         if (e.NewItems != null)
         {
@@ -54,16 +54,22 @@ public static class CardStore
         }
         innerCtx.SaveChanges();
 
+        if (SettingsStore.UseExtendsClass)
+        {
+            var importService = _services.GetRequiredService<ImportService>();
+            await importService.UploadData();
+        }
+
         if (e.NewItems != null)
         {
             foreach (MembershipCard item in e.NewItems)
-                SubscribeCard(item, _Services);
+                SubscribeCard(item, _services);
         }
     }
 
     public static void RefreshFromDatabase()
     {
-        using var scope = _Services.CreateScope();
+        using var scope = _services.CreateScope();
         var ctx = scope.ServiceProvider.GetRequiredService<CardDbContext>();
 
         Cards.CollectionChanged -= OnCardsChanged;
@@ -71,7 +77,7 @@ public static class CardStore
         foreach (var c in ctx.Cards.ToList())
         {
             Cards.Add(c);
-            SubscribeCard(c, _Services);
+            SubscribeCard(c, _services);
         }
         Cards.CollectionChanged += OnCardsChanged;
     }

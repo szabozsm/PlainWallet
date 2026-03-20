@@ -6,6 +6,11 @@ info:
 http:
   method: POST
   url: "{{baseUrl}}/bin"
+  headers:
+    - name: Security-key
+      value: a8b46056-eddb-4fa6-973b-5bc323e56899
+    - name: Private
+      value: "true"
   auth: inherit
 
 settings:

@@ -45,9 +45,11 @@ public static class MauiProgram
 
 		var app = builder.Build();
 
+	// Initialize SettingsStore from database
+		SettingsStore.Initialize(app.Services);
+
 		// Initialize CardStore from database
 		CardStore.Initialize(app.Services);
-
 		return app;
 	}
 }

@@ -44,89 +44,85 @@ public partial class AppShell : Shell
 
     private async void OnExportClicked(object? sender, EventArgs e)
     {
-     var importService = _services.GetRequiredService<ImportService>();
-     importService.UploadData();
 
-        // try
-        // {
+        try
+        {
 
-        //     var importService = _services.GetRequiredService<ImportService>();
-        //     var exportData = importService.GetDataToExport();
+            var importService = _services.GetRequiredService<ImportService>();
+            var exportData = importService.GetDataToExport();
 
-        //     var json = JsonSerializer.Serialize(exportData, new JsonSerializerOptions
-        //     {
-        //         WriteIndented = true,
-        //         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        //     });
+            var json = JsonSerializer.Serialize(exportData, new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
 
-        //     var fileName = $"plainwallet_export_{DateTime.Now:yyyyMMdd_HHmmss}.json";
-        //     var filePath = Path.Combine(FileSystem.CacheDirectory, fileName);
+            var fileName = $"plainwallet_export_{DateTime.Now:yyyyMMdd_HHmmss}.json";
+            var filePath = Path.Combine(FileSystem.CacheDirectory, fileName);
 
-        //     await File.WriteAllTextAsync(filePath, json);
+            await File.WriteAllTextAsync(filePath, json);
 
-        //     await Share.Default.RequestAsync(new ShareFileRequest
-        //     {
-        //         Title = "Export PlainWallet Cards",
-        //         File = new ShareFile(filePath)
-        //     });
-        // }
-        // catch (Exception ex)
-        // {
-        //     await DisplayAlert("Export Error", $"Failed to export cards: {ex.Message}", "OK");
-        // }
-        // finally
-        // {
-        //     this.FlyoutIsPresented = false;
-        // }
+            await Share.Default.RequestAsync(new ShareFileRequest
+            {
+                Title = "Export PlainWallet Cards",
+                File = new ShareFile(filePath)
+            });
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Export Error", $"Failed to export cards: {ex.Message}", "OK");
+        }
+        finally
+        {
+            this.FlyoutIsPresented = false;
+        }
     }
 
     private async void OnImportClicked(object? sender, EventArgs e)
     {
-   var importService = _services.GetRequiredService<ImportService>();
-   await importService.DownloadData();
 
-        // try
-        // {
-        //     var result = await FilePicker.Default.PickAsync(new PickOptions
-        //     {
-        //         PickerTitle = "Select JSON file to import",
-        //         FileTypes = new FilePickerFileType(
-        //             new Dictionary<DevicePlatform, IEnumerable<string>>
-        //             {
-        //                 { DevicePlatform.iOS, new[] { "public.json" } },
-        //                 { DevicePlatform.Android, new[] { "application/json", "text/json", "text/plain" } },
-        //                 { DevicePlatform.WinUI, new[] { ".json" } },
-        //                 { DevicePlatform.MacCatalyst, new[] { "json" } }
-        //             })
-        //     });
+        try
+        {
+            var result = await FilePicker.Default.PickAsync(new PickOptions
+            {
+                PickerTitle = "Select JSON file to import",
+                FileTypes = new FilePickerFileType(
+                    new Dictionary<DevicePlatform, IEnumerable<string>>
+                    {
+                        { DevicePlatform.iOS, new[] { "public.json" } },
+                        { DevicePlatform.Android, new[] { "application/json", "text/json", "text/plain" } },
+                        { DevicePlatform.WinUI, new[] { ".json" } },
+                        { DevicePlatform.MacCatalyst, new[] { "json" } }
+                    })
+            });
 
-        //     if (result != null)
-        //     {
-        //         using var stream = await result.OpenReadAsync();
-        //         using var reader = new StreamReader(stream);
-        //         var json = await reader.ReadToEndAsync();
+            if (result != null)
+            {
+                using var stream = await result.OpenReadAsync();
+                using var reader = new StreamReader(stream);
+                var json = await reader.ReadToEndAsync();
 
-        //         var importService = _services.GetRequiredService<ImportService>();
+                var importService = _services.GetRequiredService<ImportService>();
 
-        //         var cardCount = await importService.ImportData(json);
-        //         if (cardCount > -1)
-        //         {
-        //             await DisplayAlertAsync("Import Success", $"Successfully imported {cardCount} cards.", "OK");
-        //         }
-        //         else
-        //         {
-        //             await DisplayAlertAsync("Import Failed", $"No cards were imported. Please check the file and try again.", "OK");
-        //         }
-        //     }
-        // }
-        // catch (Exception ex)
-        // {
-        //     await DisplayAlert("Import Error", $"Failed to import cards: {ex.Message}", "OK");
-        // }
-        // finally
-        // {
-        //     this.FlyoutIsPresented = false;
-        // }
+                var cardCount = await importService.ImportData(json);
+                if (cardCount > -1)
+                {
+                    await DisplayAlertAsync("Import Success", $"Successfully imported {cardCount} cards.", "OK");
+                }
+                else
+                {
+                    await DisplayAlertAsync("Import Failed", $"No cards were imported. Please check the file and try again.", "OK");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Import Error", $"Failed to import cards: {ex.Message}", "OK");
+        }
+        finally
+        {
+            this.FlyoutIsPresented = false;
+        }
     }
 
 }

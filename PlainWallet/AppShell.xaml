@@ -13,10 +13,6 @@
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage"/>
 
-    <MenuItem Text="Settings"
-              IconImageSource="settings.svg"
-              Clicked="OnSettingsClicked"/>
-
     <MenuItem Text="Export"
               IconImageSource="export.svg"
               Clicked="OnExportClicked"/>
@@ -25,6 +21,10 @@
               IconImageSource="import_data.svg"
               Clicked="OnImportClicked"/>
 
+ <MenuItem Text="Settings"
+              IconImageSource="settings.svg"
+              Clicked="OnSettingsClicked"/>
+              
     <!-- <MenuItem Text="Buy Me a Coffee"
               Clicked="OnBuyMeCoffeeTapped">
         <MenuItem.IconImageSource>

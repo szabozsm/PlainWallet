@@ -4,39 +4,73 @@
              x:Class="PlainWallet.Views.SettingsPage"
              Title="Settings">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
-            
-            <Label Text="Settings"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center" />
-            
-            <Frame Padding="15" CornerRadius="10" BorderColor="LightGray">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Dummy Property"
-                           FontAttributes="Bold" />
-                    <Entry x:Name="DummyPropertyEntry"
-                           Text="{Binding DummyProperty}"
-                           Placeholder="Enter dummy property value" />
-                </VerticalStackLayout>
-            </Frame>
+       <ScrollView>
+              <VerticalStackLayout Padding="20"
+                                   Spacing="10">
 
-            <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
-                <Button x:Name="ApplyButton"
-                        Text="Apply"
-                        Clicked="OnApplyClicked"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-                        TextColor="White" />
-                
-                <Button x:Name="CancelButton"
-                        Text="Cancel"
-                        Clicked="OnCancelClicked"
-                        BackgroundColor="Gray"
-                        TextColor="White" />
-            </HorizontalStackLayout>
+                     <Grid ColumnDefinitions="Auto,*"
+                           ColumnSpacing="0">
 
-        </VerticalStackLayout>
-    </ScrollView>
+                            <CheckBox x:Name="SettingsCheckbox"
+                                      Grid.Column="0"
+                                      IsChecked="{Binding UseExtendsClass, Mode=TwoWay}"/>
+                            <Label Text="Use extendsclass.com for sharing"
+                                   Grid.Column="1"
+                                   VerticalOptions="Center"/>
+                     </Grid>
+
+                     <VerticalStackLayout Spacing="0"
+                                          IsVisible="{Binding Source={x:Reference SettingsCheckbox}, Path=IsChecked}">
+                            <Label Text="Api-key"/>
+                            <Entry x:Name="ApikeyEntry"
+                                   Text="{Binding Apikey, Mode=TwoWay}"
+                                   Placeholder="Enter API key value"/>
+                            <Label Text="Security-key"
+                                   Margin="0,20,0,0"/>
+                            <Grid ColumnDefinitions="*,Auto"
+                                  ColumnSpacing="0">
+                                   <Entry x:Name="SecurityKeyEntry"
+                                          IsPassword="true"
+                                          Text="{Binding SecurityKey, Mode=TwoWay}"
+                                          Placeholder="Enter security key value"
+                                          Grid.Column="0"/>
+                                   <ImageButton
+                                          Grid.Column="1"
+                                          Source="eye_show.svg"
+                                          HeightRequest="20"
+                                          WidthRequest="20"
+                                          Margin="0,0,0,0"
+                                          Clicked="OnTogglePasswordVisibility"/>
+                            </Grid>
+                            <Label Text="You can enter any string, it protects your data in the cloud"
+                                   FontSize="9"/>
+
+                            <Label Text="Bin id"
+                                   Margin="0,20,0,0"
+                                   TextColor="#FFAAAAAA"/>
+                            <Entry  TextColor="#FFAAAAAA"
+                                    IsReadOnly="True"
+                                    Text="{Binding BucketId}"/>
+
+                     </VerticalStackLayout>
+
+                     <HorizontalStackLayout HorizontalOptions="Center"
+                                            Spacing="10"
+                                            Margin="0,30">
+                            <Button x:Name="ApplyButton"
+                                    Text="Apply"
+                                    Clicked="OnApplyClicked"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                    TextColor="White"/>
+
+                            <Button x:Name="CancelButton"
+                                    Text="Cancel"
+                                    Clicked="OnCancelClicked"
+                                    BackgroundColor="Gray"
+                                    TextColor="White"/>
+                     </HorizontalStackLayout>
+
+              </VerticalStackLayout>
+       </ScrollView>
 
 </ContentPage>

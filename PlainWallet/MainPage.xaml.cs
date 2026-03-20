@@ -16,9 +16,11 @@ public partial class MainPage : ContentPage
 
     private string _filter = string.Empty;
     private readonly Random _random = new();
+    private readonly IServiceProvider _services;
 
     public MainPage()
     {
+        _services = IPlatformApplication.Current.Services;
         InitializeComponent();
         BindingContext = this;
         LoadSampleCards();
@@ -27,10 +29,46 @@ public partial class MainPage : ContentPage
         ApplyFilter();
     }
 
-    protected override void OnAppearing()
+    public bool ShowAnimation
+    {
+        get;
+        set;
+    }
+
+    protected async override void OnAppearing()
     {
         base.OnAppearing();
         ApplyFilter();
+        CardCollection.Loaded += OnCardCollectionLoaded;
+ 
+    }
+
+    private async void OnCardCollectionLoaded(object? sender, EventArgs e)
+    {
+        await UpdateCardsFromInternet();
+    }
+
+    private async Task UpdateCardsFromInternet()
+    {
+        if (SettingsStore.UseExtendsClass)
+        {
+            try
+            {
+                ShowAnimation = true;
+                OnPropertyChanged(nameof(ShowAnimation));
+                var importService = _services.GetRequiredService<ImportService>();
+                await importService.DownloadData();
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlertAsync("Error", $"Failed to download data from extendsclass.com: {ex.Message}", "OK");
+            }
+            finally
+            {
+                ShowAnimation = false;
+                OnPropertyChanged(nameof(ShowAnimation));
+            }
+        }
     }
 
     private void LoadSampleCards()
@@ -77,7 +115,7 @@ public partial class MainPage : ContentPage
 
         for (int i = 0; i < 8; i++)
         {
-            var index = _random.Next(names.Length); 
+            var index = _random.Next(names.Length);
             CardStore.Cards.Add(new MembershipCard
             {
                 Name = names[index],

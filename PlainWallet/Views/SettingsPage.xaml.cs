@@ -1,19 +1,15 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Maui.Controls;
-using PlainWallet.Data;
 using PlainWallet.Models;
+using PlainWallet.Services;
+using Xamarin.Google.Crypto.Tink.Shaded.Protobuf;
 
 namespace PlainWallet.Views;
 
 public partial class SettingsPage : ContentPage
 {
-    private Settings? _settings;
-    private bool _isEditing;
 
-    private readonly IServiceProvider services;
     public SettingsPage()
     {
-        this.services = IPlatformApplication.Current.Services;
         InitializeComponent();
         BindingContext = this;
         Title = "Settings";
@@ -22,42 +18,47 @@ public partial class SettingsPage : ContentPage
 
     public string DummyProperty
     {
-        get => _settings?.DummyProperty ?? string.Empty;
-        set
-        {
-            if (_settings != null)
-            {
-                _settings.DummyProperty = value;
-                OnPropertyChanged(nameof(DummyProperty));
-            }
-        }
+        get => SettingsStore.DummyProperty;
+        set => SettingsStore.DummyProperty = value;
     }
 
-    private async void LoadSettings()
+    public string Apikey
+    {
+        get => SettingsStore.Apikey;
+        set => SettingsStore.Apikey = value;
+    }
+
+    public string SecurityKey
+    {
+        get => SettingsStore.SecurityKey;
+        set => SettingsStore.SecurityKey = value;
+    }
+
+    public string BucketId
+    {
+        get => SettingsStore.BucketId;
+    }
+
+    public bool UseExtendsClass
+    {
+        get => SettingsStore.UseExtendsClass;
+        set => SettingsStore.UseExtendsClass = value;
+    }
+
+    private void LoadSettings()
     {
         try
         {
-
-            using var innerScope = services.CreateScope();
-            using var db = innerScope.ServiceProvider.GetRequiredService<CardDbContext>();
-
-            // Try to get existing settings
-            _settings = await db.Settings.FirstOrDefaultAsync();
-
-            if (_settings == null)
-            {
-                // Create default settings if none exist
-                _settings = new Settings();
-                db.Settings.Add(_settings);
-                await db.SaveChangesAsync();
-            }
-
-            _isEditing = true;
+            // SettingsStore should be initialized in App startup
+            // Just trigger property change to refresh UI
             OnPropertyChanged(nameof(DummyProperty));
+            OnPropertyChanged(nameof(Apikey));
+            OnPropertyChanged(nameof(SecurityKey));
+            OnPropertyChanged(nameof(UseExtendsClass));
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", $"Failed to load settings: {ex.Message}", "OK");
+            DisplayAlert("Error", $"Failed to load settings: {ex.Message}", "OK");
         }
     }
 
@@ -65,23 +66,8 @@ public partial class SettingsPage : ContentPage
     {
         try
         {
-            if (_settings == null) return;
-
-            using var innerScope = services.CreateScope();
-            using var db = innerScope.ServiceProvider.GetRequiredService<CardDbContext>();
-
-            if (_isEditing)
-            {
-                db.Settings.Update(_settings);
-            }
-            else
-            {
-                db.Settings.Add(_settings);
-            }
-
-            await db.SaveChangesAsync();
-
-            await DisplayAlert("Success", "Settings saved successfully!", "OK");
+            await SettingsStore.SaveAsync();
+            //    await DisplayAlert("Success", "Settings saved successfully!", "OK");
             await Shell.Current.GoToAsync("..");
         }
         catch (Exception ex)
@@ -92,6 +78,20 @@ public partial class SettingsPage : ContentPage
 
     private async void OnCancelClicked(object? sender, EventArgs e)
     {
+        await SettingsStore.CancelAsync();
         await Shell.Current.GoToAsync("..");
     }
+
+    private void OnTogglePasswordVisibility(object sender, EventArgs e)
+    {
+        // Toggle the IsPassword property
+        SecurityKeyEntry.IsPassword = !SecurityKeyEntry.IsPassword;
+
+        // Change the icon source based on the new state
+        if (sender is ImageButton imageButton)
+        {
+            imageButton.Source = SecurityKeyEntry.IsPassword ? "eye_show.svg" : "eye_hide.svg";
+        }
+    }
+
 }

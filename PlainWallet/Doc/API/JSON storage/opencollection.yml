@@ -17,7 +17,7 @@ config:
 request:
   headers:
     - name: Security-key
-      value: abcd123
+      value: test123
   auth:
     type: apikey
     key: Api-key
