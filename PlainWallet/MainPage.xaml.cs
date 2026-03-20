@@ -23,7 +23,6 @@ public partial class MainPage : ContentPage
         _services = IPlatformApplication.Current.Services;
         InitializeComponent();
         BindingContext = this;
-        LoadSampleCards();
         // keep filtered view in sync with the store
         CardStore.Cards.CollectionChanged += CardStore_CardsChanged;
         ApplyFilter();
@@ -68,62 +67,6 @@ public partial class MainPage : ContentPage
                 ShowAnimation = false;
                 OnPropertyChanged(nameof(ShowAnimation));
             }
-        }
-    }
-
-    private void LoadSampleCards()
-    {
-        if (CardStore.Cards.Count > 0)
-            return;
-        var names = new[]
-        {
-            "SuperMart Club",
-            "City Gym",
-            "Book Lovers",
-            "Cinema Stars",
-            "Coffee Points",
-            "Tech Store Plus"
-        };
-
-        var notes = new[]
-        {
-            "Show at checkout to collect points.",
-            "Access pass for all locations.",
-            "10% off all paperbacks.",
-            "Free popcorn every 5 visits.",
-            "Every 7th drink is free.",
-            "Extended warranty on all gadgets."
-        };
-
-        var colors = new[]
-        {
-            Colors.DeepSkyBlue,
-            Colors.MediumPurple,
-            Colors.OrangeRed,
-            Colors.SeaGreen,
-            Colors.Goldenrod,
-            Colors.CadetBlue
-        };
-
-        var barcodeFormats = new[]
-        {
-            ZXing.Net.Maui.BarcodeFormat.Code128,
-            ZXing.Net.Maui.BarcodeFormat.Code39,
-            ZXing.Net.Maui.BarcodeFormat.Code93,
-            ZXing.Net.Maui.BarcodeFormat.Ean13
-        };
-
-        for (int i = 0; i < 8; i++)
-        {
-            var index = _random.Next(names.Length);
-            CardStore.Cards.Add(new MembershipCard
-            {
-                Name = names[index],
-                CardNumber = $"{_random.Next(1000, 9999)} {_random.Next(1000, 9999)} {_random.Next(1000, 9999)}",
-                BackgroundColor = colors[_random.Next(colors.Length)],
-                Notes = notes[index],
-                BarcodeType = barcodeFormats[_random.Next(barcodeFormats.Length)]
-            });
         }
     }
 

@@ -18,10 +18,13 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <VerticalStackLayout Grid.Row="0">
-                <ActivityIndicator IsRunning="{Binding ShowAnimation}"
+                <!-- <ActivityIndicator IsRunning="{Binding ShowAnimation}"
                         IsVisible="{Binding ShowAnimation}"
                         Color="{StaticResource Primary}"
-                        VerticalOptions="CenterAndExpand"/>
+                        VerticalOptions="CenterAndExpand"/> -->
+
+<Image Source="infinity.gif" IsAnimationPlaying="{Binding ShowAnimation}" WidthRequest="100" IsVisible="{Binding ShowAnimation}" />
+
                 <Entry
                     Placeholder="Filter cards..."
                     TextChanged="OnFilterTextChanged"
