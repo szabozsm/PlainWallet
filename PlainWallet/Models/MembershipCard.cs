@@ -80,9 +80,8 @@ public class MembershipCard : INotifyPropertyChanged
             switch (LogoKind)
             {
                 case LogoKind.None:
-                    return this.CreateAvatarImage(this.CalculateInitials(Name), ComplementaryColor);
-                 //  return ImageSource.FromFile("barcode_scan.svg");
-                    break;
+                    return this.CreateInitialsImage(this.CalculateInitials(Name), ComplementaryColor);
+
                 case LogoKind.Builtin:
                     if (!string.IsNullOrEmpty(LogoUri))
                         return ImageSource.FromFile(LogoUri);
@@ -118,7 +117,6 @@ public class MembershipCard : INotifyPropertyChanged
                         return null;
                     }
 
-                    break;
                 case LogoKind.File:
                     {
                         if (LogoData != null && LogoData.Length > 0)
@@ -305,7 +303,7 @@ public class MembershipCard : INotifyPropertyChanged
         }
     }
 
-    public ImageSource CreateAvatarImage(string text, Color color)
+    public ImageSource CreateInitialsImage(string text, Color color)
     {
         try
         {
@@ -354,9 +352,9 @@ public class MembershipCard : INotifyPropertyChanged
             var imageData = data.ToArray();
             return ImageSource.FromStream(() => new MemoryStream(imageData));
         }
-        catch (Exception ex)
+        catch 
         {
-            return ImageSource.FromFile("barcode_scan.svg");
+            return null;
         }
     }
 

@@ -26,7 +26,7 @@ public static class CardStore
         foreach (var c in ctx.Cards.ToList())
         {
             Cards.Add(c);
-            SubscribeCard(c, _services);
+            SubscribeCard(c);
         }
 
         Cards.CollectionChanged += OnCardsChanged;
@@ -63,7 +63,7 @@ public static class CardStore
         if (e.NewItems != null)
         {
             foreach (MembershipCard item in e.NewItems)
-                SubscribeCard(item, _services);
+                SubscribeCard(item);
         }
     }
 
@@ -77,30 +77,67 @@ public static class CardStore
         foreach (var c in ctx.Cards.ToList())
         {
             Cards.Add(c);
-            SubscribeCard(c, _services);
+            SubscribeCard(c);
         }
         Cards.CollectionChanged += OnCardsChanged;
     }
 
-    private static void SubscribeCard(MembershipCard card, IServiceProvider services)
+    private static void SubscribeCard(MembershipCard card)
     {
         card.PropertyChanged += (_, args) =>
         {
-            using var scope = services.CreateScope();
-            var ctx = scope.ServiceProvider.GetRequiredService<CardDbContext>();
-            var tracked = ctx.Cards.Local.FirstOrDefault(x => x.Id == card.Id) ?? ctx.Cards.Find(card.Id);
-            if (tracked == null)
-            {
-                ctx.Cards.Attach(card);
-                ctx.Entry(card).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-            }
-            else
-            {
-                // Mark the tracked entity as Modified to ensure EF Core detects changes
-                ctx.Entry(tracked).CurrentValues.SetValues(card);
-                // ctx.Entry(tracked).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-            }
-            ctx.SaveChanges();
+            _ = HandlePropertyChangedAsync(card);
         };
+
+        // card.PropertyChanged += (_, args) =>
+        // {
+        //     using var scope = _services.CreateScope();
+        //     var ctx = scope.ServiceProvider.GetRequiredService<CardDbContext>();
+        //     var tracked = ctx.Cards.Local.FirstOrDefault(x => x.Id == card.Id) ?? ctx.Cards.Find(card.Id);
+        //     if (tracked == null)
+        //     {
+        //         ctx.Cards.Attach(card);
+        //         ctx.Entry(card).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+        //     }
+        //     else
+        //     {
+        //         // Mark the tracked entity as Modified to ensure EF Core detects changes
+        //         ctx.Entry(tracked).CurrentValues.SetValues(card);
+        //         // ctx.Entry(tracked).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+        //     }
+        //     ctx.SaveChanges();
+        //     if (SettingsStore.UseExtendsClass)
+        //     {
+        //         var importService = scope.ServiceProvider.GetRequiredService<ImportService>();
+        //         importService.UploadData().GetAwaiter().GetResult();
+        //     }
+        // };
+    }
+
+    private static async Task HandlePropertyChangedAsync(MembershipCard card)
+    {
+        using var scope = _services.CreateScope();
+        var ctx = scope.ServiceProvider.GetRequiredService<CardDbContext>();
+
+        var tracked = ctx.Cards.Local.FirstOrDefault(x => x.Id == card.Id)
+                      ?? ctx.Cards.Find(card.Id);
+
+        if (tracked == null)
+        {
+            ctx.Cards.Attach(card);
+            ctx.Entry(card).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+        }
+        else
+        {
+            ctx.Entry(tracked).CurrentValues.SetValues(card);
+        }
+
+        await ctx.SaveChangesAsync();
+
+        if (SettingsStore.UseExtendsClass)
+        {
+            var importService = scope.ServiceProvider.GetRequiredService<ImportService>();
+            await importService.UploadData();
+        }
     }
 }

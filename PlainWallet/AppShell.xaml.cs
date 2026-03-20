@@ -38,7 +38,7 @@ public partial class AppShell : Shell
         }
         catch
         {
-            await DisplayAlert("Browser Error", "Could not open the coffee page. Please visit: https://buymeacoffee.com/szabozsm", "OK");
+            await DisplayAlertAsync("Browser Error", "Could not open the coffee page. Please visit: https://buymeacoffee.com/szabozsm", "OK");
         }
     }
 
@@ -70,7 +70,7 @@ public partial class AppShell : Shell
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Export Error", $"Failed to export cards: {ex.Message}", "OK");
+            await DisplayAlertAsync("Export Error", $"Failed to export cards: {ex.Message}", "OK");
         }
         finally
         {
@@ -117,7 +117,7 @@ public partial class AppShell : Shell
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Import Error", $"Failed to import cards: {ex.Message}", "OK");
+            await DisplayAlertAsync("Import Error", $"Failed to import cards: {ex.Message}", "OK");
         }
         finally
         {

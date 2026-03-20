@@ -61,7 +61,7 @@ public partial class MainPage : ContentPage
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlertAsync("Error", $"Failed to download data from extendsclass.com: {ex.Message}", "OK");
+                await Application.Current.Windows[0].Page.DisplayAlertAsync("Error", $"Failed to download data from extendsclass.com: {ex.Message}", "OK");
             }
             finally
             {

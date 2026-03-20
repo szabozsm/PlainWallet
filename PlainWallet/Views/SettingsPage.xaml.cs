@@ -72,7 +72,7 @@ public partial class SettingsPage : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", $"Failed to save settings: {ex.Message}", "OK");
+            await DisplayAlertAsync("Error", $"Failed to save settings: {ex.Message}", "OK");
         }
     }
 

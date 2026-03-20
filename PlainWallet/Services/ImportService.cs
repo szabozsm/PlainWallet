@@ -87,7 +87,7 @@ public class ImportService
                 }
                 catch (Exception ex)
                 {
-                        await Application.Current.MainPage.DisplayAlertAsync("Error", $"Failed to upload data to extendsclass.com: {ex.Message}", "OK");
+                        await Application.Current.Windows[0].Page.DisplayAlertAsync("Error", $"Failed to upload data to extendsclass.com: {ex.Message}", "OK");
                 }
         }
 
@@ -106,7 +106,7 @@ public class ImportService
                 }
                 catch (Exception ex)
                 {
-                        await Application.Current.MainPage.DisplayAlertAsync("Error", $"Failed to download data from extendsclass.com: {ex.Message}", "OK");
+                        await Application.Current.Windows[0].Page.DisplayAlertAsync("Error", $"Failed to download data from extendsclass.com: {ex.Message}", "OK");
                 }
         }
 
@@ -122,7 +122,7 @@ public class ImportService
                         }
                         catch (Exception ex)
                         {
-                                await Application.Current.MainPage.DisplayAlertAsync("Error", $"Failed to create bucket on extendsclass.com: {ex.Message}", "OK");
+                                await Application.Current.Windows[0].Page.DisplayAlertAsync("Error", $"Failed to create bucket on extendsclass.com: {ex.Message}", "OK");
                         }
 
                         await SettingsStore.SaveAsync();
