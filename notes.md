@@ -12,3 +12,5 @@ https://www.svgrepo.com/collection/lets-light-line-interface-icons/
 https://www.svgrepo.com/collection/ficons-interface-icons/
 https://pictogrammers.com/library/mdi/
 
+
+https://loading.io/
