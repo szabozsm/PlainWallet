@@ -11,12 +11,15 @@ pushd ..\Resources\Logos
 $InkscapePath = "C:\Program Files\Inkscape\bin\inkscape.com"
 $TargetHeight  = 200
 
+Get-ChildItem -File | Rename-Item -NewName { $_.Name.ToLower() }
+
 $svgFiles = Get-ChildItem -Filter "*.svg" -File
 
 if ($svgFiles.Count -eq 0) {
     Write-Host "No SVG files found in: $PSScriptRoot" -ForegroundColor Yellow
     exit
 }
+
 
 foreach ($svg in $svgFiles) {
 

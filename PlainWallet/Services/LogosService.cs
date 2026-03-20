@@ -12,7 +12,8 @@ public static class LogosService
     // Static list of built-in logo filenames (located in Resources/Logos)
     // Update this list if you add/remove files in Resources/Logos
     private static readonly LogoInfo[] _builtIn =
-    [ 
+    [  
+
 new LogoInfo("ace_hardware.svg",""), 
 new LogoInfo("barnes_noble.svg",""), 
 new LogoInfo("big_lots.svg",""), 
@@ -48,6 +49,26 @@ new LogoInfo("vitamin_shoppe.svg",""),
 new LogoInfo("walgreens.svg",""), 
 new LogoInfo("walmart.svg",""), 
 new LogoInfo("whole_foods.svg",""), 
+new LogoInfo("banana_republic.svg",""), 
+new LogoInfo("Best_Buy.svg",""), 
+new LogoInfo("Home_Depot.svg","#f96302ff"), 
+new LogoInfo("seven_7_eleven.svg","#008061ff"), 
+new LogoInfo("H_M.svg",""), 
+new LogoInfo("Gap.svg",""), 
+new LogoInfo("Old_Navy.svg",""), 
+new LogoInfo("rei.svg",""), 
+new LogoInfo("columbia.svg",""), 
+new LogoInfo("skechers.svg",""), 
+new LogoInfo("under_armour.svg",""), 
+new LogoInfo("adidas.svg",""), 
+new LogoInfo("nike.svg",""), 
+new LogoInfo("foot_locker.svg",""), 
+new LogoInfo("jcpenney.svg",""), 
+new LogoInfo("kohl_s.svg",""), 
+new LogoInfo("dillard_s.svg",""), 
+new LogoInfo("carter_s.svg",""), 
+new LogoInfo("pampers.svg",""), 
+new LogoInfo("macy_s.svg",""), 
 
     ];
 
