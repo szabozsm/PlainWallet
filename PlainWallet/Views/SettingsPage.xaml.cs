@@ -46,6 +46,12 @@ public partial class SettingsPage : ContentPage
         set => SettingsStore.UseExtendsClass = value;
     }
 
+    public bool TwoColumnMode
+    {
+        get => SettingsStore.TwoColumnMode;
+        set => SettingsStore.TwoColumnMode = value;
+    }
+
     private void LoadSettings()
     {
         try
@@ -57,6 +63,7 @@ public partial class SettingsPage : ContentPage
             OnPropertyChanged(nameof(SecurityKey));
             OnPropertyChanged(nameof(UseExtendsClass));
             OnPropertyChanged(nameof(BucketId));
+            OnPropertyChanged(nameof(TwoColumnMode));
         }
         catch (Exception ex)
         {
@@ -94,6 +101,15 @@ public partial class SettingsPage : ContentPage
         {
             imageButton.Source = SecurityKeyEntry.IsPassword ? "eye_show.svg" : "eye_hide.svg";
         }
+    }
+
+    private void OnImage1Tapped(object sender, EventArgs e)
+    {
+        OneColumnRadioButton.IsChecked = true;
+    }
+    private void OnImage2Tapped(object sender, EventArgs e)
+    {
+        TwoColumnRadioButton.IsChecked = true;
     }
 
 }

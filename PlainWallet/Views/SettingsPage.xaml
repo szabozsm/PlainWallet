@@ -1,56 +1,115 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="PlainWallet.Views.SettingsPage"
              Title="Settings">
+       <ContentPage.Resources>
+              <ResourceDictionary>
+                     <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter"/>
+              </ResourceDictionary>
+       </ContentPage.Resources>
 
        <ScrollView>
-              <VerticalStackLayout Padding="20"
-                                   Spacing="10">
+              <VerticalStackLayout Padding="5"
+                                   Spacing="10"
+                                   Margin="0,10,0,0">
+                     <Border Stroke="{StaticResource PrimaryDark}">
+                            <Grid RowDefinitions="*,*,*"
+                                  ColumnDefinitions="*,*">
 
-                     <Grid ColumnDefinitions="Auto,*"
-                           ColumnSpacing="0">
+                                   <Label Text="Card list view"
+                                          Margin="10,5"
+                                          Grid.Row="0"
+                                          Grid.Column="0"
+                                          Grid.ColumnSpan="2"
+                                          HorizontalOptions="Start"/>
+                                   <!-- Option 1: Image and RadioButton -->
 
-                            <CheckBox x:Name="SettingsCheckbox"
-                                      Grid.Column="0"
-                                      IsChecked="{Binding UseExtendsClass, Mode=TwoWay}"/>
-                            <Label Text="Use extendsclass.com for sharing"
-                                   Grid.Column="1"
-                                   VerticalOptions="Center"/>
-                     </Grid>
+                                   <!-- Reference your image file (e.g., added to Resources/Images) -->
+                                   <Image Grid.Row="1"
+                                          Grid.Column="0"
+                                          Source="onecolumn.png"
+                                          Aspect="AspectFit">
+                                          <Image.GestureRecognizers>
+                                                 <TapGestureRecognizer Tapped="OnImage1Tapped"/>
+                                          </Image.GestureRecognizers>
+                                   </Image>
 
-                     <VerticalStackLayout Spacing="0"
-                                          IsVisible="{Binding Source={x:Reference SettingsCheckbox}, Path=IsChecked}">
-                            <Label Text="Api-key"/>
-                            <Entry x:Name="ApikeyEntry"
-                                   Text="{Binding Apikey, Mode=TwoWay}"
-                                   Placeholder="Enter API key value"/>
-                            <Label Text="Security-key"
-                                   Margin="0,20,0,0"/>
-                            <Grid ColumnDefinitions="*,Auto"
-                                  ColumnSpacing="0">
-                                   <Entry x:Name="SecurityKeyEntry"
-                                          IsPassword="true"
-                                          Text="{Binding SecurityKey, Mode=TwoWay}"
-                                          Placeholder="Enter security key value"
-                                          Grid.Column="0"/>
-                                   <ImageButton
+                                   <RadioButton x:Name="OneColumnRadioButton"
+                                                Grid.Row="2"
+                                                Grid.Column="0"
+                                                GroupName="MyChoices"
+                                                IsChecked="{Binding TwoColumnMode, Converter={StaticResource InvertedBoolConverter}}"
+                                                HorizontalOptions="Center"/>
+
+                                   <!-- Option 2: Image and RadioButton -->
+
+                                   <Image Grid.Row="1"
                                           Grid.Column="1"
-                                          Source="eye_show.svg"
-                                          HeightRequest="20"
-                                          WidthRequest="20"
-                                          Margin="0,0,0,0"
-                                          Clicked="OnTogglePasswordVisibility"/>
+                                          Source="twocolumn.png"
+                                          Aspect="AspectFit">
+                                          <Image.GestureRecognizers>
+                                                 <TapGestureRecognizer Tapped="OnImage2Tapped"/>
+                                          </Image.GestureRecognizers>
+                                   </Image>
+
+                                   <RadioButton x:Name="TwoColumnRadioButton"
+                                                Grid.Row="2"
+                                                Grid.Column="1"
+                                                GroupName="MyChoices"
+                                                Value="Value2"
+                                                HorizontalOptions="Center"
+                                                IsChecked="{Binding TwoColumnMode}"/>
                             </Grid>
-                            <Label Text="You can enter any string, it protects your data in the cloud"
-                                   FontSize="9"/>
+                     </Border>
+                     <Border Stroke="{StaticResource PrimaryDark}">
+                            <VerticalStackLayout Padding="5"
+                                                 Spacing="10">
+                                   <Grid ColumnDefinitions="Auto,*"
+                                         ColumnSpacing="0">
 
-                            <Label Text="Bin id"
-                                   Margin="0,20,0,0"/>
-                            <Entry  Text="{Binding BucketId, Mode=TwoWay}"/>
+                                          <CheckBox Grid.Column="0"
+                                                    x:Name="SettingsCheckbox"
+                                                    IsChecked="{Binding UseExtendsClass, Mode=TwoWay}"/>
+                                          <Label Text="Use extendsclass.com for sharing"
+                                                 Grid.Column="1"
+                                                 VerticalOptions="Center"/>
+                                   </Grid>
 
-                     </VerticalStackLayout>
+                                   <VerticalStackLayout Spacing="0"
+                                                        IsVisible="{Binding Source={x:Reference SettingsCheckbox}, Path=IsChecked}">
+                                          <Label Text="Api-key"/>
+                                          <Entry x:Name="ApikeyEntry"
+                                                 Text="{Binding Apikey, Mode=TwoWay}"
+                                                 Placeholder="Enter API key value"/>
+                                          <Label Text="Security-key"
+                                                 Margin="0,20,0,0"/>
+                                          <Grid ColumnDefinitions="*,Auto"
+                                                ColumnSpacing="0">
+                                                 <Entry x:Name="SecurityKeyEntry"
+                                                        IsPassword="true"
+                                                        Text="{Binding SecurityKey, Mode=TwoWay}"
+                                                        Placeholder="Enter security key value"
+                                                        Grid.Column="0"/>
+                                                 <ImageButton
+                                                        Grid.Column="1"
+                                                        Source="eye_show.svg"
+                                                        HeightRequest="20"
+                                                        WidthRequest="20"
+                                                        Margin="0,0,0,0"
+                                                        Clicked="OnTogglePasswordVisibility"/>
+                                          </Grid>
+                                          <Label Text="You can enter any string, it protects your data in the cloud"
+                                                 FontSize="9"/>
 
+                                          <Label Text="Bin id"
+                                                 Margin="0,20,0,0"/>
+                                          <Entry  Text="{Binding BucketId, Mode=TwoWay}"/>
+
+                                   </VerticalStackLayout>
+                            </VerticalStackLayout>
+                     </Border>
                      <HorizontalStackLayout HorizontalOptions="Center"
                                             Spacing="10"
                                             Margin="0,30">
@@ -68,6 +127,7 @@
                      </HorizontalStackLayout>
 
               </VerticalStackLayout>
+
        </ScrollView>
 
 </ContentPage>

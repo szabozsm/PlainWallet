@@ -7,6 +7,7 @@ using PlainWallet.Services;
 using Microsoft.Maui.Storage;
 using System.IO;
 using UraniumUI;
+using CommunityToolkit.Maui;
 
 namespace PlainWallet;
 
@@ -17,6 +18,7 @@ public static class MauiProgram
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
+			.UseMauiCommunityToolkit()
 			.UseBarcodeReader()
 			.UseSkiaSharp()
 			.UseUraniumUI()

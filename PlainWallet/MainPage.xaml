@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="PlainWallet.MainPage"
              Title="PlainWallet">
 
@@ -9,6 +10,10 @@
             <Setter Property="TextColor"
                     Value="White"/>
         </Style>
+
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter"/>
+        </ResourceDictionary>
     </ContentPage.Resources>
 
     <Grid Padding="16">
@@ -18,12 +23,15 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <VerticalStackLayout Grid.Row="0">
-                <!-- <ActivityIndicator IsRunning="{Binding ShowAnimation}"
+                <ActivityIndicator IsRunning="{Binding ShowAnimation}"
                         IsVisible="{Binding ShowAnimation}"
                         Color="{StaticResource Primary}"
-                        VerticalOptions="CenterAndExpand"/> -->
+                        VerticalOptions="CenterAndExpand"/>
 
-<Image Source="infinity.gif" IsAnimationPlaying="{Binding ShowAnimation}" WidthRequest="100" IsVisible="{Binding ShowAnimation}" />
+                <!-- <Image Source="infinity.gif"
+                       IsAnimationPlaying="{Binding ShowAnimation}"
+                       WidthRequest="100"
+                       IsVisible="{Binding ShowAnimation}"/> -->
 
                 <Entry
                     Placeholder="Filter cards..."
@@ -33,13 +41,67 @@
             </VerticalStackLayout>
 
             <CollectionView Grid.Row="1"
-                    x:Name="CardCollection"
+                            IsVisible="{Binding TwoColumnList, Converter={StaticResource InvertedBoolConverter}}"
+                            x:Name="CardCollection1"
+                            ItemsSource="{Binding FilteredCards}"
+                            SelectionMode="Single"
+                            SelectionChanged="OnCardSelected">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical"
+                                     Span="1"
+                                     VerticalItemSpacing="12"/>
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Border
+                                Padding="12"
+                                BackgroundColor="{Binding BackgroundColor}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="18"/>
+                                </Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnCardTapped"/>
+                                </Border.GestureRecognizers>
+                                <Grid ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="16">
+                                    <Image
+                                        Source="{Binding Logo}"
+                                        HeightRequest="120"
+                                        WidthRequest="160"
+                                        Aspect="AspectFit"/>
+
+                                    <VerticalStackLayout
+                                        Grid.Column="1"
+                                        Spacing="4"
+                                        VerticalOptions="Center">
+                                        <Label
+                                            Text="{Binding Name}"
+                                            FontAttributes="Bold"
+                                            FontSize="18"
+                                            TextColor="{Binding ComplementaryColor}"/>
+
+                                        <Label
+                                            Text="{Binding CardNumber}"
+                                            FontSize="10"
+                                            TextColor="{Binding ComplementaryColor}"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <CollectionView Grid.Row="1"
+                            IsVisible="{Binding TwoColumnList}"
+                            x:Name="CardCollection2"
                             ItemsSource="{Binding FilteredCards}"
                             SelectionMode="Single"
                             SelectionChanged="OnCardSelected"
-                                    ItemsLayout="VerticalGrid, 2"
-                            >
-          
+                            ItemsLayout="VerticalGrid, 2">
+
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Grid Padding="4">
@@ -52,29 +114,28 @@
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnCardTapped"/>
                                 </Border.GestureRecognizers>
-                              
-                                    <VerticalStackLayout
-                                    
-                                        Spacing="4"
-                                        VerticalOptions="Center">
-                                          <Image
+
+                                <VerticalStackLayout
+                                    Spacing="4"
+                                    VerticalOptions="Center">
+                                    <Image
                                         Source="{Binding Logo}"
-                                        
                                         HeightRequest="60"
                                         Aspect="AspectFit"/>
-                                        <Label
-                                            Text="{Binding Name}"
-                                            FontAttributes="Bold"
-                                            FontSize="14"
-                                            TextColor="{Binding ComplementaryColor}"/>
+                                    <Label
+                                        Text="{Binding Name}"
+                                        FontAttributes="Bold"
+                                        FontSize="14"
+                                        TextColor="{Binding ComplementaryColor}"/>
 
-                                    </VerticalStackLayout>
-                              
+                                </VerticalStackLayout>
+
                             </Border>
                         </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+
         </Grid>
         <ImageButton Source="add.svg"
                      BackgroundColor="{StaticResource Primary}"

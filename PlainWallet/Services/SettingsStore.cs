@@ -100,6 +100,12 @@ namespace PlainWallet.Services
             set => UpdateProperty(value, (s, v) => s.Apikey = v);
         }
 
+  public static bool TwoColumnMode
+        {
+            get => Current.TwoColumnMode;
+            set => UpdateProperty(value, (s, v) => s.TwoColumnMode = v);
+        }
+
         public static void Reload()
         {
             if (_services == null)

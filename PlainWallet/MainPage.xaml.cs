@@ -18,6 +18,8 @@ public partial class MainPage : ContentPage
     private readonly Random _random = new();
     private readonly IServiceProvider _services;
 
+    public bool TwoColumnList { get; set; } = false;
+    
     public MainPage()
     {
         _services = IPlatformApplication.Current.Services;
@@ -37,9 +39,11 @@ public partial class MainPage : ContentPage
     protected async override void OnAppearing()
     {
         base.OnAppearing();
+        TwoColumnList = SettingsStore.TwoColumnMode;
+        OnPropertyChanged(nameof(TwoColumnList));
         ApplyFilter();
-        CardCollection.Loaded += OnCardCollectionLoaded;
- 
+        this.Loaded += OnCardCollectionLoaded;
+
     }
 
     private async void OnCardCollectionLoaded(object? sender, EventArgs e)
