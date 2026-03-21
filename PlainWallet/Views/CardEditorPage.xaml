@@ -26,11 +26,12 @@
                                    Grid.Column="0"/>
                             <ImageButton
                                    Grid.Column="1"
-                                   WidthRequest="92"
+                                   WidthRequest="50"
+                                   HeightRequest="40"
                                    Source="barcode_scan.svg"
                                    Clicked="OnScanBarcodeClicked"
                                    BackgroundColor="{StaticResource Primary}"
-                                   CornerRadius="8"
+                                   CornerRadius="25"
                                    Padding="12"
                                    HorizontalOptions="Center"
                                    VerticalOptions="Center"/>

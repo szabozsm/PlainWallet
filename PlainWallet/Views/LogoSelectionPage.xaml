@@ -65,7 +65,7 @@
                                     ItemsSource="{Binding Logos}"
                                     SelectionMode="Single"
                                     SelectionChanged="OnSelectionChanged"
-                                    ItemsLayout="VerticalGrid, 1"
+                                    ItemsLayout="VerticalGrid, 2"
                                     ItemSizingStrategy="MeasureAllItems">
                         <CollectionView.ItemTemplate>
                             <DataTemplate>

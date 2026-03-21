@@ -46,11 +46,8 @@
                                    FontSize="9"/>
 
                             <Label Text="Bin id"
-                                   Margin="0,20,0,0"
-                                   TextColor="#FFAAAAAA"/>
-                            <Entry  TextColor="#FFAAAAAA"
-                                    IsReadOnly="True"
-                                    Text="{Binding BucketId}"/>
+                                   Margin="0,20,0,0"/>
+                            <Entry  Text="{Binding BucketId, Mode=TwoWay}"/>
 
                      </VerticalStackLayout>
 

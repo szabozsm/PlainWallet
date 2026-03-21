@@ -37,6 +37,7 @@ public partial class SettingsPage : ContentPage
     public string BucketId
     {
         get => SettingsStore.BucketId;
+        set => SettingsStore.BucketId = value;
     }
 
     public bool UseExtendsClass
@@ -55,6 +56,7 @@ public partial class SettingsPage : ContentPage
             OnPropertyChanged(nameof(Apikey));
             OnPropertyChanged(nameof(SecurityKey));
             OnPropertyChanged(nameof(UseExtendsClass));
+            OnPropertyChanged(nameof(BucketId));
         }
         catch (Exception ex)
         {

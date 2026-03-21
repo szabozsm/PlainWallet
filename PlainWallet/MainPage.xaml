@@ -36,15 +36,13 @@
                     x:Name="CardCollection"
                             ItemsSource="{Binding FilteredCards}"
                             SelectionMode="Single"
-                            SelectionChanged="OnCardSelected">
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical"
-                                       ItemSpacing="12"/>
-                </CollectionView.ItemsLayout>
-
+                            SelectionChanged="OnCardSelected"
+                                    ItemsLayout="VerticalGrid, 2"
+                            >
+          
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Grid>
+                        <Grid Padding="4">
                             <Border
                                 Padding="12"
                                 BackgroundColor="{Binding BackgroundColor}">
@@ -54,30 +52,24 @@
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnCardTapped"/>
                                 </Border.GestureRecognizers>
-                                <Grid ColumnDefinitions="Auto,*"
-                                      ColumnSpacing="16">
-                                    <Image
-                                        Source="{Binding Logo}"
-                                        HeightRequest="120"
-                                        WidthRequest="160"
-                                        Aspect="AspectFit"/>
-
+                              
                                     <VerticalStackLayout
-                                        Grid.Column="1"
+                                    
                                         Spacing="4"
                                         VerticalOptions="Center">
+                                          <Image
+                                        Source="{Binding Logo}"
+                                        
+                                        HeightRequest="60"
+                                        Aspect="AspectFit"/>
                                         <Label
                                             Text="{Binding Name}"
                                             FontAttributes="Bold"
-                                            FontSize="18"
+                                            FontSize="14"
                                             TextColor="{Binding ComplementaryColor}"/>
 
-                                        <Label
-                                            Text="{Binding CardNumber}"
-                                            FontSize="10"
-                                            TextColor="{Binding ComplementaryColor}"/>
                                     </VerticalStackLayout>
-                                </Grid>
+                              
                             </Border>
                         </Grid>
                     </DataTemplate>

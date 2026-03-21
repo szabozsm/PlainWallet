@@ -6,7 +6,7 @@
    version="1.1"
    id="svg16405"
    sodipodi:docname="appicon.svg"
-   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -23,14 +23,16 @@
      inkscape:pagecheckerboard="0"
      showgrid="false"
      inkscape:zoom="1.8223684"
-     inkscape:cx="228"
-     inkscape:cy="228"
+     inkscape:cx="227.45127"
+     inkscape:cy="227.72563"
      inkscape:window-width="1920"
      inkscape:window-height="1018"
-     inkscape:window-x="-6"
+     inkscape:window-x="1913"
      inkscape:window-y="-6"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg16405" />
+     inkscape:current-layer="svg16405"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
   <rect
      x="0"
      y="0"
@@ -38,5 +40,5 @@
      height="456"
      fill="#512BD4"
      id="rect16403"
-     style="fill:#003380" />
+     style="fill:#072a66;fill-opacity:1" />
 </svg>
