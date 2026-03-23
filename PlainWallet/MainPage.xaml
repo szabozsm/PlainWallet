@@ -126,6 +126,7 @@
                                         Text="{Binding Name}"
                                         FontAttributes="Bold"
                                         FontSize="14"
+                                        HorizontalOptions="Start"
                                         TextColor="{Binding ComplementaryColor}"/>
 
                                 </VerticalStackLayout>

@@ -28,7 +28,7 @@ public enum LogoKind
 public class MembershipCard : INotifyPropertyChanged
 {
 
-private const int MaxStoredSize =64;
+    private const int MaxStoredSize = 64;
 
     private Color _backgroundColor = Colors.LightGray;
     private Guid _id = Guid.NewGuid();
@@ -58,7 +58,7 @@ private const int MaxStoredSize =64;
 
     public int BarcodeTypeValue { get => _barcodeTypeValue; set { if (_barcodeTypeValue == value) return; _barcodeTypeValue = value; OnPropertyChanged(nameof(BarcodeTypeValue)); } }
 
-    public string CardNumber { get =>_cardNumber; set { if (_cardNumber == value) return; _cardNumber = value; OnPropertyChanged(nameof(CardNumber)); } }
+    public string CardNumber { get => _cardNumber; set { if (_cardNumber == value) return; _cardNumber = value; OnPropertyChanged(nameof(CardNumber)); } }
 
     [JsonIgnore]
     [NotMapped]
@@ -84,7 +84,7 @@ private const int MaxStoredSize =64;
         {
             if ((LogoKind == LogoKind.Builtin) && (!string.IsNullOrEmpty(LogoUri)))
             {
-                    return ImageSource.FromFile(LogoUri);
+                return ImageSource.FromFile(LogoUri);
             }
 
             if (LogoData == null)
@@ -118,7 +118,7 @@ private const int MaxStoredSize =64;
     /// <param name="maxWidth">Maximum width</param>
     /// <param name="maxHeight">Maximum height</param>
     /// <returns>Resized image bytes</returns>
-    public static async Task<byte[]> ResizeImageAsync(byte[] imageBytes, int maxWidth=MaxStoredSize, int maxHeight=MaxStoredSize)
+    public static async Task<byte[]> ResizeImageAsync(byte[] imageBytes, int maxWidth = MaxStoredSize, int maxHeight = MaxStoredSize)
     {
         try
         {

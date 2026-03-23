@@ -74,7 +74,15 @@ public partial class LogoSelectionPage : ContentPage
                 tabView.SelectedTab = FileTab;
                 break;
         }
+
     }
+
+    private async void OnDeleteLogoClicked(object? sender, EventArgs e)
+    {
+        LogoSelected?.Invoke(null, LogoKind.None);
+        await Navigation.PopAsync();
+    }
+
     private async void OnBrowseClicked(object? sender, EventArgs e)
     {
         try

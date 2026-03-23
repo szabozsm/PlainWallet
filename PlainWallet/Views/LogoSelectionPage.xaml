@@ -7,9 +7,11 @@
              Title="Select Logo">
 
     <material:TabView x:Name="tabView"
-                      TabPlacement="Bottom">
+                      TabPlacement="Bottom"
+                      Padding="20,0,20,10">
 
-        <material:TabItem Title="" x:Name="BuiltinTab">
+        <material:TabItem Title=""
+                          x:Name="BuiltinTab">
             <material:TabItem.HeaderTemplate>
                 <DataTemplate>
                     <Button Text="{Binding Title}"
@@ -17,8 +19,10 @@
                             BackgroundColor="Transparent">
                         <Button.Triggers>
                             <DataTrigger TargetType="Button"
-                                    Binding="{Binding IsSelected}"
-                                    Value="True">
+                                         Binding="{Binding IsSelected}"
+                                         Value="True">
+                                <Setter Property="CornerRadius"
+                                        Value="5"/>
                                 <Setter Property="BackgroundColor"
                                         Value="{StaticResource Primary}"/>
                                 <Setter Property="TextColor"
@@ -27,8 +31,8 @@
                                         Value="list.svg"/>
                             </DataTrigger>
                             <DataTrigger TargetType="Button"
-                                    Binding="{Binding IsSelected}"
-                                    Value="False">
+                                         Binding="{Binding IsSelected}"
+                                         Value="False">
                                 <Setter Property="BackgroundColor"
                                         Value="Transparent"/>
                                 <Setter Property="TextColor"
@@ -101,8 +105,10 @@
                             BackgroundColor="Transparent">
                         <Button.Triggers>
                             <DataTrigger TargetType="Button"
-                                    Binding="{Binding IsSelected}"
-                                    Value="True">
+                                         Binding="{Binding IsSelected}"
+                                         Value="True">
+                                <Setter Property="CornerRadius"
+                                        Value="5"/>
                                 <Setter Property="BackgroundColor"
                                         Value="{StaticResource Primary}"/>
                                 <Setter Property="TextColor"
@@ -111,8 +117,8 @@
                                         Value="web.svg"/>
                             </DataTrigger>
                             <DataTrigger TargetType="Button"
-                                    Binding="{Binding IsSelected}"
-                                    Value="False">
+                                         Binding="{Binding IsSelected}"
+                                         Value="False">
                                 <Setter Property="BackgroundColor"
                                         Value="Transparent"/>
                                 <Setter Property="TextColor"
@@ -172,7 +178,7 @@
             </material:TabItem.Content>
         </material:TabItem>
 
-        <material:TabItem x:Name="FileTab" >
+        <material:TabItem x:Name="FileTab">
             <material:TabItem.HeaderTemplate>
                 <DataTemplate>
                     <Button Text="{Binding Title}"
@@ -180,8 +186,10 @@
                             BackgroundColor="Transparent">
                         <Button.Triggers>
                             <DataTrigger TargetType="Button"
-                                    Binding="{Binding IsSelected}"
-                                    Value="True">
+                                         Binding="{Binding IsSelected}"
+                                         Value="True">
+                                <Setter Property="CornerRadius"
+                                        Value="5"/>
                                 <Setter Property="BackgroundColor"
                                         Value="{StaticResource Primary}"/>
                                 <Setter Property="TextColor"
@@ -190,8 +198,8 @@
                                         Value="folder_open.svg"/>
                             </DataTrigger>
                             <DataTrigger TargetType="Button"
-                                    Binding="{Binding IsSelected}"
-                                    Value="False">
+                                         Binding="{Binding IsSelected}"
+                                         Value="False">
                                 <Setter Property="BackgroundColor"
                                         Value="Transparent"/>
                                 <Setter Property="TextColor"
@@ -210,6 +218,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
 
                     </Grid.RowDefinitions>
 
@@ -229,10 +238,12 @@
                                HorizontalOptions="Fill"/>
                     </Border>
 
-                    <HorizontalStackLayout Grid.Row="0"
-                                           Spacing="12">
-
-                    </HorizontalStackLayout>
+                    <Button Grid.Row="2"
+                            Text="Delete logo"
+                            BackgroundColor="Red"
+                            TextColor="white"
+                            Margin="0,12,0,12"
+                            Clicked="OnDeleteLogoClicked"/>
 
                 </Grid>
 

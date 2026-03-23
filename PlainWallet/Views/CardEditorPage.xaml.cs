@@ -62,9 +62,13 @@ public partial class CardEditorPage : ContentPage
 
     private async void OnLogoSelected(string? logo, LogoKind logoKind)
     {
-        if (string.IsNullOrEmpty(logo)) return;
-
         this.LogoKind = logoKind;
+        OnPropertyChanged(nameof(LogoKind));
+        if (string.IsNullOrEmpty(logo))
+        {
+            LogoPreview.Source = MembershipCard.CreateInitialsImage(MembershipCard.CalculateInitials(Name), Colors.Black);
+            return;
+        }
 
         switch (LogoKind)
         {
@@ -133,7 +137,6 @@ public partial class CardEditorPage : ContentPage
                 break;
         }
 
-        OnPropertyChanged(nameof(LogoKind));
         OnPropertyChanged(nameof(SelectedLogoUri));
         OnPropertyChanged(nameof(SelectedLogoUrl));
         OnPropertyChanged(nameof(SelectedLogoData));
@@ -199,7 +202,7 @@ public partial class CardEditorPage : ContentPage
             _editingCard.LogoUri = SelectedLogoUri;
             _editingCard.LogoUrl = SelectedLogoUrl;
             _editingCard.LogoKind = LogoKind;
-            
+
             if (LogoKind == LogoKind.None)
             {
                 _editingCard.LogoData = await MembershipCard.ImageSourceToByteArrayAsync(MembershipCard.CreateInitialsImage(MembershipCard.CalculateInitials(Name), _editingCard.ComplementaryColor));
@@ -223,7 +226,7 @@ public partial class CardEditorPage : ContentPage
                 LogoKind = LogoKind,
                 LogoData = SelectedLogoData
             };
-                        if (card.LogoKind == LogoKind.None)
+            if (card.LogoKind == LogoKind.None)
             {
                 card.LogoData = await MembershipCard.ImageSourceToByteArrayAsync(MembershipCard.CreateInitialsImage(MembershipCard.CalculateInitials(card.Name), card.ComplementaryColor));
             }

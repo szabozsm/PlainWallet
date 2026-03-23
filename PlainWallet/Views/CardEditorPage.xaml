@@ -13,7 +13,8 @@
                             FontAttributes="Bold"/>
                      <Entry x:Name="NameEntry"
                             Placeholder="Card or store name"
-                            Text="{Binding Name, Mode=TwoWay}"/>
+                            Text="{Binding Name, Mode=TwoWay}"
+                            Keyboard="Text"/>
 
                      <Label Text="Card number"
                             FontAttributes="Bold"/>
@@ -77,8 +78,8 @@
                              Text="{Binding Notes, Mode=TwoWay}"/>
                      <Button
                             WidthRequest="200"
-                                   BackgroundColor="Red"
-                                   TextColor="white"
+                            BackgroundColor="Red"
+                            TextColor="white"
                             Text="Delete"
                             Clicked="OnDeleteClicked"/>
               </VerticalStackLayout>
