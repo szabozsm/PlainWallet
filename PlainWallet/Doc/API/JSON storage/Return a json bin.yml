@@ -7,15 +7,10 @@ http:
   method: GET
   url: "{{baseUrl}}/bin/:id"
   params:
-    - name: ""
-      value: ""
-      type: query
+    - name: id
+      value: a49a807cd078
+      type: path
   auth: inherit
-
-runtime:
-  variables:
-    - name: baseUrl
-      value: https://json.extendsclass.com
 
 settings:
   encodeUrl: true

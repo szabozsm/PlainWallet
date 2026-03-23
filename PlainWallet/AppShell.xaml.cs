@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text;
 using PlainWallet.Services;
 using Xamarin.Google.ErrorProne.Annotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace PlainWallet;
 
@@ -125,4 +126,31 @@ public partial class AppShell : Shell
         }
     }
 
+    private async void OnDeleteDatabaseClicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            bool answer = await DisplayAlert("Delete", "Are you sure you want to delete ALL CARDS?", "Yes", "No");
+            if (answer)
+            {
+                if (SettingsStore.UseExtendsClass)
+                {
+                    bool answer2 = await DisplayAlert("Delete", "You are synchronizing your data to the cloud, that will be deleted too. Are you still sure?", "Yes", "No");
+                    if (!answer2)
+                        return;
+                }
+
+                using var innerScope0 = _services.CreateScope();
+                using var db = innerScope0.ServiceProvider.GetRequiredService<CardDbContext>();
+                await db.Cards.ExecuteDeleteAsync();
+                await db.SaveChangesAsync();
+                CardStore.Initialize(_services);
+            }
+        }
+        finally
+        {
+            this.FlyoutIsPresented = false;
+        }
+
+    }
 }

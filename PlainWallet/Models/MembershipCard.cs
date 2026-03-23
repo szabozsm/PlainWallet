@@ -80,11 +80,17 @@ public class MembershipCard : INotifyPropertyChanged
             switch (LogoKind)
             {
                 case LogoKind.None:
-                    return this.CreateInitialsImage(this.CalculateInitials(Name), ComplementaryColor);
+                    if (LogoCache == null)
+                        LogoCache = this.CreateInitialsImage(this.CalculateInitials(Name), ComplementaryColor);
+                    return LogoCache;
 
                 case LogoKind.Builtin:
                     if (!string.IsNullOrEmpty(LogoUri))
-                        return ImageSource.FromFile(LogoUri);
+                    {
+                        if (LogoCache == null)
+                            LogoCache = ImageSource.FromFile(LogoUri);
+                        return LogoCache;
+                    }
                     break;
                 case LogoKind.Web:
                     {
@@ -139,6 +145,10 @@ public class MembershipCard : INotifyPropertyChanged
 
     }
     // Persist binary logo data directly in the database
+
+    [JsonIgnore]
+    [NotMapped]
+    public ImageSource LogoCache = null;
 
     public byte[]? LogoData { get => _logoData; set { if (_logoData == value) return; _logoData = value; OnPropertyChanged(nameof(LogoData)); } }
 
@@ -308,13 +318,13 @@ public class MembershipCard : INotifyPropertyChanged
         try
         {
             int size = 64; // Size of the avatar image
-            int thickness=3;
+            int thickness = 3;
             using var bitmap = new SKBitmap(size, size);
             using var canvas = new SKCanvas(bitmap);
-            
+
             // Clear with transparent background
             canvas.Clear(SKColors.Transparent);
-            
+
             // Draw circle (60px diameter = 30px radius, centered at 32,32)
             using var circlePaint = new SKPaint
             {
@@ -323,10 +333,10 @@ public class MembershipCard : INotifyPropertyChanged
                 Color = new SKColor((byte)(color.Red * 255), (byte)(color.Green * 255), (byte)(color.Blue * 255), (byte)(color.Alpha * 255)),
                 IsAntialias = true
             };
-            
+
             //canvas.DrawCircle(size/2, size/2, size/2-thickness/2-1, circlePaint);
-            canvas.DrawRoundRect(new SKRect(thickness, thickness, size-thickness, size-thickness), size/4, size/4, circlePaint);
-            
+            canvas.DrawRoundRect(new SKRect(thickness, thickness, size - thickness, size - thickness), size / 4, size / 4, circlePaint);
+
             // Draw text (48px size, centered)
             using var textPaint = new SKPaint
             {
@@ -335,24 +345,24 @@ public class MembershipCard : INotifyPropertyChanged
                 IsAntialias = true,
                 Typeface = SKTypeface.Default
             };
-            
+
             var textBounds = new SKRect();
             textPaint.MeasureText(text, ref textBounds);
-            
+
             // Center the text
-            var x = (size/2) - textBounds.Width / 2 - textBounds.Left;
-            var y = (size/2) - textBounds.Height / 2 - textBounds.Top;
-            
+            var x = (size / 2) - textBounds.Width / 2 - textBounds.Left;
+            var y = (size / 2) - textBounds.Height / 2 - textBounds.Top;
+
             canvas.DrawText(text, x, y, textPaint);
-            
+
             // Convert to ImageSource
             using var image = SKImage.FromBitmap(bitmap);
             using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-            
+
             var imageData = data.ToArray();
             return ImageSource.FromStream(() => new MemoryStream(imageData));
         }
-        catch 
+        catch
         {
             return null;
         }

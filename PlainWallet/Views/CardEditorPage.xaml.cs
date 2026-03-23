@@ -200,6 +200,7 @@ public partial class CardEditorPage : ContentPage
             _editingCard.LogoUrl = SelectedLogoUrl;
             _editingCard.LogoData = SelectedLogoData;
             _editingCard.LogoKind = LogoKind;
+            _editingCard.LogoCache=null;
 
         }
         else

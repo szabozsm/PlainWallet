@@ -6,6 +6,14 @@ info:
 http:
   method: DELETE
   url: "{{baseUrl}}/bin/:id"
+  headers:
+    - name: Security-key
+      value: abcd123
+      disabled: true
+  params:
+    - name: id
+      value: 5c3fe531afb2
+      type: path
   auth: inherit
 
 settings:

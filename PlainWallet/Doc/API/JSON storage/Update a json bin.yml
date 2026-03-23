@@ -8,7 +8,7 @@ http:
   url: "{{baseUrl}}/bin/:id"
   params:
     - name: id
-      value: 822f3c9057b3
+      value: a49a807cd078
       type: path
   body:
     type: json

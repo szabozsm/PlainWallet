@@ -74,7 +74,7 @@ new LogoInfo("macy_s.svg",""),
 
     public static IEnumerable<string> GetBuiltInLogoFileNames()
     {
-        return _builtIn.Select(x => x.FileName);
+        return _builtIn.Select(x => x.FileName).OrderBy(x=>x);
     }
 
     public static Color GetLogoColor(string filename)

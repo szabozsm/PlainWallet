@@ -10,6 +10,7 @@
 
     <ShellContent
         Title="Home"
+        Icon="home.svg"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage"/>
 
@@ -21,10 +22,33 @@
               IconImageSource="import_data.svg"
               Clicked="OnImportClicked"/>
 
- <MenuItem Text="Settings"
+    <MenuItem Text="Settings"
               IconImageSource="settings.svg"
               Clicked="OnSettingsClicked"/>
-              
+
+    <!-- <MenuItem Text="Delete all cards"
+              IconImageSource="database_delete.svg"
+              Clicked="OnDeleteDatabaseClicked">
+        <Shell.MenuItemTemplate>
+            <DataTemplate>
+                <Grid ColumnDefinitions="auto,*"
+                        Margin="0,80">
+                    <Image Grid.Column="0"
+                           Source="database_delete.svg"
+                           Margin="16,8,28,0"
+                           HeightRequest="32"/>
+                    <Label Grid.Column="1"
+                           Text="{Binding Text}"
+                           TextColor="Red"
+                           
+                           VerticalTextAlignment="Center"/>
+
+                </Grid>
+            </DataTemplate>
+        </Shell.MenuItemTemplate>
+
+    </MenuItem> -->
+
     <!-- <MenuItem Text="Buy Me a Coffee"
               Clicked="OnBuyMeCoffeeTapped">
         <MenuItem.IconImageSource>
@@ -37,12 +61,15 @@
     </MenuItem> -->
 
     <Shell.FlyoutFooter>
+             <VerticalStackLayout>
+  
         <Image Source="buyme.png"
                HorizontalOptions="Center">
             <Image.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnBuyMeCoffeeTapped"/>
             </Image.GestureRecognizers>
         </Image>
+        </VerticalStackLayout>
     </Shell.FlyoutFooter>
 
 </Shell>
