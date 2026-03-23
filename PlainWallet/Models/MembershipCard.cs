@@ -1,10 +1,13 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
+using Android.Health.Connect.DataTypes.Units;
 using Android.Util;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
@@ -24,6 +27,8 @@ public enum LogoKind
 
 public class MembershipCard : INotifyPropertyChanged
 {
+
+private const int MaxStoredSize =64;
 
     private Color _backgroundColor = Colors.LightGray;
     private Guid _id = Guid.NewGuid();
@@ -53,7 +58,7 @@ public class MembershipCard : INotifyPropertyChanged
 
     public int BarcodeTypeValue { get => _barcodeTypeValue; set { if (_barcodeTypeValue == value) return; _barcodeTypeValue = value; OnPropertyChanged(nameof(BarcodeTypeValue)); } }
 
-    public string CardNumber { get => _cardNumber; set { if (_cardNumber == value) return; _cardNumber = value; OnPropertyChanged(nameof(CardNumber)); } }
+    public string CardNumber { get =>_cardNumber; set { if (_cardNumber == value) return; _cardNumber = value; OnPropertyChanged(nameof(CardNumber)); } }
 
     [JsonIgnore]
     [NotMapped]
@@ -77,78 +82,18 @@ public class MembershipCard : INotifyPropertyChanged
     {
         get
         {
-            switch (LogoKind)
+            if ((LogoKind == LogoKind.Builtin) && (!string.IsNullOrEmpty(LogoUri)))
             {
-                case LogoKind.None:
-                    if (LogoCache == null)
-                        LogoCache = this.CreateInitialsImage(this.CalculateInitials(Name), ComplementaryColor);
-                    return LogoCache;
-
-                case LogoKind.Builtin:
-                    if (!string.IsNullOrEmpty(LogoUri))
-                    {
-                        if (LogoCache == null)
-                            LogoCache = ImageSource.FromFile(LogoUri);
-                        return LogoCache;
-                    }
-                    break;
-                case LogoKind.Web:
-                    {
-                        if (LogoData != null && LogoData.Length > 0)
-                        {
-                            try
-                            {
-                                return ImageSource.FromStream(() => new MemoryStream(LogoData));
-                            }
-                            catch
-                            {
-                            }
-                        }
-                        try
-                        {
-                            if (LogoUrl.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
-                            {
-                                byte[] SelectedLogoData = MembershipCard.DownloadSvgAsPngAsync(LogoUrl, 256).GetAwaiter().GetResult();
-                                return ImageSource.FromStream(() => new MemoryStream(SelectedLogoData));
-                            }
-                            else
-
-                                if (!string.IsNullOrEmpty(LogoUrl))
-                                    return ImageSource.FromUri(new Uri(LogoUrl));
-                        }
-                        catch
-                        {
-                        }
-
-                        return null;
-                    }
-
-                case LogoKind.File:
-                    {
-                        if (LogoData != null && LogoData.Length > 0)
-                        {
-                            try
-                            {
-                                return ImageSource.FromStream(() => new MemoryStream(LogoData));
-                            }
-                            catch
-                            {
-                                return null;
-                            }
-                        }
-                        return null;
-                    }
-                    break;
+                    return ImageSource.FromFile(LogoUri);
             }
-            return null;
+
+            if (LogoData == null)
+                return MembershipCard.CreateInitialsImage(MembershipCard.CalculateInitials(Name), Colors.Red);
+            return ImageSource.FromStream(() => new MemoryStream(LogoData));
         }
 
     }
     // Persist binary logo data directly in the database
-
-    [JsonIgnore]
-    [NotMapped]
-    public ImageSource LogoCache = null;
 
     public byte[]? LogoData { get => _logoData; set { if (_logoData == value) return; _logoData = value; OnPropertyChanged(nameof(LogoData)); } }
 
@@ -173,7 +118,7 @@ public class MembershipCard : INotifyPropertyChanged
     /// <param name="maxWidth">Maximum width</param>
     /// <param name="maxHeight">Maximum height</param>
     /// <returns>Resized image bytes</returns>
-    public static async Task<byte[]> ResizeImageAsync(byte[] imageBytes, int maxWidth, int maxHeight)
+    public static async Task<byte[]> ResizeImageAsync(byte[] imageBytes, int maxWidth=MaxStoredSize, int maxHeight=MaxStoredSize)
     {
         try
         {
@@ -200,7 +145,17 @@ public class MembershipCard : INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
-    public static async Task<byte[]> DownloadSvgAsPngAsync(string url, int maxSize = 256)
+    public static async Task<byte[]> LoadImageFile(string uri)
+    {
+        using var fileStream = File.OpenRead(uri);
+        using (var memoryStream = new MemoryStream())
+        {
+            await fileStream.CopyToAsync(memoryStream);
+            var logoData = await MembershipCard.ResizeImageAsync(memoryStream.ToArray());
+            return logoData;
+        }
+    }
+    public static async Task<byte[]> DownloadSvgAsPngAsync(string url, int maxSize = MaxStoredSize)
     {
 
         // 1. Download the SVG content
@@ -295,7 +250,7 @@ public class MembershipCard : INotifyPropertyChanged
             return new byte[0];
         }
     }
-    private String CalculateInitials(string _name)
+    public static String CalculateInitials(string _name)
     {
         if (string.IsNullOrEmpty(_name)) return "";
         if (string.IsNullOrWhiteSpace(_name)) return "";
@@ -313,11 +268,11 @@ public class MembershipCard : INotifyPropertyChanged
         }
     }
 
-    public ImageSource CreateInitialsImage(string text, Color color)
+    public static ImageSource CreateInitialsImage(string text, Color color)
     {
         try
         {
-            int size = 64; // Size of the avatar image
+            int size = MaxStoredSize; // Size of the avatar image
             int thickness = 3;
             using var bitmap = new SKBitmap(size, size);
             using var canvas = new SKCanvas(bitmap);
@@ -364,6 +319,60 @@ public class MembershipCard : INotifyPropertyChanged
         }
         catch
         {
+            return null;
+        }
+    }
+
+    public static async Task<byte[]?> ImageSourceToByteArrayAsync(ImageSource imageSource, SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
+    {
+        try
+        {
+            Stream? stream = null;
+
+            switch (imageSource)
+            {
+                case StreamImageSource streamImageSource:
+                    stream = await streamImageSource.Stream(CancellationToken.None);
+                    break;
+
+                case FileImageSource fileImageSource:
+                    throw new NotSupportedException($"ImageSource type '{imageSource.GetType().Name}' is not supported.");
+                    break;
+
+                case UriImageSource uriImageSource:
+                    using (var httpClient = new HttpClient())
+                    {
+                        var bytes = await httpClient.GetByteArrayAsync(uriImageSource.Uri);
+                        stream = new MemoryStream(bytes);
+                    }
+                    break;
+
+                default:
+                    throw new NotSupportedException($"ImageSource type '{imageSource.GetType().Name}' is not supported.");
+            }
+
+            if (stream == null)
+                return null;
+
+            using (stream)
+            {
+                var skBitmap = SKBitmap.Decode(stream);
+                if (skBitmap == null)
+                    return null;
+
+                using (skBitmap)
+                using (var skImage = SKImage.FromBitmap(skBitmap))
+                using (var encoded = skImage.Encode(format, quality))
+                using (var outputStream = new MemoryStream())
+                {
+                    encoded.SaveTo(outputStream);
+                    return outputStream.ToArray();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"ImageSourceToByteArrayAsync error: {ex.Message}");
             return null;
         }
     }

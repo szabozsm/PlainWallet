@@ -142,7 +142,7 @@ public partial class LogoSelectionPage : ContentPage
                     // Load the image asynchronously to show loading state
                     await Task.Run(async () =>
                     {
-                        var SelectedLogoData = await MembershipCard.DownloadSvgAsPngAsync(text, 256);
+                        var SelectedLogoData = await MembershipCard.DownloadSvgAsPngAsync(text);
                         var imageSource = ImageSource.FromStream(() => new MemoryStream(SelectedLogoData));
                         MainThread.BeginInvokeOnMainThread(() =>
                         {

@@ -69,10 +69,10 @@ public partial class CardEditorPage : ContentPage
         switch (LogoKind)
         {
             case LogoKind.Builtin:
-                SelectedLogoData = null;
                 SelectedLogoUri = logo;
                 SelectedLogoUrl = null;
                 LogoPreview.Source = ImageSource.FromFile(logo);
+                SelectedLogoData = await MembershipCard.ImageSourceToByteArrayAsync(LogoPreview.Source);
                 var color = LogosService.GetLogoColor(logo);
                 if (color != Colors.Transparent)
                 {
@@ -86,7 +86,7 @@ public partial class CardEditorPage : ContentPage
                     {
                         if (logo.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
                         {
-                            SelectedLogoData = await MembershipCard.DownloadSvgAsPngAsync(logo, 256);
+                            SelectedLogoData = await MembershipCard.DownloadSvgAsPngAsync(logo);
                             LogoPreview.Source = ImageSource.FromStream(() => new MemoryStream(SelectedLogoData));
                         }
                         else
@@ -94,7 +94,7 @@ public partial class CardEditorPage : ContentPage
                             LogoPreview.Source = ImageSource.FromUri(new Uri(logo));
                             // Download the image from the web URL
                             var imageData = await _httpClient.GetByteArrayAsync(logo);
-                            SelectedLogoData = await MembershipCard.ResizeImageAsync(imageData, 256, 256);
+                            SelectedLogoData = await MembershipCard.ResizeImageAsync(imageData);
                         }
                         SelectedLogoUri = null; // Clear URI since we're now using binary data
                         SelectedLogoUrl = logo; // Keep the URL for reference    
@@ -116,7 +116,7 @@ public partial class CardEditorPage : ContentPage
                         using (var memoryStream = new MemoryStream())
                         {
                             await fileStream.CopyToAsync(memoryStream);
-                            SelectedLogoData = await MembershipCard.ResizeImageAsync(memoryStream.ToArray(), 256, 256);
+                            SelectedLogoData = await MembershipCard.ResizeImageAsync(memoryStream.ToArray());
                         }
                         SelectedLogoUri = null; // Clear URI since we're now using binary data
                         SelectedLogoUrl = null; // Clear URI since we're now using binary data
@@ -198,13 +198,19 @@ public partial class CardEditorPage : ContentPage
             _editingCard.BarcodeType = SelectedBarcodeType?.Format ?? ZXing.Net.Maui.BarcodeFormat.Code128;
             _editingCard.LogoUri = SelectedLogoUri;
             _editingCard.LogoUrl = SelectedLogoUrl;
-            _editingCard.LogoData = SelectedLogoData;
             _editingCard.LogoKind = LogoKind;
-            _editingCard.LogoCache=null;
+            
+            if (LogoKind == LogoKind.None)
+            {
+                _editingCard.LogoData = await MembershipCard.ImageSourceToByteArrayAsync(MembershipCard.CreateInitialsImage(MembershipCard.CalculateInitials(Name), _editingCard.ComplementaryColor));
+            }
+            else
+                _editingCard.LogoData = SelectedLogoData;
 
         }
         else
         {
+
             var card = new MembershipCard
             {
                 Name = Name?.Trim() ?? string.Empty,
@@ -217,6 +223,11 @@ public partial class CardEditorPage : ContentPage
                 LogoKind = LogoKind,
                 LogoData = SelectedLogoData
             };
+                        if (card.LogoKind == LogoKind.None)
+            {
+                card.LogoData = await MembershipCard.ImageSourceToByteArrayAsync(MembershipCard.CreateInitialsImage(MembershipCard.CalculateInitials(card.Name), card.ComplementaryColor));
+            }
+
             CardStore.Cards.Add(card);
         }
         await Shell.Current.GoToAsync("..");
