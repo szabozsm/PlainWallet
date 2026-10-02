@@ -246,7 +246,18 @@ public partial class CardEditorPage : ContentPage
 
     private async void OnSelectLogoClicked(object? sender, EventArgs e)
     {
-        var page = new LogoSelectionPage(_editingCard?.LogoUri, _editingCard?.LogoUrl, _editingCard?.LogoData, _editingCard?.LogoKind ?? LogoKind.Builtin);
+        var shouldFocusFilter = LogoKind == LogoKind.None;
+        var firstNameWord = shouldFocusFilter
+            ? Name.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? string.Empty
+            : null;
+        var selectionKind = shouldFocusFilter ? LogoKind.Builtin : LogoKind;
+        var page = new LogoSelectionPage(
+            SelectedLogoUri,
+            SelectedLogoUrl,
+            SelectedLogoData,
+            selectionKind,
+            firstNameWord,
+            shouldFocusFilter);
         await Navigation.PushAsync(page);
     }
 

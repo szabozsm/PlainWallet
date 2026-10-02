@@ -11,15 +11,28 @@ namespace PlainWallet.Views;
 public partial class LogoSelectionPage : ContentPage
 {
     public static event Action<string?, LogoKind>? LogoSelected;
+    private readonly bool _focusFilterOnAppearing;
+    private bool _filterEntryLoaded;
+    private bool _pageAppeared;
+    private bool _filterFocusRequested;
+
     public LogoSelectionPage()
         : this(null, null, null, LogoKind.Builtin)
     {
     }
     private LogoTabViewModel myTabs = new LogoTabViewModel();
     private List<string> _allLogos = new();
-    public LogoSelectionPage(string? initialUri, string? initialUrl, byte[]? InitialLogoData, LogoKind logoKind)
+    public LogoSelectionPage(
+        string? initialUri,
+        string? initialUrl,
+        byte[]? InitialLogoData,
+        LogoKind logoKind,
+        string? initialFilter = null,
+        bool focusFilterOnAppearing = false)
     {
         InitializeComponent();
+        _focusFilterOnAppearing = focusFilterOnAppearing;
+        FilterEntry.Loaded += OnFilterEntryLoaded;
         _allLogos = LogosService.GetBuiltInLogoFileNames().ToList();
         myTabs.Logos = _allLogos.ToList();
 
@@ -69,6 +82,8 @@ public partial class LogoSelectionPage : ContentPage
         }
 
         tabView.BindingContext = myTabs;
+        if (initialFilter is not null)
+            FilterEntry.Text = initialFilter;
 
         // Select the appropriate tab based on LogoKind
         switch (logoKind)
@@ -84,6 +99,33 @@ public partial class LogoSelectionPage : ContentPage
                 break;
         }
 
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        _pageAppeared = true;
+        TryFocusFilter();
+    }
+
+    private void OnFilterEntryLoaded(object? sender, EventArgs e)
+    {
+        _filterEntryLoaded = true;
+        TryFocusFilter();
+    }
+
+    private void TryFocusFilter()
+    {
+        if (!_focusFilterOnAppearing || !_pageAppeared || !_filterEntryLoaded || _filterFocusRequested)
+            return;
+
+        _filterFocusRequested = true;
+        Dispatcher.Dispatch(() =>
+        {
+            FilterEntry.Focus();
+            FilterEntry.CursorPosition = FilterEntry.Text?.Length ?? 0;
+            FilterEntry.SelectionLength = 0;
+        });
     }
 
     private async void OnDeleteLogoClicked(object? sender, EventArgs e)
