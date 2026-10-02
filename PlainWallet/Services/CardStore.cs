@@ -35,35 +35,40 @@ public static class CardStore
 
     private async static void OnCardsChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        using var innerScope = _services.CreateScope();
-        var innerCtx = innerScope.ServiceProvider.GetRequiredService<CardDbContext>();
-        if (e.NewItems != null)
+        try
         {
-            foreach (MembershipCard item in e.NewItems)
+            using var innerScope = _services.CreateScope();
+            var innerCtx = innerScope.ServiceProvider.GetRequiredService<CardDbContext>();
+            if (e.NewItems != null)
             {
-                innerCtx.Cards.Add(item);
+                foreach (MembershipCard item in e.NewItems)
+                    innerCtx.Cards.Add(item);
+            }
+            if (e.OldItems != null)
+            {
+                foreach (MembershipCard item in e.OldItems)
+                {
+                    var tracked = innerCtx.Cards.Local.FirstOrDefault(x => x.Id == item.Id) ?? innerCtx.Cards.Find(item.Id);
+                    if (tracked != null) innerCtx.Cards.Remove(tracked);
+                }
+            }
+            innerCtx.SaveChanges();
+
+            if (SettingsStore.UseExtendsClass)
+            {
+                var importService = _services.GetRequiredService<ImportService>();
+                await importService.UploadData();
+            }
+
+            if (e.NewItems != null)
+            {
+                foreach (MembershipCard item in e.NewItems)
+                    SubscribeCard(item);
             }
         }
-        if (e.OldItems != null)
+        catch (Exception exception)
         {
-            foreach (MembershipCard item in e.OldItems)
-            {
-                var tracked = innerCtx.Cards.Local.FirstOrDefault(x => x.Id == item.Id) ?? innerCtx.Cards.Find(item.Id);
-                if (tracked != null) innerCtx.Cards.Remove(tracked);
-            }
-        }
-        innerCtx.SaveChanges();
-
-        if (SettingsStore.UseExtendsClass)
-        {
-            var importService = _services.GetRequiredService<ImportService>();
-            await importService.UploadData();
-        }
-
-        if (e.NewItems != null)
-        {
-            foreach (MembershipCard item in e.NewItems)
-                SubscribeCard(item);
+            ExceptionReporter.Report(exception, "Card storage error");
         }
     }
 
@@ -86,7 +91,7 @@ public static class CardStore
     {
         card.PropertyChanged += (_, args) =>
         {
-            _ = HandlePropertyChangedAsync(card);
+            _ = HandlePropertyChangedSafelyAsync(card);
         };
 
         // card.PropertyChanged += (_, args) =>
@@ -138,6 +143,18 @@ public static class CardStore
         {
             var importService = scope.ServiceProvider.GetRequiredService<ImportService>();
             await importService.UploadData();
+        }
+    }
+
+    private static async Task HandlePropertyChangedSafelyAsync(MembershipCard card)
+    {
+        try
+        {
+            await HandlePropertyChangedAsync(card);
+        }
+        catch (Exception exception)
+        {
+            ExceptionReporter.Report(exception, "Card save error");
         }
     }
 }
