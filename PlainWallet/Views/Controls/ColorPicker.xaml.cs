@@ -137,9 +137,12 @@ public partial class ColorPicker : ContentView
         set => SetValue(SelectedColorProperty, value);
     }
 
-    private void OnSelectColorClicked(object sender, EventArgs e)
+    private void OnSelectColorClicked(object? sender, EventArgs e)
     {
-        subColorPicker.PickedColor = ((Button)sender).BackgroundColor;
+        if (sender is Button button)
+        {
+            subColorPicker.PickedColor = button.BackgroundColor;
+        }
     }
 
 }

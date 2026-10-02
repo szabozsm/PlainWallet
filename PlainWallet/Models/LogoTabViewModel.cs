@@ -9,26 +9,26 @@ namespace PlainWallet.Models
 {
     public class LogoTabViewModel : INotifyPropertyChanged
     {
-        private List<string> _logos;
-        private ImageSource _urlPreviewSource;
-        private ImageSource _filePreviewSource;
-        private string _currentUrl;
-        private string _currentUri;
+        private List<string> _logos = [];
+        private ImageSource? _urlPreviewSource;
+        private ImageSource? _filePreviewSource;
+        private string _currentUrl = string.Empty;
+        private string _currentUri = string.Empty;
         private bool _isUrlLoading;
 
         public List<string> Logos 
         { 
             get => _logos; 
-            set { _logos = value; OnPropertyChanged(); }
+            set { _logos = value ?? []; OnPropertyChanged(); }
         }
 
-        public ImageSource UrlPreviewSource 
+        public ImageSource? UrlPreviewSource 
         { 
             get => _urlPreviewSource; 
             set { _urlPreviewSource = value; OnPropertyChanged(); }
         }
 
-        public ImageSource FilePreviewSource 
+        public ImageSource? FilePreviewSource 
         { 
             get => _filePreviewSource; 
             set { _filePreviewSource = value; OnPropertyChanged(); }

@@ -41,12 +41,12 @@ public partial class ScannerPage : ContentPage
     {
         if (_handling) return;
         var result = e.Results?.FirstOrDefault()?.Value;
-        ZXing.Net.Maui.BarcodeFormat? bctype = e.Results?.FirstOrDefault()?.Format;
+        var format = e.Results?.FirstOrDefault()?.Format ?? ZXing.Net.Maui.BarcodeFormat.QrCode;
         if (string.IsNullOrEmpty(result)) return;
         _handling = true;
         MainThread.BeginInvokeOnMainThread(async () =>
         {
-            _onScanned?.Invoke(result, bctype.Value);
+            _onScanned?.Invoke(result, format);
             await Navigation.PopAsync();
         });
     }

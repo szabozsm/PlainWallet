@@ -35,6 +35,9 @@ public class ImportService
 
         public async Task<int> ImportData(string json)
         {
+                if (string.IsNullOrWhiteSpace(json))
+                        return -1;
+
                 var importData = JsonSerializer.Deserialize<ImportedData>(json, new JsonSerializerOptions
                 {
                         PropertyNameCaseInsensitive = true,
@@ -81,13 +84,17 @@ public class ImportService
                 try
                 {
                         var data = GetDataToExport();
-                        string BucketId = await GetBucketId(); 
+                        string bucketId = await GetBucketId();
                         var cli = _services.GetRequiredService<IExtendsClassClient>();
-                        await cli.BinPUTAsync(data, BucketId);
+                        await cli.BinPUTAsync(data, bucketId);
                 }
                 catch (Exception ex)
                 {
-                        await Application.Current.Windows[0].Page.DisplayAlertAsync("Error", $"Failed to upload data to extendsclass.com: {ex.Message}", "OK");
+                        var page = Application.Current?.Windows.FirstOrDefault()?.Page;
+                        if (page is not null)
+                        {
+                                await page.DisplayAlertAsync("Error", $"Failed to upload data to extendsclass.com: {ex.Message}", "OK");
+                        }
                 }
         }
 
@@ -95,18 +102,25 @@ public class ImportService
         {
                 try
                 {
-                        string BucketId = await GetBucketId(); 
+                        string bucketId = await GetBucketId();
                         var cli = _services.GetRequiredService<IExtendsClassClient>();
-                        var data = await cli.BinGETAsync(BucketId);
-                        if (data != null)
+                        var data = await cli.BinGETAsync(bucketId);
+                        if (data is not null)
                         {
-                                string json = data.ToString();
-                                await ImportData(json);
+                                string json = data.ToString() ?? string.Empty;
+                                if (!string.IsNullOrEmpty(json))
+                                {
+                                        await ImportData(json);
+                                }
                         }
                 }
                 catch (Exception ex)
                 {
-                        await Application.Current.Windows[0].Page.DisplayAlertAsync("Error", $"Failed to download data from extendsclass.com: {ex.Message}", "OK");
+                        var page = Application.Current?.Windows.FirstOrDefault()?.Page;
+                        if (page is not null)
+                        {
+                                await page.DisplayAlertAsync("Error", $"Failed to download data from extendsclass.com: {ex.Message}", "OK");
+                        }
                 }
         }
 
@@ -122,13 +136,17 @@ public class ImportService
                         }
                         catch (Exception ex)
                         {
-                                await Application.Current.Windows[0].Page.DisplayAlertAsync("Error", $"Failed to create bucket on extendsclass.com: {ex.Message}", "OK");
+                                var page = Application.Current?.Windows.FirstOrDefault()?.Page;
+                                if (page is not null)
+                                {
+                                        await page.DisplayAlertAsync("Error", $"Failed to create bucket on extendsclass.com: {ex.Message}", "OK");
+                                }
                         }
 
                         await SettingsStore.SaveAsync();
                 }
 
-                return SettingsStore.BucketId;
+                return SettingsStore.BucketId ?? string.Empty;
         }
 
         private class ImportedData

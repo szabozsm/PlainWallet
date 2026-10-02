@@ -22,7 +22,7 @@ public partial class MainPage : ContentPage
     
     public MainPage()
     {
-        _services = IPlatformApplication.Current.Services;
+        _services = IPlatformApplication.Current?.Services ?? throw new InvalidOperationException("MAUI application services are not available.");
         InitializeComponent();
         BindingContext = this;
         // keep filtered view in sync with the store
@@ -64,7 +64,11 @@ public partial class MainPage : ContentPage
             }
             catch (Exception ex)
             {
-                await Application.Current.Windows[0].Page.DisplayAlertAsync("Error", $"Failed to download data from extendsclass.com: {ex.Message}", "OK");
+                var page = Application.Current?.Windows.FirstOrDefault()?.Page;
+                if (page is not null)
+                {
+                    await page.DisplayAlertAsync("Error", $"Failed to download data from extendsclass.com: {ex.Message}", "OK");
+                }
             }
             finally
             {

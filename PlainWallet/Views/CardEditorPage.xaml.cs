@@ -205,7 +205,11 @@ public partial class CardEditorPage : ContentPage
 
             if (LogoKind == LogoKind.None)
             {
-                _editingCard.LogoData = await MembershipCard.ImageSourceToByteArrayAsync(MembershipCard.CreateInitialsImage(MembershipCard.CalculateInitials(Name), _editingCard.ComplementaryColor));
+                var initialsImage = MembershipCard.CreateInitialsImage(MembershipCard.CalculateInitials(Name), _editingCard.ComplementaryColor);
+                if (initialsImage is not null)
+                {
+                    _editingCard.LogoData = await MembershipCard.ImageSourceToByteArrayAsync(initialsImage);
+                }
             }
             else
                 _editingCard.LogoData = SelectedLogoData;
@@ -228,7 +232,11 @@ public partial class CardEditorPage : ContentPage
             };
             if (card.LogoKind == LogoKind.None)
             {
-                card.LogoData = await MembershipCard.ImageSourceToByteArrayAsync(MembershipCard.CreateInitialsImage(MembershipCard.CalculateInitials(card.Name), card.ComplementaryColor));
+                var initialsImage = MembershipCard.CreateInitialsImage(MembershipCard.CalculateInitials(card.Name), card.ComplementaryColor);
+                if (initialsImage is not null)
+                {
+                    card.LogoData = await MembershipCard.ImageSourceToByteArrayAsync(initialsImage);
+                }
             }
 
             CardStore.Cards.Add(card);

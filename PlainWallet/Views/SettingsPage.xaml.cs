@@ -67,7 +67,7 @@ public partial class SettingsPage : ContentPage
         }
         catch (Exception ex)
         {
-            DisplayAlert("Error", $"Failed to load settings: {ex.Message}", "OK");
+            _ = DisplayAlertAsync("Error", $"Failed to load settings: {ex.Message}", "OK");
         }
     }
 

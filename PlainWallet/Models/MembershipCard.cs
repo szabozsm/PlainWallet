@@ -250,25 +250,22 @@ public class MembershipCard : INotifyPropertyChanged
             return new byte[0];
         }
     }
-    public static String CalculateInitials(string _name)
+    public static string CalculateInitials(string? _name)
     {
-        if (string.IsNullOrEmpty(_name)) return "";
-        if (string.IsNullOrWhiteSpace(_name)) return "";
-        if (_name.Length == 1) return _name.ToUpper();
+        if (string.IsNullOrWhiteSpace(_name)) return string.Empty;
+        if (_name.Length == 1) return _name.ToUpperInvariant();
 
-        var l = _name.ToUpper().Split(' ');
-        if (l.Length == 0) return "";
-        if (l.Length == 1)
+        var parts = _name.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (parts.Length == 0) return string.Empty;
+        if (parts.Length == 1)
         {
-            return l[0].Substring(0, 2);
+            return parts[0].Substring(0, Math.Min(2, parts[0].Length)).ToUpperInvariant();
         }
-        else
-        {
-            return l[0].Substring(0, 1) + l[1].Substring(0, 1);
-        }
+
+        return (parts[0][0].ToString() + parts[1][0].ToString()).ToUpperInvariant();
     }
 
-    public static ImageSource CreateInitialsImage(string text, Color color)
+    public static ImageSource? CreateInitialsImage(string text, Color color)
     {
         try
         {
@@ -296,19 +293,17 @@ public class MembershipCard : INotifyPropertyChanged
             using var textPaint = new SKPaint
             {
                 Color = new SKColor((byte)(color.Red * 255), (byte)(color.Green * 255), (byte)(color.Blue * 255), (byte)(color.Alpha * 255)),
-                TextSize = (int)(0.50 * size),
-                IsAntialias = true,
-                Typeface = SKTypeface.Default
+                IsAntialias = true
             };
-
-            var textBounds = new SKRect();
-            textPaint.MeasureText(text, ref textBounds);
+            using var font = new SKFont(SKTypeface.Default, 0.50f * size);
+            var textWidth = font.MeasureText(text);
+            var textHeight = font.Metrics.Descent - font.Metrics.Ascent;
 
             // Center the text
-            var x = (size / 2) - textBounds.Width / 2 - textBounds.Left;
-            var y = (size / 2) - textBounds.Height / 2 - textBounds.Top;
+            var x = (size / 2) - (textWidth / 2);
+            var y = (size / 2) + (textHeight / 2);
 
-            canvas.DrawText(text, x, y, textPaint);
+            canvas.DrawText(text, x, y, font, textPaint);
 
             // Convert to ImageSource
             using var image = SKImage.FromBitmap(bitmap);
@@ -323,10 +318,13 @@ public class MembershipCard : INotifyPropertyChanged
         }
     }
 
-    public static async Task<byte[]?> ImageSourceToByteArrayAsync(ImageSource imageSource, SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
+    public static async Task<byte[]?> ImageSourceToByteArrayAsync(ImageSource? imageSource, SKEncodedImageFormat format = SKEncodedImageFormat.Png, int quality = 100)
     {
         try
         {
+            if (imageSource is null)
+                return null;
+
             Stream? stream = null;
 
             switch (imageSource)
@@ -337,7 +335,6 @@ public class MembershipCard : INotifyPropertyChanged
 
                 case FileImageSource fileImageSource:
                     throw new NotSupportedException($"ImageSource type '{imageSource.GetType().Name}' is not supported.");
-                    break;
 
                 case UriImageSource uriImageSource:
                     using (var httpClient = new HttpClient())
@@ -382,7 +379,7 @@ public class MauiColorJsonConverter : JsonConverter<Color>
 {
     public override Color Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        string hexValue = reader.GetString();
+        string? hexValue = reader.GetString();
         if (string.IsNullOrEmpty(hexValue))
         {
             return Colors.White;

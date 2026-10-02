@@ -13,7 +13,7 @@ namespace PlainWallet.Services;
 public static class CardStore
 {
     public static ObservableCollection<MembershipCard> Cards { get; } = new();
-    private static IServiceProvider _services;
+    private static IServiceProvider _services = null!;
 
     public static void Initialize(IServiceProvider services)
     {

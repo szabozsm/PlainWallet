@@ -26,10 +26,13 @@ public partial class LogoSelectionPage : ContentPage
         switch (logoKind)
         {
             case LogoKind.Builtin:
-                myTabs.CurrentUri = initialUri;
+                myTabs.CurrentUri = initialUri ?? string.Empty;
                 try
                 {
-                    myTabs.UrlPreviewSource = ImageSource.FromFile(initialUri);
+                    if (!string.IsNullOrEmpty(initialUri))
+                    {
+                        myTabs.UrlPreviewSource = ImageSource.FromFile(initialUri);
+                    }
                 }
                 catch
                 {
@@ -37,10 +40,13 @@ public partial class LogoSelectionPage : ContentPage
                 }
                 break;
             case LogoKind.Web:
-                myTabs.CurrentUrl = initialUrl;
+                myTabs.CurrentUrl = initialUrl ?? string.Empty;
                 try
                 {
-                    myTabs.UrlPreviewSource = ImageSource.FromUri(new Uri(initialUrl));
+                    if (!string.IsNullOrEmpty(initialUrl) && Uri.TryCreate(initialUrl, UriKind.Absolute, out var uri))
+                    {
+                        myTabs.UrlPreviewSource = ImageSource.FromUri(uri);
+                    }
                 }
                 catch
                 {
@@ -50,7 +56,10 @@ public partial class LogoSelectionPage : ContentPage
             case LogoKind.File:
                 try
                 {
-                    myTabs.FilePreviewSource = ImageSource.FromStream(() => new MemoryStream(InitialLogoData));
+                    if (InitialLogoData is not null)
+                    {
+                        myTabs.FilePreviewSource = ImageSource.FromStream(() => new MemoryStream(InitialLogoData));
+                    }
                 }
                 catch
                 {
@@ -95,8 +104,9 @@ public partial class LogoSelectionPage : ContentPage
             if (result is not null)
             {
                 // Use the full path returned by the file picker when available, otherwise the filename
-                myTabs.FilePreviewSource = ImageSource.FromFile(result.FullPath ?? result.FileName);
-                LogoSelected?.Invoke(result.FullPath ?? result.FileName, LogoKind.File);
+                var selectedPath = result.FullPath ?? result.FileName;
+                myTabs.FilePreviewSource = ImageSource.FromFile(selectedPath);
+                LogoSelected?.Invoke(selectedPath, LogoKind.File);
                 await Navigation.PopAsync();
             }
         }

@@ -17,7 +17,7 @@ public partial class AppShell : Shell
 
     public AppShell()
     {
-        _services = IPlatformApplication.Current.Services;
+        _services = IPlatformApplication.Current?.Services ?? throw new InvalidOperationException("MAUI application services are not available.");
         InitializeComponent();
         Routing.RegisterRoute(nameof(CardDetailPage), typeof(CardDetailPage));
         Routing.RegisterRoute(nameof(CardEditorPage), typeof(CardEditorPage));
@@ -130,12 +130,12 @@ public partial class AppShell : Shell
     {
         try
         {
-            bool answer = await DisplayAlert("Delete", "Are you sure you want to delete ALL CARDS?", "Yes", "No");
+            bool answer = await DisplayAlertAsync("Delete", "Are you sure you want to delete ALL CARDS?", "Yes", "No");
             if (answer)
             {
                 if (SettingsStore.UseExtendsClass)
                 {
-                    bool answer2 = await DisplayAlert("Delete", "You are synchronizing your data to the cloud, that will be deleted too. Are you still sure?", "Yes", "No");
+                    bool answer2 = await DisplayAlertAsync("Delete", "You are synchronizing your data to the cloud, that will be deleted too. Are you still sure?", "Yes", "No");
                     if (!answer2)
                         return;
                 }
