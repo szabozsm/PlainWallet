@@ -51,12 +51,20 @@
                     Text="Barcode"
                     FontAttributes="Bold"
                     FontSize="18"/>
+                
                 <Image
                     x:Name="BarcodeImage"
+                    WidthRequest="320"
                     HeightRequest="320"
                     HorizontalOptions="Center"
                     Margin="0,8,0,0"
-                    Aspect="AspectFit"/>
+                    Aspect="AspectFill"/>
+                <Slider
+                    x:Name="BarcodeWidthSlider"
+                    Minimum="20"
+                    Maximum="1800"
+                    Value="320"
+                    ValueChanged="OnBarcodeWidthChanged"/>
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="8">

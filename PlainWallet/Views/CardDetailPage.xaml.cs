@@ -27,8 +27,15 @@ public partial class CardDetailPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
+        var display = DeviceDisplay.MainDisplayInfo;
+        BarcodeWidthSlider.Value = Math.Min(320, BarcodeWidthSlider.Maximum);
         Card = CardNavigation.SelectedCard;
         UpdateBarcode();
+    }
+
+    private void OnBarcodeWidthChanged(object? sender, ValueChangedEventArgs e)
+    {
+        BarcodeImage.WidthRequest = e.NewValue;
     }
 
     private void UpdateBarcode()
