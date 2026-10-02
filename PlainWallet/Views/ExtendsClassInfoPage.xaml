@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PlainWallet.Views.ExtendsClassInfoPage"
+             Title="What's this?">
+    <Grid Padding="20"
+          RowDefinitions="*,Auto"
+          RowSpacing="20">
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Spacing="12">
+                <Label Text="Sharing with extendsclass.com"
+                       FontSize="20"
+                       FontAttributes="Bold"/>
+                <Label Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris."
+                       FontSize="16"/>
+            </VerticalStackLayout>
+        </ScrollView>
+        <Button Grid.Row="1"
+                Text="Close"
+                Clicked="OnCloseClicked"
+                BackgroundColor="{StaticResource Primary}"
+                TextColor="White"/>
+    </Grid>
+</ContentPage>

@@ -66,15 +66,28 @@
                      <Border Stroke="{StaticResource PrimaryDark}">
                             <VerticalStackLayout Padding="5"
                                                  Spacing="10">
-                                   <Grid ColumnDefinitions="Auto,*"
+                                   <Grid RowDefinitions="Auto,Auto"
+                                         ColumnDefinitions="Auto,*"
                                          ColumnSpacing="0">
 
                                           <CheckBox Grid.Column="0"
+                                                    Grid.Row="0"
                                                     x:Name="SettingsCheckbox"
                                                     IsChecked="{Binding UseExtendsClass, Mode=TwoWay}"/>
                                           <Label Text="Use extendsclass.com for sharing"
+                                                 Grid.Row="0"
                                                  Grid.Column="1"
                                                  VerticalOptions="Center"/>
+                                          <Label Text="What's this?"
+                                                 Grid.Row="1"
+                                                 Grid.Column="1"
+                                                 FontSize="12"
+                                                 TextColor="{StaticResource Primary}"
+                                                 TextDecorations="Underline">
+                                                 <Label.GestureRecognizers>
+                                                        <TapGestureRecognizer Tapped="OnExtendsClassInfoTapped"/>
+                                                 </Label.GestureRecognizers>
+                                          </Label>
                                    </Grid>
 
                                    <VerticalStackLayout Spacing="0"

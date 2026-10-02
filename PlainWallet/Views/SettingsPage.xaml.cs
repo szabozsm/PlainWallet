@@ -112,4 +112,9 @@ public partial class SettingsPage : ContentPage
         TwoColumnRadioButton.IsChecked = true;
     }
 
+    private async void OnExtendsClassInfoTapped(object? sender, TappedEventArgs e)
+    {
+        await Navigation.PushAsync(new ExtendsClassInfoPage());
+    }
+
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Widget.Design.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="enforceTextAppearance">false</item>
         <item name="itemTextAppearanceInactive">@style/TextAppearance.MaterialComponents.Caption</item>
         <item name="itemTextAppearanceActive">@style/TextAppearance.MaterialComponents.Caption</item>
     </style>
