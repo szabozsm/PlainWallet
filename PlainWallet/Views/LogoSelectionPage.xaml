@@ -81,7 +81,7 @@
                                         <RoundRectangle CornerRadius="6"/>
                                     </Border.StrokeShape>
                                     <Grid>
-                                        <Image Source="{Binding .}"
+                                        <Image Source="{Binding ImageSource}"
                                                Aspect="AspectFit"
                                                HeightRequest="140"
                                                HorizontalOptions="Fill"

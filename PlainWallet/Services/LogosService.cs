@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.ApplicationModel;
 
@@ -7,87 +10,52 @@ namespace PlainWallet.Services;
 public static class LogosService
 {
 
-    private record LogoInfo(string FileName, string Color);
+    private sealed record LogoInfo(string Name, byte[] ImageData, string BackgroundColor);
 
-    // Static list of built-in logo filenames (located in Resources/Logos)
-    // Update this list if you add/remove files in Resources/Logos
-    private static readonly LogoInfo[] _builtIn =
-    [  
+    private static readonly LogoInfo[] _builtIn = LoadBuiltInLogos();
 
-new LogoInfo("ace_hardware.svg",""), 
-new LogoInfo("barnes_noble.svg",""), 
-new LogoInfo("big_lots.svg",""), 
-new LogoInfo("cleveland_botanical_garden.svg",""), 
-new LogoInfo("cleveland_metroparks_zoo.svg",""), 
-new LogoInfo("cma_cleveland_museum_of_art.svg",""), 
-new LogoInfo("columbus_zoo.svg",""), 
-new LogoInfo("costco_wholesale.svg",""), 
-new LogoInfo("cuyahoga_county_public_library.svg",""), 
-new LogoInfo("cvs.svg","#cc0000ff"), 
-new LogoInfo("decathlon.svg","#1482c2ff"), 
-new LogoInfo("dicks_sporting_goods.svg","#006554ff"), 
-new LogoInfo("dm.svg",""), 
-new LogoInfo("giant_eagle.svg",""), 
-new LogoInfo("heinens.svg",""), 
-new LogoInfo("holden_arboretum.svg",""), 
-new LogoInfo("ikea.svg","#2360a5ff"), 
-new LogoInfo("lake_metroparks.svg",""), 
-new LogoInfo("lakeshore_learning.svg","#ed1c24ff"), 
-new LogoInfo("lego.svg","#ff0000ff"), 
-new LogoInfo("lidl.svg","#1e71b8ff"), 
-new LogoInfo("lowe_s.svg",""), 
-new LogoInfo("moma.svg",""), 
-new LogoInfo("museum_of_natural_history_cleveland.svg",""), 
-new LogoInfo("ollie_s.svg",""), 
-new LogoInfo("panera_bread.svg","#606b21ff"), 
-new LogoInfo("pet_supplies_plus.svg",""), 
-new LogoInfo("petsmart.svg",""), 
-new LogoInfo("shaker_library.svg",""), 
-new LogoInfo("target.svg",""), 
-new LogoInfo("tesco.svg",""), 
-new LogoInfo("vitamin_shoppe.svg",""), 
-new LogoInfo("walgreens.svg",""), 
-new LogoInfo("walmart.svg",""), 
-new LogoInfo("whole_foods.svg",""), 
-new LogoInfo("banana_republic.svg",""), 
-new LogoInfo("best_buy.svg",""), 
-new LogoInfo("home_depot.svg","#f96302ff"), 
-new LogoInfo("seven_7_eleven.svg","#008061ff"), 
-new LogoInfo("h_m.svg",""), 
-new LogoInfo("gap.svg",""), 
-new LogoInfo("old_navy.svg",""), 
-new LogoInfo("rei.svg",""), 
-new LogoInfo("columbia.svg",""), 
-new LogoInfo("skechers.svg",""), 
-new LogoInfo("under_armour.svg",""), 
-new LogoInfo("adidas.svg",""), 
-new LogoInfo("nike.svg",""), 
-new LogoInfo("foot_locker.svg",""), 
-new LogoInfo("jcpenney.svg",""), 
-new LogoInfo("kohl_s.svg",""), 
-new LogoInfo("dillard_s.svg",""), 
-new LogoInfo("carter_s.svg",""), 
-new LogoInfo("pampers.svg",""), 
-new LogoInfo("macy_s.svg",""), 
+    private static LogoInfo[] LoadBuiltInLogos()
+    {
+        using var stream = typeof(LogosService).Assembly.GetManifestResourceStream("PlainWallet.Resources.Logos.logos.json")
+            ?? throw new InvalidOperationException("The built-in logos resource was not found.");
+        var logos = JsonSerializer.Deserialize<LogoJson[]>(stream)
+            ?? throw new InvalidOperationException("The built-in logos resource is empty.");
 
-    ];
+        return logos
+            .Select(logo => new LogoInfo(logo.Name, Convert.FromBase64String(logo.LogoData), logo.BackgroundColor))
+            .ToArray();
+    }
+
+    private sealed class LogoJson
+    {
+        public string Name { get; set; } = string.Empty;
+        public string LogoData { get; set; } = string.Empty;
+        public string BackgroundColor { get; set; } = string.Empty;
+    }
 
     public static IEnumerable<string> GetBuiltInLogoFileNames()
     {
-        return _builtIn.Select(x => x.FileName).OrderBy(x=>x);
+        return _builtIn.Select(x => $"{x.Name}.svg").OrderBy(x => x);
     }
 
     public static Color GetLogoColor(string filename)
     {
-        var logoInfo = _builtIn.FirstOrDefault(x => x.FileName == filename);
-        if (logoInfo == null) return Colors.Transparent;
-        if (string.IsNullOrEmpty( logoInfo.Color)) return Colors.Transparent;
-        return Color.FromRgba(logoInfo.Color);
+        var logoInfo = FindLogo(filename);
+        if (logoInfo is null || string.IsNullOrEmpty(logoInfo.BackgroundColor)) return Colors.Transparent;
+        return Color.FromArgb(logoInfo.BackgroundColor);
     }
 
-    public static ImageSource GetImageSourceForBuiltIn(string fileName)
+    public static ImageSource? GetImageSourceForBuiltIn(string fileName)
     {
-        if (string.IsNullOrEmpty(fileName)) return null!;
-        return ImageSource.FromFile(fileName);
+        var logoInfo = FindLogo(fileName);
+        if (logoInfo is null) return null;
+        return ImageSource.FromStream(() => new MemoryStream(logoInfo.ImageData, writable: false));
+    }
+
+    private static LogoInfo? FindLogo(string fileName)
+    {
+        if (string.IsNullOrWhiteSpace(fileName)) return null;
+        var name = Path.GetFileNameWithoutExtension(fileName);
+        return _builtIn.FirstOrDefault(logo => string.Equals(logo.Name, name, StringComparison.OrdinalIgnoreCase));
     }
 }

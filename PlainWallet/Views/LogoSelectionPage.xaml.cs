@@ -21,7 +21,7 @@ public partial class LogoSelectionPage : ContentPage
     {
     }
     private LogoTabViewModel myTabs = new LogoTabViewModel();
-    private List<string> _allLogos = new();
+    private List<BuiltInLogoOption> _allLogos = new();
     public LogoSelectionPage(
         string? initialUri,
         string? initialUrl,
@@ -33,7 +33,9 @@ public partial class LogoSelectionPage : ContentPage
         InitializeComponent();
         _focusFilterOnAppearing = focusFilterOnAppearing;
         FilterEntry.Loaded += OnFilterEntryLoaded;
-        _allLogos = LogosService.GetBuiltInLogoFileNames().ToList();
+        _allLogos = LogosService.GetBuiltInLogoFileNames()
+            .Select(fileName => new BuiltInLogoOption(fileName, LogosService.GetImageSourceForBuiltIn(fileName)!))
+            .ToList();
         myTabs.Logos = _allLogos.ToList();
 
         switch (logoKind)
@@ -44,7 +46,7 @@ public partial class LogoSelectionPage : ContentPage
                 {
                     if (!string.IsNullOrEmpty(initialUri))
                     {
-                        myTabs.UrlPreviewSource = ImageSource.FromFile(initialUri);
+                        myTabs.UrlPreviewSource = LogosService.GetImageSourceForBuiltIn(initialUri);
                     }
                 }
                 catch
@@ -165,9 +167,8 @@ public partial class LogoSelectionPage : ContentPage
     private async void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (e.CurrentSelection is null || e.CurrentSelection.Count == 0) return;
-        var selected = e.CurrentSelection[0]?.ToString();
-        if (string.IsNullOrEmpty(selected)) return;
-        LogoSelected?.Invoke(selected, LogoKind.Builtin);
+        if (e.CurrentSelection[0] is not BuiltInLogoOption selected) return;
+        LogoSelected?.Invoke(selected.FileName, LogoKind.Builtin);
         await Navigation.PopAsync();
     }
     private void OnFilterTextChanged(object? sender, TextChangedEventArgs e)
@@ -178,7 +179,7 @@ public partial class LogoSelectionPage : ContentPage
             myTabs.Logos = _allLogos;
             return;
         }
-        var filtered = _allLogos.Where(s => s.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
+        var filtered = _allLogos.Where(logo => logo.FileName.Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
         myTabs.Logos = filtered;
     }
     private async void OnUrlTextChanged(object? sender, TextChangedEventArgs e)

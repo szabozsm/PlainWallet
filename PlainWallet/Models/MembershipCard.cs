@@ -14,6 +14,7 @@ using Microsoft.Maui.Graphics;
 using SkiaSharp;
 using Svg.Skia;
 using ZXing;
+using PlainWallet.Services;
 
 namespace PlainWallet.Models;
 
@@ -84,7 +85,9 @@ public class MembershipCard : INotifyPropertyChanged
         {
             if ((LogoKind == LogoKind.Builtin) && (!string.IsNullOrEmpty(LogoUri)))
             {
-                return ImageSource.FromFile(LogoUri);
+                var builtInLogo = LogosService.GetImageSourceForBuiltIn(LogoUri);
+                if (builtInLogo is not null)
+                    return builtInLogo;
             }
 
             if (LogoData == null)

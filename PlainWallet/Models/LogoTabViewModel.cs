@@ -7,16 +7,18 @@ using System.Runtime.CompilerServices;
 
 namespace PlainWallet.Models
 {
+    public sealed record BuiltInLogoOption(string FileName, ImageSource ImageSource);
+
     public class LogoTabViewModel : INotifyPropertyChanged
     {
-        private List<string> _logos = [];
+        private List<BuiltInLogoOption> _logos = [];
         private ImageSource? _urlPreviewSource;
         private ImageSource? _filePreviewSource;
         private string _currentUrl = string.Empty;
         private string _currentUri = string.Empty;
         private bool _isUrlLoading;
 
-        public List<string> Logos 
+        public List<BuiltInLogoOption> Logos
         { 
             get => _logos; 
             set { _logos = value ?? []; OnPropertyChanged(); }
