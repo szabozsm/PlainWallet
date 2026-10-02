@@ -3,6 +3,8 @@ using System.Collections.Specialized;
 using System.Linq;
 using ZXing;
 using Microsoft.Maui.Controls;
+using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
 using PlainWallet.Models;
 using PlainWallet.Services;
 using PlainWallet.Views;
@@ -64,11 +66,7 @@ public partial class MainPage : ContentPage
             }
             catch (Exception ex)
             {
-                var page = Application.Current?.Windows.FirstOrDefault()?.Page;
-                if (page is not null)
-                {
-                    await page.DisplayAlertAsync("Error", $"Failed to download data from extendsclass.com: {ex.Message}", "OK");
-                }
+                await Toast.Make($"extendsclass.com failure: {ex.Message}", ToastDuration.Long).Show();
             }
             finally
             {

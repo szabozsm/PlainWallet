@@ -1,5 +1,7 @@
 using System;
 using System.Text.Json;
+using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
 using PlainWallet.Data;
 using PlainWallet.Models;
 
@@ -90,11 +92,7 @@ public class ImportService
                 }
                 catch (Exception ex)
                 {
-                        var page = Application.Current?.Windows.FirstOrDefault()?.Page;
-                        if (page is not null)
-                        {
-                                await page.DisplayAlertAsync("Error", $"Failed to upload data to extendsclass.com: {ex.Message}", "OK");
-                        }
+                                await Toast.Make($"Failed to upload data to extendsclass.com: {ex.Message}", ToastDuration.Long).Show();
                 }
         }
 
@@ -116,11 +114,7 @@ public class ImportService
                 }
                 catch (Exception ex)
                 {
-                        var page = Application.Current?.Windows.FirstOrDefault()?.Page;
-                        if (page is not null)
-                        {
-                                await page.DisplayAlertAsync("Error", $"Failed to download data from extendsclass.com: {ex.Message}", "OK");
-                        }
+                                await Toast.Make($"Failed to download data from extendsclass.com: {ex.Message}", ToastDuration.Long).Show();
                 }
         }
 
@@ -129,19 +123,8 @@ public class ImportService
                 if (string.IsNullOrEmpty(SettingsStore.BucketId))
                 {
                         var cli = _services.GetRequiredService<IExtendsClassClient>();
-                        try
-                        {
-                                var res = await cli.BinPOSTAsync();
-                                SettingsStore.BucketId = res.Id;
-                        }
-                        catch (Exception ex)
-                        {
-                                var page = Application.Current?.Windows.FirstOrDefault()?.Page;
-                                if (page is not null)
-                                {
-                                        await page.DisplayAlertAsync("Error", $"Failed to create bucket on extendsclass.com: {ex.Message}", "OK");
-                                }
-                        }
+                        var res = await cli.BinPOSTAsync();
+                        SettingsStore.BucketId = res.Id;
 
                         await SettingsStore.SaveAsync();
                 }
