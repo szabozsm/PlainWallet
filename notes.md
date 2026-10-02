@@ -17,3 +17,14 @@ https://pictogrammers.com/library/mdi/
 https://rankings.newsweek.com/americas-best-loyalty-programs-2024
 
 https://loading.io/
+
+
+ keytool -genkey -v -keystore my-release-key.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000
+
+
+dotnet publish -f net10.0-android -v:d -c Release /p:AndroidKeyStore=true /p:AndroidSigningKeyStore=C:\Repositories\PlainWallet\PlainWallet\my-release-key.keystore /p:AndroidSigningKeyAlias=my-key-alias /p:AndroidSigningKeyPass= /p:AndroidSigningStorePass= -p:AndroidPackageFormat=aab
+
+dotnet build -t:InstallAndroidDependencies -f net10.0-android -p:AcceptAndroidSdkLicenses=True
+
+
+ 
