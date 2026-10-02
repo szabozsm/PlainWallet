@@ -90,6 +90,9 @@ public class ImportService
                         var cli = _services.GetRequiredService<IExtendsClassClient>();
                         await cli.BinPUTAsync(data, bucketId);
                 }
+                catch (WifiOnlySyncSkippedException)
+                {
+                }
                 catch (Exception ex)
                 {
                                 await Toast.Make($"Failed to upload data to extendsclass.com: {ex.Message}", ToastDuration.Long).Show();
@@ -111,6 +114,9 @@ public class ImportService
                                         await ImportData(json);
                                 }
                         }
+                }
+                catch (WifiOnlySyncSkippedException)
+                {
                 }
                 catch (Exception ex)
                 {

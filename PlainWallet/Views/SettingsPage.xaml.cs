@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Controls;
 using PlainWallet.Models;
 using PlainWallet.Services;
@@ -46,6 +47,12 @@ public partial class SettingsPage : ContentPage
         set => SettingsStore.UseExtendsClass = value;
     }
 
+    public bool WifiOnlyForExtendsClass
+    {
+        get => SettingsStore.WifiOnlyForExtendsClass;
+        set => SettingsStore.WifiOnlyForExtendsClass = value;
+    }
+
     public bool TwoColumnMode
     {
         get => SettingsStore.TwoColumnMode;
@@ -62,6 +69,7 @@ public partial class SettingsPage : ContentPage
             OnPropertyChanged(nameof(Apikey));
             OnPropertyChanged(nameof(SecurityKey));
             OnPropertyChanged(nameof(UseExtendsClass));
+            OnPropertyChanged(nameof(WifiOnlyForExtendsClass));
             OnPropertyChanged(nameof(BucketId));
             OnPropertyChanged(nameof(TwoColumnMode));
         }
@@ -76,8 +84,14 @@ public partial class SettingsPage : ContentPage
         try
         {
             await SettingsStore.SaveAsync();
-            //    await DisplayAlert("Success", "Settings saved successfully!", "OK");
             await Shell.Current.GoToAsync("..");
+            if (UseExtendsClass)
+            {
+                var services = IPlatformApplication.Current?.Services
+                    ?? throw new InvalidOperationException("MAUI application services are not available.");
+                var importService = services.GetRequiredService<ImportService>();
+                await importService.DownloadData();
+            }
         }
         catch (Exception ex)
         {

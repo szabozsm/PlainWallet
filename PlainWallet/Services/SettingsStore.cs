@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using PlainWallet.Data;
 using PlainWallet.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Maui.Storage;
 
 namespace PlainWallet.Services
 {
@@ -31,6 +32,9 @@ namespace PlainWallet.Services
                 ctx.Settings.Add(_currentSettings);
                 ctx.SaveChanges();
             }
+
+            _currentSettings.WifiOnlyForExtendsClass = Preferences.Default.Get(
+                nameof(Settings.WifiOnlyForExtendsClass), false);
         }
         public static async Task CancelAsync()
         {
@@ -39,6 +43,11 @@ namespace PlainWallet.Services
             using var scope = _services.CreateScope();
             var ctx = scope.ServiceProvider.GetRequiredService<CardDbContext>();
             _currentSettings = ctx.Settings.FirstOrDefault();
+            if (_currentSettings is not null)
+            {
+                _currentSettings.WifiOnlyForExtendsClass = Preferences.Default.Get(
+                    nameof(Settings.WifiOnlyForExtendsClass), false);
+            }
         }
 
         public static async Task SaveAsync()
@@ -60,6 +69,9 @@ namespace PlainWallet.Services
             }
 
             await ctx.SaveChangesAsync();
+            Preferences.Default.Set(
+                nameof(Settings.WifiOnlyForExtendsClass),
+                _currentSettings.WifiOnlyForExtendsClass);
         }
 
         public static void UpdateProperty<T>(T value, Action<Settings, T> setter)
@@ -104,6 +116,12 @@ namespace PlainWallet.Services
         {
             get => Current.TwoColumnMode;
             set => UpdateProperty(value, (s, v) => s.TwoColumnMode = v);
+        }
+
+        public static bool WifiOnlyForExtendsClass
+        {
+            get => Current.WifiOnlyForExtendsClass;
+            set => UpdateProperty(value, (settings, wifiOnly) => settings.WifiOnlyForExtendsClass = wifiOnly);
         }
 
         public static void Reload()

@@ -19,6 +19,7 @@ public partial class MainPage : ContentPage
     private string _filter = string.Empty;
     private readonly Random _random = new();
     private readonly IServiceProvider _services;
+    private bool _startupSyncStarted;
 
     public bool TwoColumnList { get; set; } = false;
     
@@ -44,13 +45,11 @@ public partial class MainPage : ContentPage
         TwoColumnList = SettingsStore.TwoColumnMode;
         OnPropertyChanged(nameof(TwoColumnList));
         ApplyFilter();
-        this.Loaded += OnCardCollectionLoaded;
-
-    }
-
-    private async void OnCardCollectionLoaded(object? sender, EventArgs e)
-    {
-        await UpdateCardsFromInternet();
+        if (!_startupSyncStarted)
+        {
+            _startupSyncStarted = true;
+            _ = UpdateCardsFromInternet();
+        }
     }
 
     private async Task UpdateCardsFromInternet()

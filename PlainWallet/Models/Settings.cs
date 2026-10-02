@@ -12,6 +12,7 @@ public class Settings : INotifyPropertyChanged
     private string _securityKey = "";
     private bool _useExtendsClass=false;
     private bool _twoColumnMode;
+    private bool _wifiOnlyForExtendsClass;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -48,6 +49,18 @@ public class Settings : INotifyPropertyChanged
             if (_twoColumnMode == value) return;
             _twoColumnMode = value;
             OnPropertyChanged(nameof(TwoColumnMode));
+        }
+    }
+
+    [NotMapped]
+    public bool WifiOnlyForExtendsClass
+    {
+        get => _wifiOnlyForExtendsClass;
+        set
+        {
+            if (_wifiOnlyForExtendsClass == value) return;
+            _wifiOnlyForExtendsClass = value;
+            OnPropertyChanged(nameof(WifiOnlyForExtendsClass));
         }
     }
 

@@ -92,6 +92,14 @@
 
                                    <VerticalStackLayout Spacing="0"
                                                         IsVisible="{Binding Source={x:Reference SettingsCheckbox}, Path=IsChecked}">
+                                          <Grid ColumnDefinitions="Auto,*"
+                                                ColumnSpacing="0">
+                                                 <CheckBox Grid.Column="0"
+                                                           IsChecked="{Binding WifiOnlyForExtendsClass, Mode=TwoWay}"/>
+                                                 <Label Grid.Column="1"
+                                                        Text="Only sync when connected to Wi-Fi"
+                                                        VerticalOptions="Center"/>
+                                          </Grid>
                                           <Label Text="Api-key"/>
                                           <Entry x:Name="ApikeyEntry"
                                                  Text="{Binding Apikey, Mode=TwoWay}"
