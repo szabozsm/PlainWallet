@@ -27,7 +27,8 @@ namespace MyProject
 
                 if (Path.GetExtension(logo).ToLower() == ".svg")
                 {
-                    tmp.LogoData = ImageService.RasterizeAndResizeSvg( File.ReadAllBytes(logo));
+                    tmp.LogoData =  File.ReadAllBytes(logo);
+                    tmp.IsSvg = true;
                 }
                 else
                 {

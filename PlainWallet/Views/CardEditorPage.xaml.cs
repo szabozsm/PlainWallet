@@ -75,8 +75,8 @@ public partial class CardEditorPage : ContentPage
             case LogoKind.Builtin:
                 SelectedLogoUri = logo;
                 SelectedLogoUrl = null;
+                SelectedLogoData = LogosService.GetLogoDataForBuiltIn(logo);
                 LogoPreview.Source = LogosService.GetImageSourceForBuiltIn(logo);
-                SelectedLogoData = await MembershipCard.ImageSourceToByteArrayAsync(LogoPreview.Source);
                 var color = LogosService.GetLogoColor(logo);
                 if (color != Colors.Transparent)
                 {

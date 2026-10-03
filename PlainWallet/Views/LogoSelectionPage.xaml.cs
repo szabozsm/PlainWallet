@@ -34,7 +34,10 @@ public partial class LogoSelectionPage : ContentPage
         _focusFilterOnAppearing = focusFilterOnAppearing;
         FilterEntry.Loaded += OnFilterEntryLoaded;
         _allLogos = LogosService.GetBuiltInLogoFileNames()
-            .Select(fileName => new BuiltInLogoOption(fileName, LogosService.GetImageSourceForBuiltIn(fileName)!))
+            .Select(fileName => new BuiltInLogoOption(
+                fileName,
+                LogosService.GetImageSourceForBuiltIn(fileName)!,
+                LogosService.IsBuiltInLogoSvg(fileName)))
             .ToList();
         myTabs.Logos = _allLogos.ToList();
 

@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text.Json;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.ApplicationModel;
+using SkiaSharp;
+using Svg.Skia;
 
 namespace PlainWallet.Services;
 
 public static class LogosService
 {
-
-    private sealed record LogoInfo(string Name, byte[] ImageData, string BackgroundColor);
+    private const int MaxSvgRasterizedSize = 320;
+    private sealed record LogoInfo(string Name, byte[] ImageData, string BackgroundColor, bool IsSvg);
 
     private static readonly LogoInfo[] _builtIn = LoadBuiltInLogos();
 
@@ -22,7 +24,7 @@ public static class LogosService
             ?? throw new InvalidOperationException("The built-in logos resource is empty.");
 
         return logos
-            .Select(logo => new LogoInfo(logo.Name, Convert.FromBase64String(logo.LogoData), logo.BackgroundColor))
+            .Select(logo => new LogoInfo(logo.Name, Convert.FromBase64String(logo.LogoData), logo.BackgroundColor, logo.IsSvg))
             .ToArray();
     }
 
@@ -31,6 +33,7 @@ public static class LogosService
         public string Name { get; set; } = string.Empty;
         public string LogoData { get; set; } = string.Empty;
         public string BackgroundColor { get; set; } = string.Empty;
+        public bool IsSvg { get; set; }
     }
 
     public static IEnumerable<string> GetBuiltInLogoFileNames()
@@ -45,11 +48,60 @@ public static class LogosService
         return Color.FromArgb(logoInfo.BackgroundColor);
     }
 
+    public static byte[]? GetLogoDataForBuiltIn(string fileName) => FindLogo(fileName)?.ImageData;
+
+    public static bool IsBuiltInLogoSvg(string fileName) => FindLogo(fileName)?.IsSvg ?? false;
+
     public static ImageSource? GetImageSourceForBuiltIn(string fileName)
     {
         var logoInfo = FindLogo(fileName);
+
         if (logoInfo is null) return null;
-        return ImageSource.FromStream(() => new MemoryStream(logoInfo.ImageData, writable: false));
+        if (!logoInfo.IsSvg) return null;
+        return GetImageSourceForLogoData(logoInfo.ImageData, logoInfo.IsSvg);
+     }
+
+    public static ImageSource? GetImageSourceForLogoData(byte[]? imageData, bool isSvg)
+    {
+        if (imageData is null || imageData.Length == 0) return null;
+        var displayData = isSvg ? RasterizeSvg(imageData) : imageData;
+        if (displayData is null) return null;
+        return ImageSource.FromStream(() => new MemoryStream(displayData, writable: false));
+    }
+
+    private static byte[]? RasterizeSvg(byte[] svgData, int maxSize = MaxSvgRasterizedSize)
+    {
+        try
+        {
+            using var stream = new MemoryStream(svgData, writable: false);
+            using var svg = new SKSvg();
+            svg.Load(stream);
+
+            var picture = svg.Picture;
+            if (picture is null) return null;
+
+            var bounds = picture.CullRect;
+            if (bounds.Width <= 0 || bounds.Height <= 0) return null;
+
+            var scale = Math.Min(maxSize / bounds.Width, maxSize / bounds.Height);
+            var width = Math.Max(1, (int)Math.Round(bounds.Width * scale));
+            var height = Math.Max(1, (int)Math.Round(bounds.Height * scale));
+
+            using var bitmap = new SKBitmap(width, height);
+            using var canvas = new SKCanvas(bitmap);
+            canvas.Clear(SKColors.Transparent);
+            canvas.Scale(scale);
+            canvas.DrawPicture(picture);
+            canvas.Flush();
+
+            using var image = SKImage.FromBitmap(bitmap);
+            using var encoded = image.Encode(SKEncodedImageFormat.Png, 100);
+            return encoded.ToArray();
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     private static LogoInfo? FindLogo(string fileName)

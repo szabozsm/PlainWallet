@@ -29,7 +29,7 @@ public enum LogoKind
 public class MembershipCard : INotifyPropertyChanged
 {
 
-    private const int MaxStoredSize = 64;
+    private const int MaxStoredSize = 128;
 
     private Color _backgroundColor = Colors.LightGray;
     private Guid _id = Guid.NewGuid();

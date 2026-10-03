@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 
 namespace PlainWallet.Models
 {
-    public sealed record BuiltInLogoOption(string FileName, ImageSource ImageSource);
+    public sealed record BuiltInLogoOption(string FileName, ImageSource ImageSource, bool IsSvg);
 
     public class LogoTabViewModel : INotifyPropertyChanged
     {

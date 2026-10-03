@@ -13,7 +13,7 @@ namespace LogoCreator.Services
 {
     public static class ImageService
     {
-        private const int MaxStoredSize = 64;
+        private const int MaxStoredSize = 256;
 
         public static byte[] ResizeImage(byte[] imageBytes, int maxWidth = MaxStoredSize, int maxHeight = MaxStoredSize)
         {
