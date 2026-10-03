@@ -10,6 +10,7 @@ namespace LogoCreator.Models
     {
         public string Name { get; set; }
          public byte[] LogoData { get; set; }
+         public string LogoSvg { get; set; }
          public string BackgroundColor { get; set; }
          public bool IsSvg {get; set; }= false;
     }

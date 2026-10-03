@@ -6,6 +6,7 @@ using Microsoft.Maui.Controls;
 using Microsoft.Maui.ApplicationModel;
 using SkiaSharp;
 using Svg.Skia;
+using System.Text;
 
 namespace PlainWallet.Services;
 
@@ -24,7 +25,7 @@ public static class LogosService
             ?? throw new InvalidOperationException("The built-in logos resource is empty.");
 
         return logos
-            .Select(logo => new LogoInfo(logo.Name, Convert.FromBase64String(logo.LogoData), logo.BackgroundColor, logo.IsSvg))
+            .Select(logo => new LogoInfo(logo.Name,  logo.IsSvg?  Encoding.UTF8.GetBytes(logo.LogoSvg):  Convert.FromBase64String(logo.LogoData), logo.BackgroundColor, logo.IsSvg))
             .ToArray();
     }
 
@@ -32,6 +33,7 @@ public static class LogosService
     {
         public string Name { get; set; } = string.Empty;
         public string LogoData { get; set; } = string.Empty;
+        public string LogoSvg { get; set; } = string.Empty;
         public string BackgroundColor { get; set; } = string.Empty;
         public bool IsSvg { get; set; }
     }
@@ -57,16 +59,14 @@ public static class LogosService
         var logoInfo = FindLogo(fileName);
 
         if (logoInfo is null) return null;
-        if (!logoInfo.IsSvg) return null;
-        return GetImageSourceForLogoData(logoInfo.ImageData, logoInfo.IsSvg);
+        if (!logoInfo.IsSvg) return GetImageSourceForLogoData(logoInfo.ImageData);
+        return GetImageSourceForLogoData(RasterizeSvg(logoInfo.ImageData));
      }
 
-    public static ImageSource? GetImageSourceForLogoData(byte[]? imageData, bool isSvg)
+    public static ImageSource? GetImageSourceForLogoData(byte[]? imageData)
     {
         if (imageData is null || imageData.Length == 0) return null;
-        var displayData = isSvg ? RasterizeSvg(imageData) : imageData;
-        if (displayData is null) return null;
-        return ImageSource.FromStream(() => new MemoryStream(displayData, writable: false));
+        return ImageSource.FromStream(() => new MemoryStream(imageData, writable: false));
     }
 
     private static byte[]? RasterizeSvg(byte[] svgData, int maxSize = MaxSvgRasterizedSize)
