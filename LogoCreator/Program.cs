@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Text.Json;
 using System.Text;
+using System.IO;
+using System.IO.Compression;
 using LogoCreator.Services;
 
 namespace MyProject
@@ -10,6 +12,7 @@ namespace MyProject
         static void Main(string[] args)
         {
             string outputPath = @"..\..\..\..\PlainWallet\Resources\Logos\logos.json"; // Specify the output path for the generated logos
+            string binoutputPath = @"..\..\..\..\PlainWallet\Resources\Logos\logos.bin"; // Specify the output path for the generated logos
             string logoPath = @"..\..\..\..\logos"; // Specify the log file path
 
             var logofiles = Directory.GetFiles(logoPath, "*.*");
@@ -48,7 +51,7 @@ namespace MyProject
 
                 if (tmp.IsSvg)
                 {
-                    tmp.BackgroundColor = ImageService.GetRasterBackgroundColor(ImageService.RasterizeAndResizeSvg( Encoding.UTF8.GetBytes(tmp.LogoSvg)));
+                    tmp.BackgroundColor = ImageService.GetRasterBackgroundColor(ImageService.RasterizeAndResizeSvg(Encoding.UTF8.GetBytes(tmp.LogoSvg)));
                 }
                 else
                 {
@@ -60,6 +63,16 @@ namespace MyProject
             }
 
             File.WriteAllText(outputPath, JsonSerializer.Serialize(logos, new JsonSerializerOptions { WriteIndented = true }));
+            // File.WriteAllBytes(outputPath, JsonSerializer.SerializeToUtf8Bytes(logos, new JsonSerializerOptions { WriteIndented = false }));
+
+            using var outputStream = new MemoryStream();
+            // Use BrotliStream for maximum compression ratios
+            using (var compressor = new BrotliStream(outputStream, CompressionLevel.Optimal))
+            {
+                JsonSerializer.Serialize(compressor, logos);
+            }
+
+            File.WriteAllBytes(binoutputPath, outputStream.ToArray());
 
         }
     }

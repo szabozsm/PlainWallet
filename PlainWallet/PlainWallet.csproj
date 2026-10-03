@@ -56,7 +56,7 @@
 		<MauiImage Include="Resources\Images\*" />
 		<!-- Built-in logos -->
 		<MauiImage Include="Resources\Logos\*.svg" />
-		<EmbeddedResource Include="Resources\Logos\logos.json" LogicalName="PlainWallet.Resources.Logos.logos.json" />
+		<EmbeddedResource Include="Resources\Logos\logos.bin" LogicalName="PlainWallet.Resources.Logos.logos.bin" />
 		
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />

@@ -7,6 +7,7 @@ using Microsoft.Maui.ApplicationModel;
 using SkiaSharp;
 using Svg.Skia;
 using System.Text;
+using System.IO.Compression;
 
 namespace PlainWallet.Services;
 
@@ -19,13 +20,16 @@ public static class LogosService
 
     private static LogoInfo[] LoadBuiltInLogos()
     {
-        using var stream = typeof(LogosService).Assembly.GetManifestResourceStream("PlainWallet.Resources.Logos.logos.json")
+        using var stream = typeof(LogosService).Assembly.GetManifestResourceStream("PlainWallet.Resources.Logos.logos.bin")
             ?? throw new InvalidOperationException("The built-in logos resource was not found.");
-        var logos = JsonSerializer.Deserialize<LogoJson[]>(stream)
+
+        using var decompressor = new BrotliStream(stream, CompressionMode.Decompress);
+
+        var logos = JsonSerializer.Deserialize<LogoJson[]>(decompressor)
             ?? throw new InvalidOperationException("The built-in logos resource is empty.");
 
         return logos
-            .Select(logo => new LogoInfo(logo.Name,  logo.IsSvg?  Encoding.UTF8.GetBytes(logo.LogoSvg):  Convert.FromBase64String(logo.LogoData), logo.BackgroundColor, logo.IsSvg))
+            .Select(logo => new LogoInfo(logo.Name, logo.IsSvg ? Encoding.UTF8.GetBytes(logo.LogoSvg) : Convert.FromBase64String(logo.LogoData), logo.BackgroundColor, logo.IsSvg))
             .ToArray();
     }
 
@@ -61,7 +65,7 @@ public static class LogosService
         if (logoInfo is null) return null;
         if (!logoInfo.IsSvg) return GetImageSourceForLogoData(logoInfo.ImageData);
         return GetImageSourceForLogoData(RasterizeSvg(logoInfo.ImageData));
-     }
+    }
 
     public static ImageSource? GetImageSourceForLogoData(byte[]? imageData)
     {
