@@ -124,6 +124,12 @@ namespace PlainWallet.Services
             set => UpdateProperty(value, (settings, wifiOnly) => settings.WifiOnlyForExtendsClass = wifiOnly);
         }
 
+        public static string LogoSyncEtag
+        {
+            get => Current.LogoSyncEtag;
+            set => UpdateProperty(value, (settings, etag) => settings.LogoSyncEtag = etag);
+        }
+
         public static void Reload()
         {
             if (_services == null)

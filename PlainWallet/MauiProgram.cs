@@ -61,6 +61,12 @@ public static class MauiProgram
 
 		try
 		{
+			using (var scope = app.Services.CreateScope())
+			{
+				var dbContext = scope.ServiceProvider.GetRequiredService<CardDbContext>();
+				dbContext.Database.Migrate();
+			}
+
 			SettingsStore.Initialize(app.Services);
 			CardStore.Initialize(app.Services);
 			_ = Task.Run(async () => await LogoSyncService.TryDownloadAsync());

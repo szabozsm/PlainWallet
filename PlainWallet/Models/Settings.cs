@@ -13,6 +13,7 @@ public class Settings : INotifyPropertyChanged
     private bool _useExtendsClass=false;
     private bool _twoColumnMode;
     private bool _wifiOnlyForExtendsClass;
+    private string _logoSyncEtag = string.Empty;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -61,6 +62,17 @@ public class Settings : INotifyPropertyChanged
             if (_wifiOnlyForExtendsClass == value) return;
             _wifiOnlyForExtendsClass = value;
             OnPropertyChanged(nameof(WifiOnlyForExtendsClass));
+        }
+    }
+
+    public string LogoSyncEtag
+    {
+        get => _logoSyncEtag;
+        set
+        {
+            if (_logoSyncEtag == value) return;
+            _logoSyncEtag = value;
+            OnPropertyChanged(nameof(LogoSyncEtag));
         }
     }
 
