@@ -63,6 +63,17 @@
                                                 IsChecked="{Binding TwoColumnMode}"/>
                             </Grid>
                      </Border>
+                                         <Border Stroke="{StaticResource PrimaryDark}">
+                            <Grid Padding="5"
+                                  ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="0">
+                                   <CheckBox Grid.Column="0"
+                                             IsChecked="{Binding WifiOnlyForExtendsClass, Mode=TwoWay}"/>
+                                   <Label Grid.Column="1"
+                                          Text="Only sync data when connected to Wi-Fi"
+                                          VerticalOptions="Center"/>
+                            </Grid>
+                     </Border>
                      <Border Stroke="{StaticResource PrimaryDark}">
                             <VerticalStackLayout Padding="5"
                                                  Spacing="10">
@@ -92,14 +103,6 @@
 
                                    <VerticalStackLayout Spacing="0"
                                                         IsVisible="{Binding Source={x:Reference SettingsCheckbox}, Path=IsChecked}">
-                                          <Grid ColumnDefinitions="Auto,*"
-                                                ColumnSpacing="0">
-                                                 <CheckBox Grid.Column="0"
-                                                           IsChecked="{Binding WifiOnlyForExtendsClass, Mode=TwoWay}"/>
-                                                 <Label Grid.Column="1"
-                                                        Text="Only sync when connected to Wi-Fi"
-                                                        VerticalOptions="Center"/>
-                                          </Grid>
                                           <Label Text="Api-key"/>
                                           <Entry x:Name="ApikeyEntry"
                                                  Text="{Binding Apikey, Mode=TwoWay}"
@@ -131,6 +134,7 @@
                                    </VerticalStackLayout>
                             </VerticalStackLayout>
                      </Border>
+ 
                      <HorizontalStackLayout HorizontalOptions="Center"
                                             Spacing="10"
                                             Margin="0,30">
