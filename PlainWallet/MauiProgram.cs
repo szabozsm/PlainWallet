@@ -63,6 +63,7 @@ public static class MauiProgram
 		{
 			SettingsStore.Initialize(app.Services);
 			CardStore.Initialize(app.Services);
+			_ = Task.Run(async () => await LogoSyncService.TryDownloadAsync());
 		}
 		catch (Exception exception)
 		{

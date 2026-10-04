@@ -63,14 +63,14 @@
                                                 IsChecked="{Binding TwoColumnMode}"/>
                             </Grid>
                      </Border>
-                                         <Border Stroke="{StaticResource PrimaryDark}">
+                     <Border Stroke="{StaticResource PrimaryDark}">
                             <Grid Padding="5"
                                   ColumnDefinitions="Auto,*"
                                   ColumnSpacing="0">
                                    <CheckBox Grid.Column="0"
                                              IsChecked="{Binding WifiOnlyForExtendsClass, Mode=TwoWay}"/>
                                    <Label Grid.Column="1"
-                                          Text="Only sync data when connected to Wi-Fi"
+                                          Text="Access the internet only when connected to Wi‑Fi"
                                           VerticalOptions="Center"/>
                             </Grid>
                      </Border>
@@ -134,7 +134,7 @@
                                    </VerticalStackLayout>
                             </VerticalStackLayout>
                      </Border>
- 
+
                      <HorizontalStackLayout HorizontalOptions="Center"
                                             Spacing="10"
                                             Margin="0,30">

@@ -8,21 +8,57 @@ using SkiaSharp;
 using Svg.Skia;
 using System.Text;
 using System.IO.Compression;
+using Microsoft.Maui.Storage;
 
 namespace PlainWallet.Services;
 
 public static class LogosService
 {
     private const int MaxSvgRasterizedSize = 320;
+    private const string RemoteLogoPath = "logos.bin";
     private sealed record LogoInfo(string Name, byte[] ImageData, string BackgroundColor, bool IsSvg);
 
-    private static readonly LogoInfo[] _builtIn = LoadBuiltInLogos();
+    private static LogoInfo[] _builtIn = LoadBuiltInLogos();
+
+    public static void Reload()
+    {
+        _builtIn = LoadBuiltInLogos();
+    }
 
     private static LogoInfo[] LoadBuiltInLogos()
     {
+        var appDataLogoPath = Path.Combine(FileSystem.AppDataDirectory, RemoteLogoPath);
+
+        if (File.Exists(appDataLogoPath))
+        {
+            try
+            {
+                var remoteLogos = LoadLogoSetFromFile(appDataLogoPath);
+                if (remoteLogos.Length > 0)
+                {
+                    return remoteLogos;
+                }
+            }
+            catch
+            {
+                // Fall back to the bundled asset if the downloaded file is missing or invalid.
+            }
+        }
+
         using var stream = typeof(LogosService).Assembly.GetManifestResourceStream("PlainWallet.Resources.Logos.logos.bin")
             ?? throw new InvalidOperationException("The built-in logos resource was not found.");
 
+        return LoadLogoSetFromStream(stream);
+    }
+
+    private static LogoInfo[] LoadLogoSetFromFile(string filePath)
+    {
+        using var stream = File.OpenRead(filePath);
+        return LoadLogoSetFromStream(stream);
+    }
+
+    private static LogoInfo[] LoadLogoSetFromStream(Stream stream)
+    {
         using var decompressor = new BrotliStream(stream, CompressionMode.Decompress);
 
         var logos = JsonSerializer.Deserialize<LogoJson[]>(decompressor)
