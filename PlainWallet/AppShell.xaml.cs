@@ -113,7 +113,7 @@ public partial class AppShell : Shell
             bool answer = await DisplayAlertAsync("Delete", "Are you sure you want to delete ALL CARDS?", "Yes", "No");
             if (answer)
             {
-                if (SettingsStore.UseExtendsClass)
+                if (SettingsStore.UseExtendsClass || SettingsStore.UseJsonBin)
                 {
                     bool answer2 = await DisplayAlertAsync("Delete", "You are synchronizing your data to the cloud, that will be deleted too. Are you still sure?", "Yes", "No");
                     if (!answer2)
