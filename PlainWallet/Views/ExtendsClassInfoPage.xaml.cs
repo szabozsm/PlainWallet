@@ -34,7 +34,7 @@ public partial class ExtendsClassInfoPage : ContentPage
 
                 <div class="container">
                     <h1>🔄 How Syncing Works</h1>
-                    <p>This app allows you to sync your data across multiple devices for free. Instead of saving your data on an unsafe public server, you save it inside your own private storage locker that <strong>only you</strong> control.</p> 
+                    <p>This app allows you to sync your data across multiple devices for free. Instead of saving your data on a public server, you save it inside your own private storage bin on <strong>extendsclass.com</strong>, which only your personal key can access.</p>
 
                     <p>To make this work, the app uses three settings:</p>
 
