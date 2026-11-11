@@ -44,7 +44,21 @@ public partial class SettingsPage : ContentPage
     public bool UseExtendsClass
     {
         get => SettingsStore.UseExtendsClass;
-        set => SettingsStore.UseExtendsClass = value;
+        set
+        {
+            SettingsStore.UseExtendsClass = value;
+            OnPropertyChanged(nameof(UseJsonBin));
+        }
+    }
+
+    public bool UseJsonBin
+    {
+        get => SettingsStore.UseJsonBin;
+        set
+        {
+            SettingsStore.UseJsonBin = value;
+            OnPropertyChanged(nameof(UseExtendsClass));
+        }
     }
 
     public bool WifiOnlyForExtendsClass
@@ -59,6 +73,18 @@ public partial class SettingsPage : ContentPage
         set => SettingsStore.TwoColumnMode = value;
     }
 
+    public string JsonBinAccessKey
+    {
+        get => SettingsStore.JsonBinAccessKey;
+        set => SettingsStore.JsonBinAccessKey = value;
+    }
+
+    public string JsonBinBinId
+    {
+        get => SettingsStore.JsonBinBinId;
+        set => SettingsStore.JsonBinBinId = value;
+    }
+
     private void LoadSettings()
     {
         try
@@ -71,6 +97,9 @@ public partial class SettingsPage : ContentPage
             OnPropertyChanged(nameof(UseExtendsClass));
             OnPropertyChanged(nameof(WifiOnlyForExtendsClass));
             OnPropertyChanged(nameof(BucketId));
+            OnPropertyChanged(nameof(JsonBinAccessKey));
+            OnPropertyChanged(nameof(JsonBinBinId));
+            OnPropertyChanged(nameof(UseJsonBin));
             OnPropertyChanged(nameof(TwoColumnMode));
         }
         catch (Exception ex)
@@ -85,7 +114,7 @@ public partial class SettingsPage : ContentPage
         {
             await SettingsStore.SaveAsync();
             await Shell.Current.GoToAsync("..");
-            if (UseExtendsClass)
+            if (UseExtendsClass || UseJsonBin)
             {
                 var services = IPlatformApplication.Current?.Services
                     ?? throw new InvalidOperationException("MAUI application services are not available.");
@@ -117,6 +146,16 @@ public partial class SettingsPage : ContentPage
         }
     }
 
+    private void OnToggleJsonBinAccessKeyVisibility(object sender, EventArgs e)
+    {
+        JsonBinAccessKeyEntry.IsPassword = !JsonBinAccessKeyEntry.IsPassword;
+
+        if (sender is ImageButton imageButton)
+        {
+            imageButton.Source = JsonBinAccessKeyEntry.IsPassword ? "eye_show.svg" : "eye_hide.svg";
+        }
+    }
+
     private void OnImage1Tapped(object sender, EventArgs e)
     {
         OneColumnRadioButton.IsChecked = true;
@@ -129,6 +168,11 @@ public partial class SettingsPage : ContentPage
     private async void OnExtendsClassInfoTapped(object? sender, TappedEventArgs e)
     {
         await Navigation.PushAsync(new ExtendsClassInfoPage());
+    }
+
+    private async void OnJsonBinInfoTapped(object? sender, TappedEventArgs e)
+    {
+        await Navigation.PushAsync(new JsonBinInfoPage());
     }
 
 }

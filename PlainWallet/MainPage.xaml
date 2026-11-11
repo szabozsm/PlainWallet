@@ -40,7 +40,10 @@
 
             </VerticalStackLayout>
 
-            <CollectionView Grid.Row="1"
+            <RefreshView Grid.Row="1"
+                         Refreshing="OnCardsRefreshing">
+                <Grid RowDefinitions="*">
+                    <CollectionView
                             IsVisible="{Binding TwoColumnList, Converter={StaticResource InvertedBoolConverter}}"
                             x:Name="CardCollection1"
                             ItemsSource="{Binding FilteredCards}"
@@ -92,9 +95,9 @@
                         </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
-            </CollectionView>
+                    </CollectionView>
 
-            <CollectionView Grid.Row="1"
+                    <CollectionView
                             IsVisible="{Binding TwoColumnList}"
                             x:Name="CardCollection2"
                             ItemsSource="{Binding FilteredCards}"
@@ -135,7 +138,9 @@
                         </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
-            </CollectionView>
+                    </CollectionView>
+                </Grid>
+            </RefreshView>
 
         </Grid>
         <ImageButton Source="add.svg"
