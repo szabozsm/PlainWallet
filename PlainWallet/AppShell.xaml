@@ -48,15 +48,26 @@
 
     </MenuItem> -->
 
-    <!-- <MenuItem Text="Buy Me a Coffee"
-              Clicked="OnBuyMeCoffeeTapped">
-        <MenuItem.IconImageSource>
-            <FontImageSource
-                Glyph="&#9749;"
-                FontFamily="FontAwesome"
-                Size="72"
-                Color="Black"/>
-        </MenuItem.IconImageSource>
-    </MenuItem> -->
+    <Shell.FlyoutFooter>
+        <Grid Padding="0"
+              RowDefinitions="Auto,72">
+            <Label x:Name="FlyoutAppVersionLabel"
+                   AutomationId="FlyoutAppVersion"
+                   Grid.Row="0"
+                   FontSize="12"
+                   HorizontalTextAlignment="End"
+                   Padding="8,8" />
+            <Image Grid.Row="1"
+                   Source="buyme.png"
+                   HeightRequest="72"
+                   Aspect="AspectFit"
+                   HorizontalOptions="Fill"
+                   VerticalOptions="Center">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnBuyMeCoffeeTapped" />
+                </Image.GestureRecognizers>
+            </Image>
+        </Grid>
+    </Shell.FlyoutFooter>
 
 </Shell>

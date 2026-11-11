@@ -16,6 +16,7 @@ public partial class AppShell : Shell
     {
         _services = IPlatformApplication.Current?.Services ?? throw new InvalidOperationException("MAUI application services are not available.");
         InitializeComponent();
+        FlyoutAppVersionLabel.Text = $"Version {Microsoft.Maui.ApplicationModel.AppInfo.Current.VersionString}";
         Routing.RegisterRoute(nameof(CardDetailPage), typeof(CardDetailPage));
         Routing.RegisterRoute(nameof(CardEditorPage), typeof(CardEditorPage));
         Routing.RegisterRoute(nameof(SettingsPage), typeof(SettingsPage));
@@ -26,6 +27,12 @@ public partial class AppShell : Shell
         var settingsPage = _services.GetRequiredService<SettingsPage>();
         await Navigation.PushAsync(settingsPage);
         FlyoutIsPresented = false;
+    }
+
+    private async void OnBuyMeCoffeeTapped(object? sender, EventArgs e)
+    {
+        FlyoutIsPresented = false;
+        await Browser.Default.OpenAsync("https://www.buymeacoffee.com/szabozsm", BrowserLaunchMode.SystemPreferred);
     }
 
     private async void OnExportClicked(object? sender, EventArgs e)
