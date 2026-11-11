@@ -11,6 +11,9 @@ public class Settings : INotifyPropertyChanged
     private string _apikey = "";
     private string _securityKey = "";
     private bool _useExtendsClass=false;
+    private bool _useJsonBin;
+    private string _jsonBinAccessKey = "";
+    private string _jsonBinBinId = "";
     private bool _twoColumnMode;
     private bool _wifiOnlyForExtendsClass;
     private string _logoSyncEtag = string.Empty;
@@ -39,6 +42,39 @@ public class Settings : INotifyPropertyChanged
             if (_useExtendsClass == value) return;
             _useExtendsClass = value;
             OnPropertyChanged(nameof(UseExtendsClass));
+        }
+    }
+
+    public bool UseJsonBin
+    {
+        get => _useJsonBin;
+        set
+        {
+            if (_useJsonBin == value) return;
+            _useJsonBin = value;
+            OnPropertyChanged(nameof(UseJsonBin));
+        }
+    }
+
+    public string JsonBinAccessKey
+    {
+        get => _jsonBinAccessKey;
+        set
+        {
+            if (_jsonBinAccessKey == value) return;
+            _jsonBinAccessKey = value;
+            OnPropertyChanged(nameof(JsonBinAccessKey));
+        }
+    }
+
+    public string JsonBinBinId
+    {
+        get => _jsonBinBinId;
+        set
+        {
+            if (_jsonBinBinId == value) return;
+            _jsonBinBinId = value;
+            OnPropertyChanged(nameof(JsonBinBinId));
         }
     }
 

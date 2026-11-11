@@ -1,0 +1,838 @@
+{
+	"openapi": "3.0.3",
+	"info": {
+		"title": "JSONBin.io REST API v3",
+		"description": "Community-generated OpenAPI 3.0 specification for JSONBin.io v3 endpoints covering Bins, Collections, Schema Docs, Access Keys, and Logs.",
+		"version": "3.0.0",
+		"contact": {
+			"name": "JSONBin.io API Reference",
+			"url": "https://jsonbin.io/api-reference"
+		}
+	},
+	"servers": [
+		{
+			"url": "https://api.jsonbin.io/v3",
+			"description": "JSONBin.io Production API v3 Server"
+		}
+	],
+	"security": [
+		{
+			"MasterKeyAuth": []
+		},
+		{
+			"AccessKeyAuth": []
+		}
+	],
+	"paths": {
+		"/b": {
+			"post": {
+				"tags": [
+					"Bins"
+				],
+				"summary": "Create a Bin",
+				"description": "Create a new JSON record (bin) in your account or inside a specific collection.",
+				"parameters": [
+					{
+						"name": "X-Bin-Private",
+						"in": "header",
+						"description": "Set to false to create a public bin. Defaults to true.",
+						"required": false,
+						"schema": {
+							"type": "boolean",
+							"default": true
+						}
+					},
+					{
+						"name": "X-Bin-Name",
+						"in": "header",
+						"description": "Optional name for the bin (1 to 128 characters).",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"minLength": 1,
+							"maxLength": 128
+						}
+					},
+					{
+						"name": "X-Collection-Id",
+						"in": "header",
+						"description": "Optional Collection ID to group the bin and validate against an attached schema.",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"additionalProperties": true,
+								"example": {
+									"sample": "Hello World"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Bin successfully created.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BinResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/ErrorResponse"
+					},
+					"401": {
+						"$ref": "#/components/responses/ErrorResponse"
+					},
+					"403": {
+						"$ref": "#/components/responses/ErrorResponse"
+					}
+				}
+			}
+		},
+		"/b/{binId}": {
+			"get": {
+				"tags": [
+					"Bins"
+				],
+				"summary": "Read a Bin",
+				"description": "Fetch the latest version of a public or private bin.",
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/BinIdParam"
+					},
+					{
+						"$ref": "#/components/parameters/BinMetaHeader"
+					},
+					{
+						"$ref": "#/components/parameters/JsonPathHeader"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Bin data retrieved successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BinResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"$ref": "#/components/responses/ErrorResponse"
+					},
+					"404": {
+						"$ref": "#/components/responses/ErrorResponse"
+					}
+				}
+			},
+			"put": {
+				"tags": [
+					"Bins"
+				],
+				"summary": "Update a Bin",
+				"description": "Overwrite the JSON contents of an existing bin.",
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/BinIdParam"
+					},
+					{
+						"name": "X-Bin-Versioning",
+						"in": "header",
+						"description": "Set to false to disable creating a new version on update.",
+						"required": false,
+						"schema": {
+							"type": "boolean",
+							"default": true
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"additionalProperties": true
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Bin updated successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BinResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"$ref": "#/components/responses/ErrorResponse"
+					},
+					"401": {
+						"$ref": "#/components/responses/ErrorResponse"
+					}
+				}
+			},
+			"delete": {
+				"tags": [
+					"Bins"
+				],
+				"summary": "Delete a Bin",
+				"description": "Permanently delete a bin and all its versions.",
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/BinIdParam"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Bin deleted successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"metadata": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string"
+												},
+												"versionsDeleted": {
+													"type": "integer"
+												}
+											}
+										},
+										"message": {
+											"type": "string"
+										}
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"$ref": "#/components/responses/ErrorResponse"
+					},
+					"404": {
+						"$ref": "#/components/responses/ErrorResponse"
+					}
+				}
+			}
+		},
+		"/b/{binId}/{binVersion}": {
+			"get": {
+				"tags": [
+					"Bins"
+				],
+				"summary": "Read a Specific Bin Version",
+				"description": "Fetch a specific version number or 'latest' of a bin.",
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/BinIdParam"
+					},
+					{
+						"name": "binVersion",
+						"in": "path",
+						"required": true,
+						"description": "Version number (e.g., 1) or 'latest'.",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"$ref": "#/components/parameters/BinMetaHeader"
+					},
+					{
+						"$ref": "#/components/parameters/JsonPathHeader"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Specific bin version retrieved successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/BinResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"$ref": "#/components/responses/ErrorResponse"
+					}
+				}
+			}
+		},
+		"/b/{binId}/meta/name": {
+			"put": {
+				"tags": [
+					"Bins"
+				],
+				"summary": "Update Bin Name",
+				"description": "Rename an existing bin.",
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/BinIdParam"
+					},
+					{
+						"name": "X-Bin-Name",
+						"in": "header",
+						"required": true,
+						"description": "New name for the bin (1 to 128 characters).",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Bin name updated."
+					}
+				}
+			}
+		},
+		"/b/{binId}/meta/privacy": {
+			"put": {
+				"tags": [
+					"Bins"
+				],
+				"summary": "Update Bin Privacy",
+				"description": "Toggle a bin between public and private.",
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/BinIdParam"
+					},
+					{
+						"name": "X-Bin-Private",
+						"in": "header",
+						"required": true,
+						"description": "Set to true for private or false for public.",
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Bin privacy updated."
+					}
+				}
+			}
+		},
+		"/c": {
+			"get": {
+				"tags": [
+					"Collections"
+				],
+				"summary": "List Collections",
+				"description": "Retrieve metadata for all collections created in your account.",
+				"security": [
+					{
+						"MasterKeyAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "List of collections.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/CollectionItem"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": [
+					"Collections"
+				],
+				"summary": "Create a Collection",
+				"description": "Create a new collection to group bins and optionally attach validation schemas.",
+				"security": [
+					{
+						"MasterKeyAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "X-Collection-Name",
+						"in": "header",
+						"required": true,
+						"description": "Name of the new collection.",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Collection created.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CollectionItem"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/c/{collectionId}/bins": {
+			"get": {
+				"tags": [
+					"Collections"
+				],
+				"summary": "Fetch Bins in a Collection",
+				"description": "Fetch a paginated list of bins inside a specific collection.",
+				"security": [
+					{
+						"MasterKeyAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/CollectionIdParam"
+					},
+					{
+						"name": "X-Sort-Order",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"ascending",
+								"descending"
+							]
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Paginated bins metadata list."
+					}
+				}
+			}
+		},
+		"/c/uncategorized/bins": {
+			"get": {
+				"tags": [
+					"Collections"
+				],
+				"summary": "Fetch Uncategorized Bins",
+				"description": "Fetch a paginated list of bins not assigned to any collection.",
+				"security": [
+					{
+						"MasterKeyAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "List of uncategorized bins."
+					}
+				}
+			}
+		},
+		"/c/{collectionId}/schemadoc/add": {
+			"put": {
+				"tags": [
+					"Collections"
+				],
+				"summary": "Attach Schema Doc to Collection",
+				"description": "Attach a validation schema doc to a collection so new bins are validated before storage.",
+				"security": [
+					{
+						"MasterKeyAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/CollectionIdParam"
+					},
+					{
+						"name": "X-Schema-Doc-Id",
+						"in": "header",
+						"required": true,
+						"description": "ID of the Schema Doc to attach.",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Schema Doc attached to collection."
+					}
+				}
+			}
+		},
+		"/c/{collectionId}/schemadoc/remove": {
+			"put": {
+				"tags": [
+					"Collections"
+				],
+				"summary": "Remove Schema Doc from Collection",
+				"description": "Detach the active validation schema doc from a collection.",
+				"security": [
+					{
+						"MasterKeyAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/CollectionIdParam"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Schema Doc removed from collection."
+					}
+				}
+			}
+		},
+		"/s": {
+			"post": {
+				"tags": [
+					"Schema Docs"
+				],
+				"summary": "Create a Schema Doc",
+				"description": "Create a JSON Schema validation document that can be attached to collections.",
+				"security": [
+					{
+						"MasterKeyAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "X-Schema-Doc-Name",
+						"in": "header",
+						"required": true,
+						"description": "Name of the schema document.",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"description": "Valid JSON Schema definition.",
+								"additionalProperties": true
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Schema Doc created successfully."
+					}
+				}
+			}
+		},
+		"/s/{schemaDocId}": {
+			"get": {
+				"tags": [
+					"Schema Docs"
+				],
+				"summary": "Read a Schema Doc",
+				"description": "Retrieve a previously created JSON Schema document.",
+				"security": [
+					{
+						"MasterKeyAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/SchemaDocIdParam"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Schema Doc retrieved."
+					}
+				}
+			},
+			"put": {
+				"tags": [
+					"Schema Docs"
+				],
+				"summary": "Update a Schema Doc",
+				"description": "Update an existing JSON Schema document.",
+				"security": [
+					{
+						"MasterKeyAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"$ref": "#/components/parameters/SchemaDocIdParam"
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"additionalProperties": true
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Schema Doc updated."
+					}
+				}
+			}
+		},
+		"/a": {
+			"get": {
+				"tags": [
+					"Access Keys"
+				],
+				"summary": "List Access Keys",
+				"description": "Fetch all granular Access Keys and their endpoint permissions.",
+				"security": [
+					{
+						"MasterKeyAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "List of Access Keys.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/AccessKeyItem"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/l": {
+			"get": {
+				"tags": [
+					"Usage Logs"
+				],
+				"summary": "List Usage Logs",
+				"description": "Retrieve a list of available daily usage log directories.",
+				"security": [
+					{
+						"MasterKeyAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "List of log dates/directories."
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"securitySchemes": {
+			"MasterKeyAuth": {
+				"type": "apiKey",
+				"in": "header",
+				"name": "X-Master-Key",
+				"description": "Core API Master Key found on your JSONBin.io API Keys dashboard."
+			},
+			"AccessKeyAuth": {
+				"type": "apiKey",
+				"in": "header",
+				"name": "X-Access-Key",
+				"description": "Granular Access Key with scoped permissions for Bins."
+			}
+		},
+		"parameters": {
+			"BinIdParam": {
+				"name": "binId",
+				"in": "path",
+				"required": true,
+				"description": "Unique 24-character identifier of the Bin.",
+				"schema": {
+					"type": "string"
+				}
+			},
+			"CollectionIdParam": {
+				"name": "collectionId",
+				"in": "path",
+				"required": true,
+				"description": "Unique identifier of the Collection.",
+				"schema": {
+					"type": "string"
+				}
+			},
+			"SchemaDocIdParam": {
+				"name": "schemaDocId",
+				"in": "path",
+				"required": true,
+				"description": "Unique identifier of the Schema Doc.",
+				"schema": {
+					"type": "string"
+				}
+			},
+			"BinMetaHeader": {
+				"name": "X-Bin-Meta",
+				"in": "header",
+				"required": false,
+				"description": "Set to false to omit metadata and return only the stored JSON record.",
+				"schema": {
+					"type": "boolean",
+					"default": true
+				}
+			},
+			"JsonPathHeader": {
+				"name": "X-JSON-Path",
+				"in": "header",
+				"required": false,
+				"description": "JSONPath expression to extract specific fields from the bin (e.g., users[0].firstName).",
+				"schema": {
+					"type": "string"
+				}
+			}
+		},
+		"schemas": {
+			"BinResponse": {
+				"type": "object",
+				"properties": {
+					"record": {
+						"type": "object",
+						"additionalProperties": true,
+						"description": "The stored JSON payload."
+					},
+					"metadata": {
+						"type": "object",
+						"properties": {
+							"id": {
+								"type": "string"
+							},
+							"createdAt": {
+								"type": "string",
+								"format": "date-time"
+							},
+							"private": {
+								"type": "boolean"
+							},
+							"name": {
+								"type": "string"
+							},
+							"collectionId": {
+								"type": "string"
+							}
+						}
+					}
+				}
+			},
+			"CollectionItem": {
+				"type": "object",
+				"properties": {
+					"record": {
+						"type": "string"
+					},
+					"metadata": {
+						"type": "object",
+						"properties": {
+							"name": {
+								"type": "string"
+							},
+							"createdAt": {
+								"type": "string",
+								"format": "date-time"
+							}
+						}
+					}
+				}
+			},
+			"AccessKeyItem": {
+				"type": "object",
+				"properties": {
+					"accessKeyId": {
+						"type": "string"
+					},
+					"accessKey": {
+						"type": "string"
+					},
+					"keyPermissions": {
+						"type": "object",
+						"properties": {
+							"bins": {
+								"type": "object",
+								"properties": {
+									"create": {
+										"type": "boolean"
+									},
+									"read": {
+										"type": "boolean"
+									},
+									"update": {
+										"type": "boolean"
+									},
+									"delete": {
+										"type": "boolean"
+									}
+								}
+							}
+						}
+					},
+					"metadata": {
+						"type": "object",
+						"properties": {
+							"name": {
+								"type": "string"
+							}
+						}
+					}
+				}
+			}
+		},
+		"responses": {
+			"ErrorResponse": {
+				"description": "API error response.",
+				"content": {
+					"application/json": {
+						"schema": {
+							"type": "object",
+							"properties": {
+								"message": {
+									"type": "string",
+									"description": "Detailed error explanation."
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

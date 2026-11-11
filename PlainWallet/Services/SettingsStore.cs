@@ -92,7 +92,25 @@ namespace PlainWallet.Services
         public static bool UseExtendsClass
         {
             get => Current.UseExtendsClass;
-            set => UpdateProperty(value, (s, v) => s.UseExtendsClass = v);
+            set
+            {
+                if (value)
+                    Current.UseJsonBin = false;
+
+                UpdateProperty(value, (settings, enabled) => settings.UseExtendsClass = enabled);
+            }
+        }
+
+        public static bool UseJsonBin
+        {
+            get => Current.UseJsonBin;
+            set
+            {
+                if (value)
+                    Current.UseExtendsClass = false;
+
+                UpdateProperty(value, (settings, enabled) => settings.UseJsonBin = enabled);
+            }
         }
 
         public static string BucketId
@@ -110,6 +128,18 @@ namespace PlainWallet.Services
         {
             get => Current.Apikey;
             set => UpdateProperty(value, (s, v) => s.Apikey = v);
+        }
+
+        public static string JsonBinAccessKey
+        {
+            get => Current.JsonBinAccessKey;
+            set => UpdateProperty(value, (settings, accessKey) => settings.JsonBinAccessKey = accessKey);
+        }
+
+        public static string JsonBinBinId
+        {
+            get => Current.JsonBinBinId;
+            set => UpdateProperty(value, (settings, binId) => settings.JsonBinBinId = binId);
         }
 
   public static bool TwoColumnMode

@@ -54,7 +54,7 @@ public static class CardStore
             }
             innerCtx.SaveChanges();
 
-            if (SettingsStore.UseExtendsClass)
+            if (SettingsStore.UseExtendsClass || SettingsStore.UseJsonBin)
             {
                 var importService = _services.GetRequiredService<ImportService>();
                 await importService.UploadData();
@@ -139,7 +139,7 @@ public static class CardStore
 
         await ctx.SaveChangesAsync();
 
-        if (SettingsStore.UseExtendsClass)
+        if (SettingsStore.UseExtendsClass || SettingsStore.UseJsonBin)
         {
             var importService = scope.ServiceProvider.GetRequiredService<ImportService>();
             await importService.UploadData();

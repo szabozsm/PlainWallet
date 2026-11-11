@@ -54,6 +54,7 @@ public class ImportService
 
                         foreach (var card in importData.Cards)
                         {
+                                card.SetLastChangedFromSync(card.JsonLastChanged);
                                 var tracked = db.Cards.Local.FirstOrDefault(x => x.Id == card.Id) ?? db.Cards.Find(card.Id);
                                 if (tracked == null)
                                 {
@@ -63,7 +64,8 @@ public class ImportService
                                 }
                                 else
                                 {
-                                        if (card.JsonLastChanged > tracked.LastChanged)
+                                        if (card.JsonLastChanged > tracked.LastChanged ||
+                                            (card.JsonLastChanged == tracked.LastChanged && HasCardDataChanged(card, tracked)))
                                         {
                                                 db.Entry(tracked).CurrentValues.SetValues(card);
                                                 CardCount++;
@@ -81,8 +83,35 @@ public class ImportService
                 return -1;
         }
 
+        private static bool HasCardDataChanged(MembershipCard incoming, MembershipCard current)
+        {
+                return !incoming.BackgroundColor.Equals(current.BackgroundColor) ||
+                       incoming.LogoKind != current.LogoKind ||
+                       incoming.BarcodeTypeValue != current.BarcodeTypeValue ||
+                       incoming.CardNumber != current.CardNumber ||
+                       incoming.Id != current.Id ||
+                       !ByteArraysEqual(incoming.LogoData, current.LogoData) ||
+                       incoming.LogoUri != current.LogoUri ||
+                       incoming.LogoUrl != current.LogoUrl ||
+                       incoming.Name != current.Name ||
+                       incoming.Notes != current.Notes;
+        }
+
+        private static bool ByteArraysEqual(byte[]? first, byte[]? second)
+        {
+                return first is null
+                        ? second is null
+                        : second is not null && first.AsSpan().SequenceEqual(second);
+        }
+
         public async Task UploadData()
         {
+                if (SettingsStore.UseJsonBin)
+                {
+                        await UploadJsonBinData();
+                        return;
+                }
+
                 try
                 {
                         var data = GetDataToExport();
@@ -101,6 +130,12 @@ public class ImportService
 
         public async Task DownloadData()
         {
+                if (SettingsStore.UseJsonBin)
+                {
+                        await DownloadJsonBinData();
+                        return;
+                }
+
                 try
                 {
                         string bucketId = await GetBucketId();
@@ -121,6 +156,64 @@ public class ImportService
                 catch (Exception ex)
                 {
                                 await Toast.Make($"Failed to download data from extendsclass.com: {ex.Message}", ToastDuration.Long).Show();
+                }
+        }
+
+        private async Task UploadJsonBinData()
+        {
+                try
+                {
+                        var client = _services.GetRequiredService<JsonBinClient>();
+                        var data = GetDataToExport();
+                        if (string.IsNullOrWhiteSpace(SettingsStore.JsonBinBinId))
+                        {
+                                SettingsStore.JsonBinBinId = await client.CreateBinAsync(
+                                        data,
+                                        SettingsStore.JsonBinAccessKey);
+                                await SettingsStore.SaveAsync();
+                        }
+                        else
+                        {
+                                await client.UpdateBinAsync(
+                                        data,
+                                        SettingsStore.JsonBinBinId,
+                                        SettingsStore.JsonBinAccessKey);
+                        }
+                }
+                catch (WifiOnlySyncSkippedException)
+                {
+                }
+                catch (Exception ex)
+                {
+                        await Toast.Make($"Failed to upload data to jsonbin.io: {ex.Message}", ToastDuration.Long).Show();
+                }
+        }
+
+        private async Task DownloadJsonBinData()
+        {
+                try
+                {
+                        var client = _services.GetRequiredService<JsonBinClient>();
+                        if (string.IsNullOrWhiteSpace(SettingsStore.JsonBinBinId))
+                        {
+                                SettingsStore.JsonBinBinId = await client.CreateBinAsync(
+                                        GetDataToExport(),
+                                        SettingsStore.JsonBinAccessKey);
+                                await SettingsStore.SaveAsync();
+                                return;
+                        }
+
+                        var json = await client.GetBinRecordAsync(
+                                SettingsStore.JsonBinBinId,
+                                SettingsStore.JsonBinAccessKey);
+                        await ImportData(json);
+                }
+                catch (WifiOnlySyncSkippedException)
+                {
+                }
+                catch (Exception ex)
+                {
+                        await Toast.Make($"Failed to download data from jsonbin.io: {ex.Message}", ToastDuration.Long).Show();
                 }
         }
 

@@ -114,6 +114,8 @@ public class MembershipCard : INotifyPropertyChanged
     [JsonIgnore]
     public DateTime LastChanged { get => _lastChanged; private set => _lastChanged = value; }
 
+    internal void SetLastChangedFromSync(DateTime value) => _lastChanged = value;
+
     /// <summary>
     /// Resizes an image to the specified maximum dimensions while maintaining aspect ratio
     /// </summary>

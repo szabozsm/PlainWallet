@@ -134,6 +134,54 @@
                                    </VerticalStackLayout>
                             </VerticalStackLayout>
                      </Border>
+                     <Border Stroke="{StaticResource PrimaryDark}">
+                            <VerticalStackLayout Padding="5"
+                                                 Spacing="10">
+                                   <Grid RowDefinitions="Auto,Auto"
+                                         ColumnDefinitions="Auto,*"
+                                         ColumnSpacing="0">
+                                          <CheckBox Grid.Row="0"
+                                                    Grid.Column="0"
+                                                    x:Name="JsonBinCheckbox"
+                                                    IsChecked="{Binding UseJsonBin, Mode=TwoWay}"/>
+                                          <Label Grid.Row="0"
+                                                 Grid.Column="1"
+                                                 Text="Use jsonbin.io for sharing"
+                                                 VerticalOptions="Center"/>
+                                          <Label Grid.Row="1"
+                                                 Grid.Column="1"
+                                                 Text="What's this?"
+                                                 FontSize="12"
+                                                 TextColor="{StaticResource Primary}"
+                                                 TextDecorations="Underline">
+                                                 <Label.GestureRecognizers>
+                                                        <TapGestureRecognizer Tapped="OnJsonBinInfoTapped"/>
+                                                 </Label.GestureRecognizers>
+                                          </Label>
+                                   </Grid>
+                                   <VerticalStackLayout Spacing="0"
+                                                        IsVisible="{Binding Source={x:Reference JsonBinCheckbox}, Path=IsChecked}">
+                                          <Label Text="X-Access-Key"/>
+                                          <Grid ColumnDefinitions="*,Auto"
+                                                ColumnSpacing="0">
+                                                 <Entry x:Name="JsonBinAccessKeyEntry"
+                                                        Grid.Column="0"
+                                                        IsPassword="true"
+                                                        Text="{Binding JsonBinAccessKey, Mode=TwoWay}"
+                                                        Placeholder="Enter access key"/>
+                                                 <ImageButton Grid.Column="1"
+                                                              Source="eye_show.svg"
+                                                              HeightRequest="20"
+                                                              WidthRequest="20"
+                                                              Clicked="OnToggleJsonBinAccessKeyVisibility"/>
+                                          </Grid>
+                                          <Label Text="Bin ID"
+                                                 Margin="0,20,0,0"/>
+                                          <Entry Text="{Binding JsonBinBinId, Mode=TwoWay}"
+                                                 Placeholder="Leave blank to create a bin"/>
+                                   </VerticalStackLayout>
+                            </VerticalStackLayout>
+                     </Border>
 
                      <HorizontalStackLayout HorizontalOptions="Center"
                                             Spacing="10"

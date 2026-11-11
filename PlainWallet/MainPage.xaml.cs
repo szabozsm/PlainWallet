@@ -19,7 +19,7 @@ public partial class MainPage : ContentPage
     private string _filter = string.Empty;
     private readonly Random _random = new();
     private readonly IServiceProvider _services;
-    private bool _startupSyncStarted;
+    private bool _isSyncing;
 
     public bool TwoColumnList { get; set; } = false;
     
@@ -39,39 +39,50 @@ public partial class MainPage : ContentPage
         set;
     }
 
-    protected async override void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
         TwoColumnList = SettingsStore.TwoColumnMode;
         OnPropertyChanged(nameof(TwoColumnList));
         ApplyFilter();
-        if (!_startupSyncStarted)
-        {
-            _startupSyncStarted = true;
-            _ = UpdateCardsFromInternet();
-        }
+        _ = UpdateCardsFromInternet();
     }
 
     private async Task UpdateCardsFromInternet()
     {
-        if (SettingsStore.UseExtendsClass)
+        if (_isSyncing || (!SettingsStore.UseExtendsClass && !SettingsStore.UseJsonBin))
+            return;
+
+        _isSyncing = true;
+        try
         {
-            try
-            {
-                ShowAnimation = true;
-                OnPropertyChanged(nameof(ShowAnimation));
-                var importService = _services.GetRequiredService<ImportService>();
-                await importService.DownloadData();
-            }
-            catch (Exception ex)
-            {
-                await Toast.Make($"extendsclass.com failure: {ex.Message}", ToastDuration.Long).Show();
-            }
-            finally
-            {
-                ShowAnimation = false;
-                OnPropertyChanged(nameof(ShowAnimation));
-            }
+            ShowAnimation = true;
+            OnPropertyChanged(nameof(ShowAnimation));
+            var importService = _services.GetRequiredService<ImportService>();
+            await importService.DownloadData();
+        }
+        catch (Exception ex)
+        {
+            await Toast.Make($"Cloud sync failure: {ex.Message}", ToastDuration.Long).Show();
+        }
+        finally
+        {
+            ShowAnimation = false;
+            OnPropertyChanged(nameof(ShowAnimation));
+            _isSyncing = false;
+        }
+    }
+
+    private async void OnCardsRefreshing(object? sender, EventArgs e)
+    {
+        try
+        {
+            await UpdateCardsFromInternet();
+        }
+        finally
+        {
+            if (sender is RefreshView refreshView)
+                refreshView.IsRefreshing = false;
         }
     }
 

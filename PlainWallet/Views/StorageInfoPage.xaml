@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="PlainWallet.Views.ExtendsClassInfoPage"
+             x:Class="PlainWallet.Views.StorageInfoPage"
              Title="What's this?">
     <Grid RowDefinitions="*,Auto">
         <WebView x:Name="InfoWebView"
-             Grid.Row="0"
-             Navigating="OnInfoWebViewNavigating"/>
-       <Button Grid.Row="1"
-              Margin="16"
+                 Grid.Row="0"
+                 Navigating="OnInfoWebViewNavigating"/>
+        <Button Grid.Row="1"
+                Margin="16"
                 Text="Close"
                 Clicked="OnCloseClicked"
                 BackgroundColor="{StaticResource Primary}"
