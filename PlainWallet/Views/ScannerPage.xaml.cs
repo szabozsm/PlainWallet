@@ -8,10 +8,10 @@ namespace PlainWallet.Views;
 
 public partial class ScannerPage : ContentPage
 {
-    private readonly Action<string?,ZXing.Net.Maui.BarcodeFormat>? _onScanned;
+    private readonly Func<string?, ZXing.Net.Maui.BarcodeFormat, Task<bool>>? _onScanned;
     private bool _handling;
 
-    public ScannerPage(Action<string?,ZXing.Net.Maui.BarcodeFormat>? onScanned)
+    public ScannerPage(Func<string?, ZXing.Net.Maui.BarcodeFormat, Task<bool>>? onScanned)
     {
         InitializeComponent();
         cameraView.Options = new BarcodeReaderOptions
@@ -46,8 +46,20 @@ public partial class ScannerPage : ContentPage
         _handling = true;
         MainThread.BeginInvokeOnMainThread(async () =>
         {
-            _onScanned?.Invoke(result, format);
-            await Navigation.PopAsync();
+            cameraView.IsDetecting = false;
+            var accepted = _onScanned is null || await _onScanned(result, format);
+            if (accepted)
+            {
+                await Navigation.PopAsync();
+                return;
+            }
+
+            await DisplayAlertAsync(
+                "QR code not recognized",
+                "Scan a PlainWallet ExtendsClass sharing QR code.",
+                "OK");
+            _handling = false;
+            cameraView.IsDetecting = true;
         });
     }
 

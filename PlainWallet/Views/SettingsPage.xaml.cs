@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Controls;
 using PlainWallet.Models;
 using PlainWallet.Services;
-using Xamarin.Google.Crypto.Tink.Shaded.Protobuf;
 
 namespace PlainWallet.Views;
 
@@ -115,6 +114,51 @@ public partial class SettingsPage : ContentPage
         {
             imageButton.Source = SecurityKeyEntry.IsPassword ? "eye_show.svg" : "eye_hide.svg";
         }
+    }
+
+    private async void OnShareCredentialsClicked(object? sender, EventArgs e)
+    {
+        if (!ExtendsClassCredentialsQrCode.HasAllCredentials(Apikey, SecurityKey, BucketId))
+        {
+            await DisplayAlertAsync(
+                "Missing credentials",
+                "Enter the API key, security key, and Bin ID before sharing.",
+                "OK");
+            return;
+        }
+
+        var payload = ExtendsClassCredentialsQrCode.Encode(Apikey, SecurityKey, BucketId);
+        var qrCode = BarcodeGenerator.CreateBarcode(
+            payload,
+            ZXing.Net.Maui.BarcodeFormat.QrCode,
+            width: 1024,
+            height: 1024);
+        if (qrCode is null)
+        {
+            await DisplayAlertAsync("QR code error", "Could not create the credentials QR code.", "OK");
+            return;
+        }
+
+        await Navigation.PushAsync(new CredentialsQrCodePage(qrCode));
+    }
+
+    private async void OnScanCredentialsClicked(object? sender, EventArgs e)
+    {
+        var scanner = new ScannerPage(async (value, _) =>
+        {
+            if (!ExtendsClassCredentialsQrCode.TryDecode(value, out var credentials) || credentials is null)
+                return false;
+
+            Apikey = credentials.ApiKey;
+            SecurityKey = credentials.SecurityKey;
+            BucketId = credentials.BinId;
+            OnPropertyChanged(nameof(Apikey));
+            OnPropertyChanged(nameof(SecurityKey));
+            OnPropertyChanged(nameof(BucketId));
+            return true;
+        });
+
+        await Navigation.PushAsync(scanner);
     }
 
     private void OnImage1Tapped(object sender, EventArgs e)

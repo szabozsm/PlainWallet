@@ -269,6 +269,7 @@ public partial class CardEditorPage : ContentPage
             SelectedBarcodeType = BarcodeTypeOptions.FirstOrDefault(o => o.Format == barcodeFormat) ?? BarcodeTypeOptions[4];
             OnPropertyChanged(nameof(CardNumber));
             OnPropertyChanged(nameof(SelectedBarcodeType));
+            return Task.FromResult(true);
         });
         await Navigation.PushAsync(scanner);
     }
