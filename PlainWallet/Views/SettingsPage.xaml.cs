@@ -167,12 +167,12 @@ public partial class SettingsPage : ContentPage
 
     private async void OnExtendsClassInfoTapped(object? sender, TappedEventArgs e)
     {
-        await Navigation.PushAsync(new ExtendsClassInfoPage());
+        await Navigation.PushAsync(new StorageInfoPage(StorageInfoContent.ExtendsClass));
     }
 
     private async void OnJsonBinInfoTapped(object? sender, TappedEventArgs e)
     {
-        await Navigation.PushAsync(new JsonBinInfoPage());
+        await Navigation.PushAsync(new StorageInfoPage(StorageInfoContent.JsonBin));
     }
 
 }
