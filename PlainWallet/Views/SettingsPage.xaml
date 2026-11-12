@@ -137,17 +137,17 @@
                                                  <Button x:Name="ShareCredentialsButton"
                                                          AutomationId="ShareCredentialsButton"
                                                          Text="Share"
-                                                         ImageSource="share.svg"
+                                                         ImageSource="share_small.png"
                                                          ContentLayout="Left,8"
-                                                         Background="{StaticResource Secondary}"
+                                                         Background="{StaticResource StorageActionButtonBackground}"
                                                          TextColor="{StaticResource Black}"
                                                          Clicked="OnShareCredentialsClicked"/>
                                                  <Button x:Name="ScanCredentialsButton"
                                                          AutomationId="ScanCredentialsButton"
                                                          Text="Scan"
-                                                         ImageSource="qr_scan.svg"
+                                                         ImageSource="qr_scan_small.png"
                                                          ContentLayout="Left,8"
-                                                         Background="{StaticResource Secondary}"
+                                                         Background="{StaticResource StorageActionButtonBackground}"
                                                          TextColor="{StaticResource Black}"
                                                          Clicked="OnScanCredentialsClicked"/>
                                           </HorizontalStackLayout>
@@ -200,6 +200,26 @@
                                                  Margin="0,20,0,0"/>
                                           <Entry Text="{Binding JsonBinBinId, Mode=TwoWay}"
                                                  Placeholder="Leave blank to create a bin"/>
+                                          <HorizontalStackLayout HorizontalOptions="Center"
+                                                                 Spacing="12"
+                                                                 Margin="0,16,0,0">
+                                                 <Button x:Name="ShareJsonBinCredentialsButton"
+                                                         AutomationId="ShareJsonBinCredentialsButton"
+                                                         Text="Share"
+                                                         ImageSource="share_small.png"
+                                                         ContentLayout="Left,8"
+                                                         Background="{StaticResource StorageActionButtonBackground}"
+                                                         TextColor="{StaticResource Black}"
+                                                         Clicked="OnShareJsonBinCredentialsClicked"/>
+                                                 <Button x:Name="ScanJsonBinCredentialsButton"
+                                                         AutomationId="ScanJsonBinCredentialsButton"
+                                                         Text="Scan"
+                                                         ImageSource="qr_scan_small.png"
+                                                         ContentLayout="Left,8"
+                                                         Background="{StaticResource StorageActionButtonBackground}"
+                                                         TextColor="{StaticResource Black}"
+                                                         Clicked="OnScanJsonBinCredentialsClicked"/>
+                                          </HorizontalStackLayout>
                                    </VerticalStackLayout>
                             </VerticalStackLayout>
                      </Border>

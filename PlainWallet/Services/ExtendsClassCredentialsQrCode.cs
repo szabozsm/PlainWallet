@@ -6,7 +6,7 @@ public sealed record ExtendsClassCredentials(string ApiKey, string SecurityKey, 
 
 public static class ExtendsClassCredentialsQrCode
 {
-    private const string PayloadMarker = "PW1";
+    private const string PayloadMarker = "PEC1";
 
     public static bool HasAllCredentials(string? apiKey, string? securityKey, string? binId) =>
         !string.IsNullOrWhiteSpace(apiKey) &&

@@ -11,6 +11,7 @@
 <Color x:Key="PrimaryDarkText">#111827</Color>
 
 <Color x:Key="Secondary">#E3ECFA</Color>
+<Color x:Key="StorageActionButtonBackground">#CADCF4</Color>
 <Color x:Key="SecondaryDarkText">#3B6EDC</Color>
 
 <Color x:Key="Tertiary">#072A66</Color>
