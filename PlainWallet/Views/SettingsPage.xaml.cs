@@ -185,7 +185,50 @@ public partial class SettingsPage : ContentPage
             OnPropertyChanged(nameof(SecurityKey));
             OnPropertyChanged(nameof(BucketId));
             return true;
-        });
+        }, "Scan a PlainWallet ExtendsClass sharing QR code.");
+
+        await Navigation.PushAsync(scanner);
+    }
+
+    private async void OnShareJsonBinCredentialsClicked(object? sender, EventArgs e)
+    {
+        if (!JsonBinCredentialsQrCode.HasAllCredentials(JsonBinAccessKey, JsonBinBinId))
+        {
+            await DisplayAlertAsync(
+                "Missing credentials",
+                "Enter the JSONBin X-Access-Key and Bin ID before sharing.",
+                "OK");
+            return;
+        }
+
+        var payload = JsonBinCredentialsQrCode.Encode(JsonBinAccessKey, JsonBinBinId);
+        var qrCode = BarcodeGenerator.CreateBarcode(
+            payload,
+            ZXing.Net.Maui.BarcodeFormat.QrCode,
+            width: 1024,
+            height: 1024);
+        if (qrCode is null)
+        {
+            await DisplayAlertAsync("QR code error", "Could not create the credentials QR code.", "OK");
+            return;
+        }
+
+        await Navigation.PushAsync(new CredentialsQrCodePage(qrCode));
+    }
+
+    private async void OnScanJsonBinCredentialsClicked(object? sender, EventArgs e)
+    {
+        var scanner = new ScannerPage(async (value, _) =>
+        {
+            if (!JsonBinCredentialsQrCode.TryDecode(value, out var credentials) || credentials is null)
+                return false;
+
+            JsonBinAccessKey = credentials.AccessKey;
+            JsonBinBinId = credentials.BinId;
+            OnPropertyChanged(nameof(JsonBinAccessKey));
+            OnPropertyChanged(nameof(JsonBinBinId));
+            return true;
+        }, "Scan a PlainWallet JSONBin sharing QR code.");
 
         await Navigation.PushAsync(scanner);
     }
