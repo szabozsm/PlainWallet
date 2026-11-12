@@ -30,8 +30,8 @@
 		<ApplicationId>io.github.szabozsm.plainwallet</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>0.51</ApplicationDisplayVersion>
-		<ApplicationVersion>51</ApplicationVersion>
+		<ApplicationDisplayVersion>0.6</ApplicationDisplayVersion>
+		<ApplicationVersion>60</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
