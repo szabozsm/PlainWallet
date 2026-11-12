@@ -168,7 +168,7 @@ public partial class SettingsPage : ContentPage
             return;
         }
 
-        await Navigation.PushAsync(new CredentialsQrCodePage(qrCode));
+        await Navigation.PushAsync(new CredentialsQrCodePage(qrCode, "ExtendsClass.com"));
     }
 
     private async void OnScanCredentialsClicked(object? sender, EventArgs e)
@@ -213,7 +213,7 @@ public partial class SettingsPage : ContentPage
             return;
         }
 
-        await Navigation.PushAsync(new CredentialsQrCodePage(qrCode));
+        await Navigation.PushAsync(new CredentialsQrCodePage(qrCode, "jsonBin.io"));
     }
 
     private async void OnScanJsonBinCredentialsClicked(object? sender, EventArgs e)
