@@ -15,8 +15,11 @@
 <Color x:Key="SecondaryDarkText">#3B6EDC</Color>
 
 <Color x:Key="Tertiary">#072A66</Color>
+<Color x:Key="Warning">#B00020</Color>
+<Color x:Key="DarkWarning">OrangeRed</Color>
 
     <Color x:Key="White">White</Color>
+    
     <Color x:Key="Black">Black</Color>
     <Color x:Key="Magenta">#D600AA</Color>
     <Color x:Key="MidnightBlue">#190649</Color>

@@ -103,6 +103,15 @@
 
                                    <VerticalStackLayout Spacing="0"
                                                         IsVisible="{Binding Source={x:Reference SettingsCheckbox}, Path=IsChecked}">
+                                          <Border Background="#B00020"
+                                                  Stroke="#B00020"
+                                                  StrokeShape="RoundRectangle 6"
+                                                  Padding="10"
+                                                  Margin="0,0,0,12">
+                                                 <Label Text="Warning: As of this app’s release, ExtendsClass’s JSON storage service is not working. Please verify that it’s working again before using it."
+                                                        FontSize="12"
+                                                        TextColor="White"/>
+                                          </Border>
                                           <Label Text="Api-key"/>
                                           <Entry x:Name="ApikeyEntry"
                                                  Text="{Binding Apikey, Mode=TwoWay}"
